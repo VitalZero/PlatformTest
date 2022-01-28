@@ -25,3 +25,9 @@
 /processorParam:TextureFormat=Color
 /build:MARIOTILESSIMPLE.png
 
+#begin stage1.json
+/copy:stage1.json
+
+#begin stage1tiles.json
+/copy:stage1tiles.json
+

@@ -33,7 +33,7 @@ namespace PlatformTest
             graphics.ApplyChanges();
 
             buffer = new RenderTarget2D(GraphicsDevice, width, height);
-            map.Initialize();
+            map.Initialize(Content.RootDirectory);
 
             base.Initialize();
         }

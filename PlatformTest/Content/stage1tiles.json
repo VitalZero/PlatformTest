@@ -1,0 +1,110 @@
+{ 
+ "columns":10,
+ "totalTiles": 20,
+ "image":"MARIOTILESSIMPLE",
+ "imageheight":32,
+ "imagewidth":160,
+ "tileheight":16,
+ "tilewidth":16,
+ "tiles":[
+      {
+        "id":0,
+        "breakable": false,
+        "solid": true
+      },
+      {
+        "id": 1,
+        "breakable": false,
+        "solid": true
+      },
+      {
+        "id": 2,
+        "breakable": false,
+        "solid": true
+      },
+      {
+        "id": 3,
+        "breakable": false,
+        "solid": true
+      },
+      {
+        "id": 4,
+        "breakable": true,
+        "solid": true
+      },
+      {
+        "id": 5,
+        "breakable": false,
+        "solid": false
+      },
+      {
+        "id": 6,
+        "breakable": false,
+        "solid": false
+      },
+      {
+        "id": 7,
+        "breakable": false,
+        "solid": false
+      },
+      {
+        "id": 8,
+        "breakable": false,
+        "solid": true
+      },
+      {
+        "id": 9,
+        "breakable": false,
+        "solid": false
+      },
+      {
+        "id": 10,
+        "breakable": false,
+        "solid": false
+      },
+      {
+        "id": 11,
+        "breakable": false,
+        "solid": false
+      },
+      {
+        "id": 12,
+        "breakable": false,
+        "solid": false
+      },
+      {
+        "id": 13,
+        "breakable": false,
+        "solid": false
+      },
+      {
+        "id": 14,
+        "breakable": false,
+        "solid": false
+      },
+      {
+        "id": 15,
+        "breakable": false,
+        "solid": false
+      },
+      {
+        "id": 16,
+        "breakable": false,
+        "solid": true
+      },
+      {
+        "id": 17,
+        "breakable": false,
+        "solid": true
+      },
+      {
+        "id": 18,
+        "breakable": false,
+        "solid": true
+      },
+      {
+        "id": 19,
+        "breakable": false,
+        "solid": true
+      }]
+}
