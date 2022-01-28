@@ -1,10 +1,12 @@
-﻿namespace PlatformTest
-{
-    public enum TileType:byte { None, Solid, OneWay, Slope }
+﻿using System;
+using System.Collections.Generic;
 
-    public struct Tile
+namespace PlatformTest
+{
+    public class Tile
     {
-        int tile;
-        TileType type;
+        public int id = -1;
+        public bool breakable = false;
+        public bool solid = false;
     }
 }
