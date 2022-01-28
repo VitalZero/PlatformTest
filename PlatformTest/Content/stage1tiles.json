@@ -1,7 +1,7 @@
 { 
  "columns":10,
  "totalTiles": 20,
- "image":"MARIOTILESSIMPLE",
+ "image":"mariotilessimple",
  "imageheight":32,
  "imagewidth":160,
  "tileheight":16,

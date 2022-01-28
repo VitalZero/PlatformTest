@@ -8,13 +8,14 @@ namespace PlatformTest
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-        private const int width = 480;
+        private const int width = 320;
         private const int height = 240;
-        private const int pixels = 3;
+        private const int pixels = 2;
         private const int windowWidth = width * pixels;
         private const int windowHeight = height * pixels;
         private RenderTarget2D buffer;
         private Map map;
+        private Player player;
 
         public Game1()
         {
@@ -22,6 +23,7 @@ namespace PlatformTest
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             map = new Map();
+            player = new Player();
         }
 
         protected override void Initialize()
@@ -43,6 +45,7 @@ namespace PlatformTest
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             map.Load(Content);
+            player.Load(Content);
             // TODO: use this.Content to load your game content here
         }
 
@@ -50,6 +53,10 @@ namespace PlatformTest
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            player.Input(gameTime);
+
+            player.Update(gameTime);
 
             // TODO: Add your update logic here
 
@@ -61,8 +68,11 @@ namespace PlatformTest
             GraphicsDevice.SetRenderTarget(buffer);
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            spriteBatch.Begin();
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+
             map.Draw(spriteBatch);
+            player.Draw(spriteBatch);
+
             spriteBatch.End();
 
             GraphicsDevice.SetRenderTarget(null);

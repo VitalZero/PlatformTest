@@ -107,5 +107,13 @@ namespace PlatformTest
                 }
             }
         }
+
+        public Tile GetTile(float x, float y)
+        {
+            int tileX = (int)x / tileSize;
+            int tileY = (int)y / tileSize;
+
+            return map[tileX + mapWidth * tileY];
+        }
     }
 }
