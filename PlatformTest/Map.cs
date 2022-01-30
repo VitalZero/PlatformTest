@@ -18,6 +18,7 @@ namespace PlatformTest
         private int textureColumns;
         private Texture2D texture;
         private string textureName;
+        ContentManager content;
 
         public void Initialize(string directory)
         {
@@ -67,6 +68,12 @@ namespace PlatformTest
 
                             map[x + mapWidth * y].breakable = doc.RootElement.GetProperty("tiles")[tileId].GetProperty("breakable").GetBoolean();
                             map[x + mapWidth * y].solid = doc.RootElement.GetProperty("tiles")[tileId].GetProperty("solid").GetBoolean();
+                            if (map[x + mapWidth * y].breakable)
+                                map[x + mapWidth * y].collision = TileCollision.breakable;
+                            else if (map[x + mapWidth * y].solid && !map[x + mapWidth * y].breakable)
+                                map[x + mapWidth * y].collision = TileCollision.solid;
+                            else if (!map[x + mapWidth * y].solid && !map[x + mapWidth * y].breakable)
+                                map[x + mapWidth * y].collision = TileCollision.none;
                         }
                     }
                 }
@@ -79,8 +86,9 @@ namespace PlatformTest
             }
         }
 
-        public void Load(ContentManager content)
+        public void Load(IServiceProvider serviceProvider)
         {
+            content = new ContentManager(serviceProvider, "Content");
             texture = content.Load<Texture2D>(textureName);
         }
 
@@ -108,12 +116,17 @@ namespace PlatformTest
             }
         }
 
-        public Tile GetTile(float x, float y)
+        public Tile GetTile(int x, int y)
         {
-            int tileX = (int)x / tileSize;
-            int tileY = (int)y / tileSize;
+            int tileX = x / tileSize;
+            int tileY = y / tileSize;
 
-            return map[tileX + mapWidth * tileY];
+             return map[x + mapWidth * y];
+        }
+
+        public Rectangle GetBounds(int x, int y)
+        {
+            return new Rectangle(x * tileSize, y * tileSize, tileSize, tileSize);
         }
     }
 }
