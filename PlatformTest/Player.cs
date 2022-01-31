@@ -43,8 +43,8 @@ namespace PlatformTest
         {
             KeyboardState oldState = keyState;
             keyState = Keyboard.GetState();
-            
-            if(keyState.IsKeyDown(Keys.Right))
+
+            if (keyState.IsKeyDown(Keys.Right))
                 dir = 1f;
             if (keyState.IsKeyDown(Keys.Left))
                 dir = -1f;
@@ -56,7 +56,7 @@ namespace PlatformTest
 
         public void Update(GameTime gameTime, Map map)
         {
-            ApplyPhysics(gameTime, map);
+            ApplyPhysics2(gameTime, map);
 
             dir = 0f;
         }
@@ -69,6 +69,30 @@ namespace PlatformTest
                 new Rectangle(0, 0, 16, 32),
                 Color.White
                 );
+        }
+
+        private void ApplyPhysics2(GameTime gameTime, Map map)
+        {
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            vel.X = dir * speed * elapsed;
+            vel.Y = MathHelper.Clamp(vel.Y + gravity * elapsed, -10f, 10f);
+
+            if (isJumping && isOnGround)
+            {
+                vel.Y = jumpSpeed * elapsed;
+                isJumping = false;
+            }
+
+            pos.X += vel.X;
+            pos.X = (float)Math.Round(pos.X);
+
+            HandleCollisionsX(map);
+
+            pos.Y += vel.Y;
+            pos.Y = (float)Math.Round(pos.Y);
+
+            HandleCollisionsY(map);
         }
 
         private void ApplyPhysics(GameTime gameTime, Map map)
@@ -92,6 +116,113 @@ namespace PlatformTest
             HandleCollisions(map);
         }
 
+        private void HandleCollisionsX(Map map)
+        {
+            Rectangle bounds = new Rectangle((int)pos.X + 1, (int)pos.Y + 1, (int)size.X, (int)size.Y);
+
+            int top = (int)(pos.Y / 16);
+            int bottom = (int)((pos.Y + size.Y) / 16);
+            int left = (int)(pos.X / 16);
+            int right = (int)((pos.X + size.X) / 16);
+
+            if (top < 0) top = 0;
+            if (left < 0) left = 0;
+            if (right >= map.mapWidth) right = map.mapWidth;
+            if (bottom >= map.mapHeight) bottom = map.mapHeight;
+
+            List<Tile> tilesToCheck = new List<Tile>();
+
+            for (int y = top; y <= bottom; ++y)
+            {
+                for (int x = left; x <= right; ++x)
+                {
+                    Tile tile = map.GetTile(x, y);
+
+                    if(tile.collision != TileCollision.none)
+                        tilesToCheck.Add(tile);
+                }
+            }
+
+            foreach (var t in tilesToCheck)
+            {
+                Rectangle tileBounds = new Rectangle(t.X * 16, t.Y * 16, 16, 16);
+
+                if (bounds.Intersects(tileBounds))
+                {
+                    float leftDist = Math.Abs(bounds.Right - tileBounds.Left);
+                    float rightDist = Math.Abs(bounds.Left - (tileBounds.Right));
+
+                    if (leftDist < rightDist)
+                    {
+                        pos.X += -leftDist;
+                    }
+                    else
+                    {
+                        pos.X += rightDist;
+                    }
+
+                    break;
+                }
+
+            }
+        }
+
+        private void HandleCollisionsY(Map map)
+        {
+            isOnGround = false;
+
+            Rectangle bounds = new Rectangle((int)pos.X + 1, (int)pos.Y + 1, (int)size.X, (int)size.Y);
+
+            int top = (int)(pos.Y / 16);
+            int bottom = (int)((pos.Y + size.Y) / 16);
+            int left = (int)(pos.X / 16);
+            int right = (int)((pos.X + size.X) / 16);
+
+            if (top < 0) top = 0;
+            if (left < 0) left = 0;
+            if (right >= map.mapWidth) right = map.mapWidth;
+            if (bottom >= map.mapHeight) bottom = map.mapHeight;
+
+            List<Tile> tilesToCheck = new List<Tile>();
+
+            for (int y = top; y <= bottom; ++y)
+            {
+                for (int x = left; x <= right; ++x)
+                {
+                    Tile tile = map.GetTile(x, y);
+
+                    if (tile.collision != TileCollision.none)
+                        tilesToCheck.Add(tile);
+                }
+            }
+
+            foreach (var t in tilesToCheck)
+            {
+                Rectangle tileBounds = new Rectangle(t.X * 16, t.Y * 16, 16, 16);
+
+                if (bounds.Intersects(tileBounds))
+                {
+                    float topDist = Math.Abs(bounds.Bottom - tileBounds.Top);
+                    float bottomDist = Math.Abs(bounds.Top - (tileBounds.Bottom));
+
+                    if (topDist < bottomDist)
+                    {
+                        pos.Y += -topDist;
+                        isOnGround = true;
+                        vel.Y = 0;
+                    }
+                    else
+                    {
+                        pos.Y += bottomDist;
+                        vel.Y = 0;
+                    }
+
+                    break;
+                }
+
+            }
+        }
+
         private void HandleCollisions(Map map)
         {
             Rectangle bounds = new Rectangle((int)pos.X + 1, (int)pos.Y + 1, (int)size.X, (int)size.Y);
@@ -102,14 +233,12 @@ namespace PlatformTest
             int left = (int)Math.Floor((float)bounds.Left / 16);
             int right = (int)Math.Ceiling((float)bounds.Right / 16);
 
-            //List<Tile> tilesToCheck = new List<Tile>();
 
             //collision handling
             for (int y = top; y <= bottom; ++y)
             {
                 for (int x = left; x <= right; ++x)
                 {
-                    //tilesToCheck.Add(map.GetTile(x, y));
                     Tile tile = map.GetTile(x, y);
 
                     bounds = new Rectangle((int)pos.X + 1, (int)pos.Y + 1, (int)size.X, (int)size.Y);

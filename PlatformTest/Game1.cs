@@ -10,7 +10,7 @@ namespace PlatformTest
         private SpriteBatch spriteBatch;
         private const int width = 480;
         private const int height = 240;
-        private const int pixels = 3;
+        private const int pixels = 2;
         private const int windowWidth = width * pixels;
         private const int windowHeight = height * pixels;
         private RenderTarget2D buffer;
