@@ -15,8 +15,8 @@ namespace PlatformTest
         private Vector2 vel;
         private float dir;
         private const float speed = 100f;
-        private const float gravity = 31f;
-        private const float jumpSpeed = -600f;
+        private const float gravity = 20f;
+        private const float jumpSpeed = -400f;
         KeyboardState keyState;
         ContentManager content;
         private Vector2 size;
@@ -29,6 +29,7 @@ namespace PlatformTest
             vel = Vector2.Zero;
             dir = 0f;
             size = new Vector2(14f, 30f);
+
         }
 
         public void Load(IServiceProvider serviceProvider)
@@ -40,6 +41,7 @@ namespace PlatformTest
 
         public void Input(GameTime gameTime)
         {
+            KeyboardState oldState = keyState;
             keyState = Keyboard.GetState();
             
             if(keyState.IsKeyDown(Keys.Right))
@@ -47,7 +49,9 @@ namespace PlatformTest
             if (keyState.IsKeyDown(Keys.Left))
                 dir = -1f;
 
-            isJumping = keyState.IsKeyDown(Keys.Space);
+            //isJumping = keyState.IsKeyDown(Keys.Space);
+            if (keyState.IsKeyDown(Keys.Space) && !oldState.IsKeyDown(Keys.Space))
+                isJumping = true;
         }
 
         public void Update(GameTime gameTime, Map map)
@@ -55,7 +59,6 @@ namespace PlatformTest
             ApplyPhysics(gameTime, map);
 
             dir = 0f;
-            isJumping = false;
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -78,36 +81,38 @@ namespace PlatformTest
             vel.Y = MathHelper.Clamp(vel.Y + gravity * elapsed, -10f, 10f);
 
             if (isJumping && isOnGround)
+            {
                 vel.Y = jumpSpeed * elapsed;
+                isJumping = false;
+            }
 
             pos += vel;
             pos = new Vector2((float)Math.Round(pos.X), (float)Math.Round(pos.Y));
 
             HandleCollisions(map);
-
-            //if (pos.X == prevPos.X)
-            //    vel.X = 0;
-            //if (pos.Y == prevPos.Y)
-            //    vel.Y = 0;
         }
 
         private void HandleCollisions(Map map)
         {
             Rectangle bounds = new Rectangle((int)pos.X + 1, (int)pos.Y + 1, (int)size.X, (int)size.Y);
-
             isOnGround = false;
 
             int top = (int)Math.Floor((float)bounds.Top / 16);
-            int bottom = (int)Math.Ceiling((float)bounds.Bottom / 16) - 1;
+            int bottom = (int)Math.Ceiling((float)bounds.Bottom / 16);
             int left = (int)Math.Floor((float)bounds.Left / 16);
-            int right = (int)Math.Ceiling((float)bounds.Right / 16) - 1;
+            int right = (int)Math.Ceiling((float)bounds.Right / 16);
+
+            //List<Tile> tilesToCheck = new List<Tile>();
 
             //collision handling
             for (int y = top; y <= bottom; ++y)
             {
                 for (int x = left; x <= right; ++x)
                 {
+                    //tilesToCheck.Add(map.GetTile(x, y));
                     Tile tile = map.GetTile(x, y);
+
+                    bounds = new Rectangle((int)pos.X + 1, (int)pos.Y + 1, (int)size.X, (int)size.Y);
 
                     if (tile.collision != TileCollision.none)
                     {
@@ -120,24 +125,69 @@ namespace PlatformTest
                             float depthX = Math.Abs(depth.X);
                             float depthY = Math.Abs(depth.Y);
 
-                            if (depthY < depthX)
+                            // check first X and resolve
+                            if (depthX < depthY)
                             {
-                                vel.Y = 0;
-                                pos = new Vector2(pos.X, pos.Y + depth.Y);
-                                isOnGround = true;
-                                bounds = new Rectangle((int)pos.X + 1, (int)pos.Y + 1, (int)size.X, (int)size.Y);
+                                pos.X += depth.X;
+                                bounds.X = (int)pos.X + 1;
+                                vel.X = 0;
                             }
                             else
                             {
-                                vel.X = 0;
-                                pos = new Vector2(pos.X + depth.X, pos.Y);
+                                if(tile.collision == TileCollision.breakable &&
+                                    vel.Y < 0)
+                                {
+                                    map.RemoveTile(x, y);
 
-                                bounds = new Rectangle((int)pos.X + 1, (int)pos.Y + 1, (int)size.X, (int)size.Y);
+                                    // if tile is breakable (brick) reduce Y speed by 70% of the current speed
+                                    vel.Y += -vel.Y * .7f ;
+                                }
+                                else
+                                {
+                                    vel.Y = 0;
+                                }
+
+                                pos.Y += depth.Y;
+                                isOnGround = true;
+                                bounds.Y = (int)pos.Y + 1;
                             }
                         }
                     }
                 }
             }
+
+            //foreach(var t in tilesToCheck)
+            //{
+            //    if (t.collision != TileCollision.none)
+            //    {
+            //        bounds = new Rectangle((int)pos.X + 1, (int)pos.Y + 1, (int)size.X, (int)size.Y);
+
+            //        Rectangle tileBounds = new Rectangle(t.X * 16, t.Y * 16, 16, 16);
+
+            //        Vector2 depth = GetIntersectionDepth(bounds, tileBounds);
+
+            //        if (depth != Vector2.Zero)
+            //        {
+            //            float depthX = Math.Abs(depth.X);
+            //            float depthY = Math.Abs(depth.Y);
+
+            //            // check first X and resolve
+            //            if (depthX < depthY)
+            //            {
+            //                pos.X += depth.X;
+            //                bounds.X = (int)pos.X + 1;
+            //                vel.X = 0;
+            //            }
+            //            else
+            //            {
+            //                pos.Y += depth.Y;
+            //                isOnGround = true;
+            //                bounds.Y = (int)pos.Y + 1;
+            //                vel.Y = 0;
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         private Vector2 GetIntersectionDepth(Rectangle rectA, Rectangle rectB)
@@ -159,7 +209,7 @@ namespace PlatformTest
             float minDistanceY = halfHeightA + halfHeightB;
 
             // If we are not intersecting at all, return (0, 0).
-            if (Math.Abs(distanceX) >= minDistanceX || Math.Abs(distanceY) >= minDistanceY)
+            if (Math.Abs(distanceX) > minDistanceX || Math.Abs(distanceY) > minDistanceY)
                 return Vector2.Zero;
 
             // Calculate and return intersection depths.

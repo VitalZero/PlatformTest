@@ -55,7 +55,7 @@
       {
         "id": 9,
         "breakable": false,
-        "solid": false
+        "solid": true
       },
       {
         "id": 10,

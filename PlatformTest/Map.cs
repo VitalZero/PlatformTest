@@ -12,8 +12,8 @@ namespace PlatformTest
     public class Map
     {
         private Tile[] map;
-        private int mapWidth;
-        private int mapHeight;
+        public int mapWidth;
+        public int mapHeight;
         private int tileSize;
         private int textureColumns;
         private Texture2D texture;
@@ -61,6 +61,8 @@ namespace PlatformTest
                         int tileId = indexMap[x + mapWidth * y] - 1;
 
                         map[x + mapWidth * y] = new Tile();
+                        map[x + mapWidth * y].X = x;
+                        map[x + mapWidth * y].Y = y;
 
                         if (tileId >= 0)
                         {
@@ -118,10 +120,14 @@ namespace PlatformTest
 
         public Tile GetTile(int x, int y)
         {
-            int tileX = x / tileSize;
-            int tileY = y / tileSize;
+            return map[x + mapWidth * y];
+        }
 
-             return map[x + mapWidth * y];
+        public void RemoveTile(int x, int y)
+        {
+            map[x + mapWidth * y] = new Tile();
+            map[x + mapWidth * y].X = x;
+            map[x + mapWidth * y].Y = y;
         }
 
         public Rectangle GetBounds(int x, int y)
