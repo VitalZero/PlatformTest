@@ -19,6 +19,12 @@ namespace PlatformTest
         private Texture2D texture;
         private string textureName;
         ContentManager content;
+        Camera camera;
+
+        public Map(Camera camera)
+        {
+            this.camera = camera;
+        }
 
         public void Initialize(string directory)
         {
@@ -101,7 +107,7 @@ namespace PlatformTest
 
                         spriteBatch.Draw(
                             texture,
-                            new Vector2(x * tileSize, y * tileSize),
+                            new Vector2((int)((x * tileSize) - camera.XOffset), (int)((y * tileSize) - camera.YOffset)),
                             new Rectangle(dx, dy, tileSize, tileSize),
                             Color.White
                             );

@@ -8,7 +8,9 @@ namespace PlatformTest
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-        private const int width = 480;
+        public int Width { get { return width; } }
+        public int Height { get { return height; } }
+        private const int width = 320;
         private const int height = 240;
         private const int pixels = 2;
         private const int windowWidth = width * pixels;
@@ -17,13 +19,15 @@ namespace PlatformTest
         private Map map;
         private Player player;
         private Matrix globalTransformation;
+        private Camera camera;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            map = new Map();
+            camera = new Camera(this, 0, 0);
+            map = new Map(camera);
             player = new Player();
         }
 
@@ -60,6 +64,8 @@ namespace PlatformTest
             player.Input(gameTime);
 
             player.Update(gameTime, map);
+
+            camera.CenterOnPlayer(player);
 
             // TODO: Add your update logic here
 
