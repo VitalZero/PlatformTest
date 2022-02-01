@@ -1,7 +1,7 @@
 ﻿
 namespace PlatformTest
 {
-    public enum TileCollision { none, solid, breakable }
+    public enum TileCollision { none, solid, breakable, item }
 
     public class Tile
     {

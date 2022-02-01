@@ -213,6 +213,11 @@ namespace PlatformTest
                     }
                     else
                     {
+                        if (t.collision == TileCollision.breakable)
+                            map.RemoveTile(t.X, t.Y);
+                        else if (t.collision == TileCollision.item)
+                            map.usedTileItem(t.X, t.Y);
+
                         pos.Y += bottomDist;
                         vel.Y = 0;
                     }
