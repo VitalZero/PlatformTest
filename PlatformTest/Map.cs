@@ -68,14 +68,6 @@ namespace PlatformTest
                         {
                             map[x + mapWidth * y].id = tileId;
                             map[x + mapWidth * y].collision = (TileCollision)doc.RootElement.GetProperty("tiles")[tileId].GetProperty("collision").GetInt32();
-                            //map[x + mapWidth * y].breakable = doc.RootElement.GetProperty("tiles")[tileId].GetProperty("breakable").GetBoolean();
-                            //map[x + mapWidth * y].solid = doc.RootElement.GetProperty("tiles")[tileId].GetProperty("solid").GetBoolean();
-                            //if (map[x + mapWidth * y].breakable)
-                            //    map[x + mapWidth * y].collision = TileCollision.breakable;
-                            //else if (map[x + mapWidth * y].solid && !map[x + mapWidth * y].breakable)
-                            //    map[x + mapWidth * y].collision = TileCollision.solid;
-                            //else if (!map[x + mapWidth * y].solid && !map[x + mapWidth * y].breakable)
-                            //    map[x + mapWidth * y].collision = TileCollision.none;
                         }
                     }
                 }
