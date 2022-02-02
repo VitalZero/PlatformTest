@@ -20,18 +20,18 @@ namespace PlatformTest
         private const float jumpSpeed = -400f;
         KeyboardState keyState;
         ContentManager content;
-        private Vector2 size;
         private bool isOnGround;
-        private bool isJumping = false;
+        private bool isJumping;
         private Rectangle aabb;
+        BoundingSphere bs;
         Camera camera;
+        SpriteEffects flip;
 
         public Player(Camera camera)
         {
             pos = new Vector2(50f, 50f);
             vel = Vector2.Zero;
             dir = 0f;
-            size = new Vector2(12f, 24f);
             aabb = new Rectangle(2, 4, 12, 28);
             this.camera = camera;
         }
@@ -53,26 +53,37 @@ namespace PlatformTest
             if (keyState.IsKeyDown(Keys.Left))
                 dir = -1f;
 
-            //isJumping = keyState.IsKeyDown(Keys.Space);
-            if (keyState.IsKeyDown(Keys.Space) && !oldState.IsKeyDown(Keys.Space) && !isJumping)
-                isJumping = true;
+            isJumping = keyState.IsKeyDown(Keys.Space);
+            //if (keyState.IsKeyDown(Keys.Space))
+            //    isJumping = true;
         }
 
         public void Update(GameTime gameTime, Map map)
         {
             ApplyPhysics2(gameTime, map);
 
+            if (vel.X > 0)
+                flip = SpriteEffects.None;
+            else if (vel.X < 0)
+                flip = SpriteEffects.FlipHorizontally;
+
+            isJumping = false;
+
             dir = 0f;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-
             spriteBatch.Draw(
                 texture,
                 new Vector2(pos.X - camera.XOffset, pos.Y - camera.YOffset),
                 new Rectangle(0, 0, 16, 32),
-                Color.White
+                Color.White,
+                0,
+                Vector2.Zero,
+                1,
+                flip,
+                0
                 );
         }
 
@@ -88,10 +99,12 @@ namespace PlatformTest
             vel.X = dir * speed * elapsed;
             vel.Y = MathHelper.Clamp(vel.Y + gravity * elapsed, -10f, 10f);
 
-            if (isJumping && isOnGround)
+            if (isJumping)
             {
-                vel.Y = jumpSpeed * elapsed;
-                isJumping = false;
+                if (isOnGround)
+                {
+                    vel.Y = jumpSpeed * elapsed;
+                }
             }
 
             pos.X += vel.X;
@@ -101,6 +114,8 @@ namespace PlatformTest
 
             pos.Y += vel.Y;
             pos.Y = (float)Math.Round(pos.Y);
+            
+            isOnGround = false;
 
             HandleCollisionsY(map);
         }
@@ -158,8 +173,6 @@ namespace PlatformTest
 
         private void HandleCollisionsY(Map map)
         {
-            isOnGround = false;
-
             Rectangle bounds = GetAABB();
 
             int top = (int)(bounds.Top / 16);

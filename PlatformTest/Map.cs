@@ -94,9 +94,12 @@ namespace PlatformTest
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            for(int y = 0; y < mapHeight; ++y)
+            int xStart = (int)Math.Max(0, (camera.XOffset) / tileSize) + 1;
+            int xEnd = (int)Math.Min(mapWidth, (camera.XOffset + (480)) / tileSize);
+
+            for (int y = 0; y < mapHeight; ++y)
             {
-                for(int x = 0; x < mapWidth; ++x)
+                for(int x = xStart; x < xEnd; ++x)
                 {
                     int tileTexture = map[x + mapWidth * y].id;
 
@@ -118,10 +121,10 @@ namespace PlatformTest
 
         public Tile GetTile(int x, int y)
         {
-            if ((x + mapWidth * y) > map.Length)
+            if ((x + mapWidth * y) >= map.Length)
                 return new Tile();
 
-            return map[x + mapWidth * y];
+             return map[x + mapWidth * y];
         }
 
         public void usedTileItem(int x, int y)

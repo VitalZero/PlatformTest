@@ -10,7 +10,7 @@ namespace PlatformTest
         private SpriteBatch spriteBatch;
         public int Width { get { return width; } }
         public int Height { get { return height; } }
-        private const int width = 320;
+        private const int width = 480;
         private const int height = 240;
         private const int pixels = 2;
         private const int windowWidth = width * pixels;
@@ -20,6 +20,8 @@ namespace PlatformTest
         private Player player;
         private Matrix globalTransformation;
         private Camera camera;
+        private float fps;
+        SpriteFont font;
 
         public Game1()
         {
@@ -53,6 +55,7 @@ namespace PlatformTest
 
             map.Load(Services);
             player.Load(Services);
+            font = Content.Load<SpriteFont>("Arial");
             // TODO: use this.Content to load your game content here
         }
 
@@ -60,6 +63,8 @@ namespace PlatformTest
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            fps = 1f / (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             player.Input(gameTime);
 
@@ -74,26 +79,12 @@ namespace PlatformTest
 
         protected override void Draw(GameTime gameTime)
         {
-            //GraphicsDevice.SetRenderTarget(buffer);
-
-            //GraphicsDevice.Clear(Color.CornflowerBlue);
-            //spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-
-            //map.Draw(spriteBatch);
-            //player.Draw(spriteBatch);
-
-            //spriteBatch.End();
-
-            //GraphicsDevice.SetRenderTarget(null);
-
-            //spriteBatch.Begin(samplerState:SamplerState.PointClamp);
-            //spriteBatch.Draw(buffer, new Rectangle(0, 0, windowWidth, windowHeight), Color.White);
-            //spriteBatch.End();
-
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null, null, globalTransformation);
             map.Draw(spriteBatch);
             player.Draw(spriteBatch);
+
+            spriteBatch.DrawString(font, "FPS:" + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);
             spriteBatch.End();
 
 
