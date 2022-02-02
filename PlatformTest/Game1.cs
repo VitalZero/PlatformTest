@@ -28,7 +28,7 @@ namespace PlatformTest
             IsMouseVisible = true;
             camera = new Camera(this, 0, 0);
             map = new Map(camera);
-            player = new Player();
+            player = new Player(camera);
         }
 
         protected override void Initialize()

@@ -24,14 +24,16 @@ namespace PlatformTest
         private bool isOnGround;
         private bool isJumping = false;
         private Rectangle aabb;
+        Camera camera;
 
-        public Player()
+        public Player(Camera camera)
         {
             pos = new Vector2(50f, 50f);
             vel = Vector2.Zero;
             dir = 0f;
             size = new Vector2(12f, 24f);
             aabb = new Rectangle(2, 4, 12, 28);
+            this.camera = camera;
         }
 
         public void Load(IServiceProvider serviceProvider)
@@ -65,9 +67,10 @@ namespace PlatformTest
 
         public void Draw(SpriteBatch spriteBatch)
         {
+
             spriteBatch.Draw(
                 texture,
-                pos,
+                new Vector2(pos.X - camera.XOffset, pos.Y - camera.YOffset),
                 new Rectangle(0, 0, 16, 32),
                 Color.White
                 );

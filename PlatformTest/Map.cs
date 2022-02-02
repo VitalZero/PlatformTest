@@ -118,6 +118,9 @@ namespace PlatformTest
 
         public Tile GetTile(int x, int y)
         {
+            if ((x + mapWidth * y) > map.Length)
+                return new Tile();
+
             return map[x + mapWidth * y];
         }
 

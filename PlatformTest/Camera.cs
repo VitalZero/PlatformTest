@@ -28,6 +28,9 @@ namespace PlatformTest
         {
             XOffset = player.Pos.X - game.Width / 2;
             YOffset = player.Pos.Y - game.Height / 2;
+
+            XOffset = Math.Clamp(XOffset, 0, (71*16) - 320);
+            YOffset = 0;
         }
     }
 }
