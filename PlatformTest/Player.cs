@@ -26,6 +26,9 @@ namespace PlatformTest
         BoundingSphere bs;
         Camera camera;
         SpriteEffects flip;
+        Animation standing;
+        Animation run;
+        AnimationPlayer animPlayer;
 
         public Player(Camera camera)
         {
@@ -34,6 +37,7 @@ namespace PlatformTest
             dir = 0f;
             aabb = new Rectangle(2, 4, 12, 28);
             this.camera = camera;
+            animPlayer = new AnimationPlayer();
         }
 
         public void Load(IServiceProvider serviceProvider)
@@ -41,6 +45,9 @@ namespace PlatformTest
             content = new ContentManager(serviceProvider, "Content");
 
             texture = content.Load<Texture2D>("mariobasic");
+
+            standing = new Animation(texture, 1f, true, 16, 1, 0);
+            run = new Animation(texture, .1f, true, 16, 3, 16);
         }
 
         public void Input(GameTime gameTime)
@@ -48,14 +55,14 @@ namespace PlatformTest
             KeyboardState oldState = keyState;
             keyState = Keyboard.GetState();
 
+            //isJumping = keyState.IsKeyDown(Keys.Space);
+            if (keyState.IsKeyDown(Keys.Space))
+                isJumping = true;
+
             if (keyState.IsKeyDown(Keys.Right))
                 dir = 1f;
             if (keyState.IsKeyDown(Keys.Left))
                 dir = -1f;
-
-            isJumping = keyState.IsKeyDown(Keys.Space);
-            //if (keyState.IsKeyDown(Keys.Space))
-            //    isJumping = true;
         }
 
         public void Update(GameTime gameTime, Map map)
@@ -63,9 +70,21 @@ namespace PlatformTest
             ApplyPhysics2(gameTime, map);
 
             if (vel.X > 0)
+            {
                 flip = SpriteEffects.None;
+                animPlayer.PlayAnimation(run);
+            }
             else if (vel.X < 0)
+            {
                 flip = SpriteEffects.FlipHorizontally;
+                animPlayer.PlayAnimation(run);
+            }
+            else
+            {
+                animPlayer.PlayAnimation(standing);
+            }
+
+            animPlayer.Update(gameTime);
 
             isJumping = false;
 
@@ -74,17 +93,18 @@ namespace PlatformTest
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(
-                texture,
-                new Vector2(pos.X - camera.XOffset, pos.Y - camera.YOffset),
-                new Rectangle(0, 0, 16, 32),
-                Color.White,
-                0,
-                Vector2.Zero,
-                1,
-                flip,
-                0
-                );
+            //spriteBatch.Draw(
+            //    texture,
+            //    new Vector2(pos.X - camera.XOffset, pos.Y - camera.YOffset),
+            //    new Rectangle(0, 0, 16, 32),
+            //    Color.White,
+            //    0,
+            //    Vector2.Zero,
+            //    1,
+            //    flip,
+            //    0
+            //    );
+            animPlayer.Draw(spriteBatch, new Vector2(pos.X - camera.XOffset, pos.Y - camera.YOffset), flip);
         }
 
         private Rectangle GetAABB()

@@ -94,8 +94,8 @@ namespace PlatformTest
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            int xStart = (int)Math.Max(0, (camera.XOffset) / tileSize) + 1;
-            int xEnd = (int)Math.Min(mapWidth, (camera.XOffset + (480)) / tileSize);
+            int xStart = (int)Math.Max(0, (camera.XOffset) / tileSize);
+            int xEnd = (int)Math.Min(mapWidth, (camera.XOffset + (480) / tileSize) + 1);
 
             for (int y = 0; y < mapHeight; ++y)
             {
