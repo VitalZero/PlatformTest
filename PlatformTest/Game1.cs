@@ -10,9 +10,9 @@ namespace PlatformTest
         private SpriteBatch spriteBatch;
         public int Width { get { return width; } }
         public int Height { get { return height; } }
-        private const int width = 480;
-        private const int height = 240;
-        private const int pixels = 2;
+        private const int width = 320;
+        private const int height = 244;
+        private const int pixels = 3;
         private const int windowWidth = width * pixels;
         private const int windowHeight = height * pixels;
         private RenderTarget2D buffer;
@@ -84,6 +84,9 @@ namespace PlatformTest
             map.Draw(spriteBatch);
             player.Draw(spriteBatch);
 
+            spriteBatch.End();
+
+            spriteBatch.Begin();
             spriteBatch.DrawString(font, "FPS:" + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);
             spriteBatch.End();
 

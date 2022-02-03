@@ -20,6 +20,7 @@ namespace PlatformTest
         private string textureName;
         ContentManager content;
         Camera camera;
+        int tileToBounce;
 
         public Map(Camera camera)
         {
@@ -94,6 +95,7 @@ namespace PlatformTest
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            
             int xStart = (int)Math.Max(0, (camera.XOffset) / tileSize);
             int xEnd = (int)Math.Min(mapWidth, (camera.XOffset + (480) / tileSize) + 1);
 
@@ -106,7 +108,7 @@ namespace PlatformTest
                     if (tileTexture >= 0)
                     {
                         int dx = (tileTexture % textureColumns) * tileSize;
-                        int dy = (tileTexture / textureColumns) * tileSize;
+                        int dy = (tileTexture / textureColumns) *tileSize;
 
                         spriteBatch.Draw(
                             texture,
@@ -140,9 +142,22 @@ namespace PlatformTest
             map[x + mapWidth * y].Y = y;
         }
 
+        public void BounceTile(int x, int y)
+        {
+            tileToBounce = GetTile(x, y).id;
+        }
+
         public Rectangle GetBounds(int x, int y)
         {
             return new Rectangle(x * tileSize, y * tileSize, tileSize, tileSize);
+        }
+
+        private float SpringForce(float y, float restLen)
+        {
+            float k = .05f;
+            float x = y - restLen;
+
+            return -k * x;
         }
     }
 }

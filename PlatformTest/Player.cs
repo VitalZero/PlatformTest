@@ -14,13 +14,15 @@ namespace PlatformTest
         public Vector2 Pos { get { return pos; } }
         private Vector2 pos;
         private Vector2 vel;
+        private Vector2 origin;
+        private Vector2 size;
         private float dir;
         private const float speed = 100f;
         private const float gravity = 20f;
         private const float jumpSpeed = -400f;
         KeyboardState keyState;
         ContentManager content;
-        private bool isOnGround;
+        private bool isOnGround = false;
         private bool isJumping;
         private Rectangle aabb;
         BoundingSphere bs;
@@ -28,14 +30,17 @@ namespace PlatformTest
         SpriteEffects flip;
         Animation standing;
         Animation run;
+        Animation jump;
         AnimationPlayer animPlayer;
 
         public Player(Camera camera)
         {
             pos = new Vector2(50f, 50f);
+            size = new Vector2(16, 32);
             vel = Vector2.Zero;
             dir = 0f;
             aabb = new Rectangle(2, 4, 12, 28);
+            origin = new Vector2(size.X / 2, size.Y);
             this.camera = camera;
             animPlayer = new AnimationPlayer();
         }
@@ -46,8 +51,10 @@ namespace PlatformTest
 
             texture = content.Load<Texture2D>("mariobasic");
 
-            standing = new Animation(texture, 1f, true, 16, 1, 0);
-            run = new Animation(texture, .1f, true, 16, 3, 16);
+            standing = new Animation(texture, 1f, true, 16, 1, 0, 0);
+            run = new Animation(texture, .1f, true, 16, 4, 16, 0);
+            jump = new Animation(texture, .1f, true, 16, 1, 16 * 6, 0);
+            animPlayer.PlayAnimation(standing);
         }
 
         public void Input(GameTime gameTime)
@@ -72,16 +79,19 @@ namespace PlatformTest
             if (vel.X > 0)
             {
                 flip = SpriteEffects.None;
-                animPlayer.PlayAnimation(run);
+                if (isOnGround)
+                    animPlayer.PlayAnimation(run);
             }
             else if (vel.X < 0)
             {
                 flip = SpriteEffects.FlipHorizontally;
-                animPlayer.PlayAnimation(run);
+                if (isOnGround)
+                    animPlayer.PlayAnimation(run);
             }
             else
             {
-                animPlayer.PlayAnimation(standing);
+                if(isOnGround)
+                    animPlayer.PlayAnimation(standing);
             }
 
             animPlayer.Update(gameTime);
@@ -104,12 +114,12 @@ namespace PlatformTest
             //    flip,
             //    0
             //    );
-            animPlayer.Draw(spriteBatch, new Vector2(pos.X - camera.XOffset, pos.Y - camera.YOffset), flip);
+            animPlayer.Draw(spriteBatch, new Vector2(pos.X - camera.XOffset + origin.X, pos.Y - camera.YOffset + origin.Y), flip);
         }
 
         private Rectangle GetAABB()
         {
-            return new Rectangle((int)pos.X + aabb.X, (int)pos.Y + aabb.Y, aabb.Width, aabb.Height);
+            return new Rectangle((int)pos.X + aabb.X + (int)origin.X, (int)pos.Y + aabb.Y + (int)origin.Y, aabb.Width, aabb.Height);
         }
 
         private void ApplyPhysics2(GameTime gameTime, Map map)
@@ -123,6 +133,7 @@ namespace PlatformTest
             {
                 if (isOnGround)
                 {
+                    animPlayer.PlayAnimation(jump);
                     vel.Y = jumpSpeed * elapsed;
                 }
             }
@@ -134,7 +145,7 @@ namespace PlatformTest
 
             pos.Y += vel.Y;
             pos.Y = (float)Math.Round(pos.Y);
-            
+
             isOnGround = false;
 
             HandleCollisionsY(map);
@@ -238,7 +249,7 @@ namespace PlatformTest
                         if (t.collision == TileCollision.breakable)
                             map.RemoveTile(t.X, t.Y);
                         else if (t.collision == TileCollision.item)
-                            map.usedTileItem(t.X, t.Y);
+                            map.usedTileItem(t.X, t.Y); map.BounceTile(t.X, t.Y);
 
                         pos.Y += bottomDist;
                         vel.Y = 0;

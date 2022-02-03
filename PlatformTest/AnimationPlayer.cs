@@ -12,7 +12,7 @@ namespace PlatformTest
         public Animation Animation { get { return animation; } }
         int frameIndex;
         public int FrameIndex { get { return frameIndex; } }
-        public Vector2 Origin { get { return new Vector2(Animation.FrameWidth / 2, Animation.FrameHeight); } }
+        //public Vector2 Origin { get { return new Vector2(Animation.FrameWidth / 2, Animation.FrameHeight); } }
         float time;
         Rectangle source;
 
