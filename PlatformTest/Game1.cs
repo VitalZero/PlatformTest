@@ -66,6 +66,8 @@ namespace PlatformTest
 
             fps = 1f / (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            map.Update(gameTime);
+
             player.Input(gameTime);
 
             player.Update(gameTime, map);

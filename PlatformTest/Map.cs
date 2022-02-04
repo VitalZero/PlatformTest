@@ -20,11 +20,16 @@ namespace PlatformTest
         private string textureName;
         ContentManager content;
         Camera camera;
-        int tileToBounce;
+        Tile tileToBounce;
+        float bounceTimer = 0f;
+        float maxBounceTime = .2f;
+        float bounceForce;
+        float velY;
 
         public Map(Camera camera)
         {
             this.camera = camera;
+            tileToBounce = new Tile();
         }
 
         public void Initialize(string directory)
@@ -93,6 +98,28 @@ namespace PlatformTest
             texture = content.Load<Texture2D>(textureName);
         }
 
+        public void Update(GameTime gameTime)
+        {
+            if(tileToBounce.id > 0)
+            {
+                float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                bounceForce = SpringForce(bounceForce, 200f);
+                velY += bounceForce * dt;
+
+
+                if(bounceTimer >= maxBounceTime)
+                {
+                    tileToBounce = new Tile();
+                    bounceTimer = 0f;
+                    bounceForce = 0;
+                    velY = 0;
+                }
+
+                bounceTimer += dt;
+            }
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             
@@ -119,6 +146,19 @@ namespace PlatformTest
                     }
                 }
             }
+
+            if(tileToBounce.id > 0)
+            {
+                int dx = (tileToBounce.id % textureColumns) * tileSize;
+                int dy = (tileToBounce.id / textureColumns) * tileSize;
+
+                spriteBatch.Draw(
+                    texture,
+                    new Vector2((int)((tileToBounce.X * tileSize) - camera.XOffset), (int)((tileToBounce.Y * tileSize) - camera.YOffset - velY)),
+                    new Rectangle(dx, dy, tileSize, tileSize),
+                    Color.White
+                    );
+            }
         }
 
         public Tile GetTile(int x, int y)
@@ -131,8 +171,10 @@ namespace PlatformTest
 
         public void usedTileItem(int x, int y)
         {
-            map[x + mapWidth * y].id = 8;
-            map[x + mapWidth * y].collision = TileCollision.solid;
+            tileToBounce = GetTile(x, y);
+            RemoveTile(x, y);
+            //map[x + mapWidth * y].id = 8;
+            //map[x + mapWidth * y].collision = TileCollision.solid;
         }
 
         public void RemoveTile(int x, int y)
@@ -142,11 +184,6 @@ namespace PlatformTest
             map[x + mapWidth * y].Y = y;
         }
 
-        public void BounceTile(int x, int y)
-        {
-            tileToBounce = GetTile(x, y).id;
-        }
-
         public Rectangle GetBounds(int x, int y)
         {
             return new Rectangle(x * tileSize, y * tileSize, tileSize, tileSize);
@@ -154,7 +191,7 @@ namespace PlatformTest
 
         private float SpringForce(float y, float restLen)
         {
-            float k = .05f;
+            float k = .3f;
             float x = y - restLen;
 
             return -k * x;
