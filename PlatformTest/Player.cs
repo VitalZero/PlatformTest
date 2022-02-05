@@ -25,7 +25,6 @@ namespace PlatformTest
         private bool isOnGround = false;
         private bool isJumping;
         private Rectangle aabb;
-        BoundingSphere bs;
         Camera camera;
         SpriteEffects flip;
         Animation standing;
@@ -247,9 +246,9 @@ namespace PlatformTest
                     else
                     {
                         if (t.collision == TileCollision.breakable)
-                            map.RemoveTile(t.X, t.Y);
+                            map.RemoveTile((int)t.X, (int)t.Y);
                         else if (t.collision == TileCollision.item)
-                            map.usedTileItem(t.X, t.Y);
+                            map.usedTileItem((int)t.X, (int)t.Y);
 
                         pos.Y += bottomDist;
                         vel.Y = 0;

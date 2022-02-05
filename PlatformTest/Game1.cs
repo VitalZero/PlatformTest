@@ -11,7 +11,7 @@ namespace PlatformTest
         public int Width { get { return width; } }
         public int Height { get { return height; } }
         private const int width = 320;
-        private const int height = 244;
+        private const int height = 240;
         private const int pixels = 3;
         private const int windowWidth = width * pixels;
         private const int windowHeight = height * pixels;

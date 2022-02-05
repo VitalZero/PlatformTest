@@ -20,16 +20,12 @@ namespace PlatformTest
         private string textureName;
         ContentManager content;
         Camera camera;
-        Tile tileToBounce;
-        float bounceTimer = 0f;
-        float maxBounceTime = .2f;
-        float bounceForce;
-        float velY;
+        BouncingTile bouncingTile;
+        private int tileIndexRestore = -1;
 
         public Map(Camera camera)
         {
             this.camera = camera;
-            tileToBounce = new Tile();
         }
 
         public void Initialize(string directory)
@@ -100,23 +96,15 @@ namespace PlatformTest
 
         public void Update(GameTime gameTime)
         {
-            if(tileToBounce.id > 0)
+            if (bouncingTile != null)
             {
-                float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-                bounceForce = SpringForce(bounceForce, 200f);
-                velY += bounceForce * dt;
-
-
-                if(bounceTimer >= maxBounceTime)
+                bouncingTile.Update(gameTime);
+                if (bouncingTile.Done)
                 {
-                    tileToBounce = new Tile();
-                    bounceTimer = 0f;
-                    bounceForce = 0;
-                    velY = 0;
+                    map[tileIndexRestore].id = 8;
+                    map[tileIndexRestore].collision = TileCollision.solid;
+                    bouncingTile = null;
                 }
-
-                bounceTimer += dt;
             }
         }
 
@@ -141,23 +129,21 @@ namespace PlatformTest
                             texture,
                             new Vector2((int)((x * tileSize) - camera.XOffset), (int)((y * tileSize) - camera.YOffset)),
                             new Rectangle(dx, dy, tileSize, tileSize),
-                            Color.White
+                            Color.White     
                             );
                     }
                 }
             }
 
-            if(tileToBounce.id > 0)
+            if (bouncingTile != null && bouncingTile.Active)
             {
-                int dx = (tileToBounce.id % textureColumns) * tileSize;
-                int dy = (tileToBounce.id / textureColumns) * tileSize;
+                int tx = (bouncingTile.TextureID % textureColumns) * tileSize;
+                int ty = (bouncingTile.TextureID / textureColumns) * tileSize;
 
-                spriteBatch.Draw(
-                    texture,
-                    new Vector2((int)((tileToBounce.X * tileSize) - camera.XOffset), (int)((tileToBounce.Y * tileSize) - camera.YOffset - velY)),
-                    new Rectangle(dx, dy, tileSize, tileSize),
-                    Color.White
-                    );
+                spriteBatch.Draw(texture,
+                    new Vector2(bouncingTile.X - camera.XOffset, bouncingTile.Y - camera.YOffset),
+                    new Rectangle(tx, ty, tileSize, tileSize),
+                    Color.White);
             }
         }
 
@@ -171,7 +157,9 @@ namespace PlatformTest
 
         public void usedTileItem(int x, int y)
         {
-            tileToBounce = GetTile(x, y);
+            Tile t = GetTile(x, y);
+            tileIndexRestore = x + mapWidth * y;
+            bouncingTile = new BouncingTile(t.id, x * tileSize, y * tileSize);
             RemoveTile(x, y);
             //map[x + mapWidth * y].id = 8;
             //map[x + mapWidth * y].collision = TileCollision.solid;
