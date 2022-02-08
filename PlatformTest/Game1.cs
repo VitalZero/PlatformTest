@@ -15,7 +15,6 @@ namespace PlatformTest
         private const int pixels = 3;
         private const int windowWidth = width * pixels;
         private const int windowHeight = height * pixels;
-        private RenderTarget2D buffer;
         private Map map;
         private Player player;
         private Matrix globalTransformation;
@@ -41,7 +40,6 @@ namespace PlatformTest
             graphics.PreferMultiSampling = false;
             graphics.ApplyChanges();
 
-            buffer = new RenderTarget2D(GraphicsDevice, width, height);
             map.Initialize(Content.RootDirectory);
 
             globalTransformation = Matrix.CreateScale((float)pixels);

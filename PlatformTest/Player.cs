@@ -1,15 +1,22 @@
-﻿using Microsoft.Xna.Framework;
+﻿//#define DEBUG_DRAW
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using System.Text;
+
 
 namespace PlatformTest
 {
     public class Player
     {
+
+#if DEBUG_DRAW
+        Texture2D debugTexture;
+#endif
+
         private Texture2D texture;
         public Vector2 Pos { get { return pos; } }
         private Vector2 pos;
@@ -22,7 +29,7 @@ namespace PlatformTest
         private const float jumpSpeed = -400f;
         KeyboardState keyState;
         ContentManager content;
-        private bool isOnGround = false;
+        public bool isOnGround { get; set; }
         private bool isJumping;
         private Rectangle aabb;
         Camera camera;
@@ -42,11 +49,16 @@ namespace PlatformTest
             origin = new Vector2(size.X / 2, size.Y);
             this.camera = camera;
             animPlayer = new AnimationPlayer();
+            isOnGround = false;
         }
 
         public void Load(IServiceProvider serviceProvider)
         {
             content = new ContentManager(serviceProvider, "Content");
+
+#if DEBUG_DRAW
+            debugTexture = content.Load<Texture2D>("pixel");
+#endif
 
             texture = content.Load<Texture2D>("mariobasic");
 
@@ -54,6 +66,16 @@ namespace PlatformTest
             run = new Animation(texture, .1f, true, 16, 4, 16, 0);
             jump = new Animation(texture, .1f, true, 16, 1, 16 * 6, 0);
             animPlayer.PlayAnimation(standing);
+        }
+
+        public void MoveX(float x)
+        {
+            pos.X += x;
+        }
+
+        public void MoveY(float y)
+        {
+            pos.Y += y;
         }
 
         public void Input(GameTime gameTime)
@@ -66,9 +88,13 @@ namespace PlatformTest
                 isJumping = true;
 
             if (keyState.IsKeyDown(Keys.Right))
+            {
                 dir = 1f;
+            }
             if (keyState.IsKeyDown(Keys.Left))
+            { 
                 dir = -1f;
+            }
         }
 
         public void Update(GameTime gameTime, Map map)
@@ -77,15 +103,20 @@ namespace PlatformTest
 
             if (vel.X > 0)
             {
-                flip = SpriteEffects.None;
+
                 if (isOnGround)
+                {
                     animPlayer.PlayAnimation(run);
+                    flip = SpriteEffects.None;
+                }
             }
             else if (vel.X < 0)
             {
-                flip = SpriteEffects.FlipHorizontally;
                 if (isOnGround)
+                {
                     animPlayer.PlayAnimation(run);
+                    flip = SpriteEffects.FlipHorizontally;
+                }
             }
             else
             {
@@ -102,27 +133,29 @@ namespace PlatformTest
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            //spriteBatch.Draw(
-            //    texture,
-            //    new Vector2(pos.X - camera.XOffset, pos.Y - camera.YOffset),
-            //    new Rectangle(0, 0, 16, 32),
-            //    Color.White,
-            //    0,
-            //    Vector2.Zero,
-            //    1,
-            //    flip,
-            //    0
-            //    );
             animPlayer.Draw(spriteBatch, new Vector2(pos.X - camera.XOffset + origin.X, pos.Y - camera.YOffset + origin.Y), flip);
+
+#if DEBUG_DRAW
+            Rectangle aabbDebug = GetAABB();
+            aabbDebug.X += (int)-camera.XOffset;
+            aabbDebug.Y += (int)-camera.YOffset;
+            spriteBatch.Draw(debugTexture, aabbDebug, new Color(Color.Red, 0.2f));
+            spriteBatch.Draw(debugTexture, new Rectangle(
+                (int)(pos.X  + (origin.X * 2) - camera.XOffset) - 1, 
+                (int)(pos.Y + (origin.Y * 2) - camera.YOffset) - 1,
+                2, 2),
+                new Color(Color.White, 0.8f));
+#endif
         }
 
-        private Rectangle GetAABB()
+        public Rectangle GetAABB()
         {
             return new Rectangle((int)pos.X + aabb.X + (int)origin.X, (int)pos.Y + aabb.Y + (int)origin.Y, aabb.Width, aabb.Height);
         }
 
         private void Physics(GameTime gameTime, Map map)
         {
+            // was on physics before
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             vel.X = dir * speed * elapsed;
@@ -130,12 +163,13 @@ namespace PlatformTest
 
             if (isJumping && isOnGround)
             {
-                //if (isOnGround)
                 {
                     animPlayer.PlayAnimation(jump);
                     vel.Y = jumpSpeed * elapsed;
                 }
             }
+
+            //
 
             pos.X += vel.X;
             pos.X = (float)Math.Round(pos.X);
@@ -172,32 +206,28 @@ namespace PlatformTest
                 {
                     Tile tile = map.GetTile(x, y);
 
-                    if(tile.collision != TileCollision.none)
-                        tilesToCheck.Add(tile);
-                }
-            }
-
-            foreach (var t in tilesToCheck)
-            {
-                Rectangle tileBounds = new Rectangle(t.X * 16, t.Y * 16, 16, 16);
-
-                if (bounds.Intersects(tileBounds))
-                {
-                    float leftDist = Math.Abs(bounds.Right - tileBounds.Left);
-                    float rightDist = Math.Abs(bounds.Left - tileBounds.Right);
-
-                    if (leftDist < rightDist)
+                    if (tile.collision != TileCollision.none)
                     {
-                        pos.X += -leftDist;
-                    }
-                    else
-                    {
-                        pos.X += rightDist;
-                    }
+                        Rectangle tileBounds = new Rectangle(tile.X * 16, tile.Y * 16, 16, 16);
 
-                    break;
+                        if(bounds.Intersects(tileBounds))
+                        {
+                            float leftDist = Math.Abs(bounds.Right - tileBounds.Left);
+                            float rightDist = Math.Abs(bounds.Left - tileBounds.Right);
+
+                            if(leftDist < rightDist)
+                            {
+                                pos.X += -leftDist;
+                            }
+                            else
+                            {
+                                pos.X += rightDist;
+                            }
+
+                            return;
+                        }
+                    }
                 }
-
             }
         }
 
@@ -224,68 +254,36 @@ namespace PlatformTest
                     Tile tile = map.GetTile(x, y);
 
                     if (tile.collision != TileCollision.none)
-                        tilesToCheck.Add(tile);
+                    {
+                        Rectangle tileBounds = new Rectangle(tile.X * 16, tile.Y * 16, 16, 16);
+
+                        if (bounds.Intersects(tileBounds))
+                        {
+                            float topDist = Math.Abs(bounds.Bottom - tileBounds.Top);
+                            float bottomDist = Math.Abs(bounds.Top - tileBounds.Bottom);
+
+                            if (topDist < bottomDist)
+                            {
+                                pos.Y += -topDist;
+                                isOnGround = true;
+                                vel.Y = 0;
+                            }
+                            else
+                            {
+                                if (tile.collision == TileCollision.breakable)
+                                    map.RemoveTile(tile.X, tile.Y);
+                                else if (tile.collision == TileCollision.item)
+                                    map.usedTileItem(tile.X, tile.Y);
+
+                                pos.Y += bottomDist;
+                                vel.Y = 0;
+                            }
+
+                            return;
+                        }
+                    }
                 }
             }
-
-            foreach (var t in tilesToCheck)
-            {
-                Rectangle tileBounds = new Rectangle(t.X * 16, t.Y * 16, 16, 16);
-
-                if (bounds.Intersects(tileBounds))
-                {
-                    float topDist = Math.Abs(bounds.Bottom - tileBounds.Top);
-                    float bottomDist = Math.Abs(bounds.Top - tileBounds.Bottom);
-
-                    if (topDist < bottomDist)
-                    {
-                        pos.Y += -topDist;
-                        isOnGround = true;
-                        vel.Y = 0;
-                    }
-                    else
-                    {
-                        if (t.collision == TileCollision.breakable)
-                            map.RemoveTile((int)t.X, (int)t.Y);
-                        else if (t.collision == TileCollision.item)
-                            map.usedTileItem((int)t.X, (int)t.Y);
-
-                        pos.Y += bottomDist;
-                        vel.Y = 0;
-                    }
-
-                    break;
-                }
-
-            }
-        }
-
-        private Vector2 GetIntersectionDepth(Rectangle rectA, Rectangle rectB)
-        {
-            // Calculate half sizes.
-            float halfWidthA = rectA.Width / 2.0f;
-            float halfHeightA = rectA.Height / 2.0f;
-            float halfWidthB = rectB.Width / 2.0f;
-            float halfHeightB = rectB.Height / 2.0f;
-
-            // Calculate centers.
-            Vector2 centerA = new Vector2(rectA.Left + halfWidthA, rectA.Top + halfHeightA);
-            Vector2 centerB = new Vector2(rectB.Left + halfWidthB, rectB.Top + halfHeightB);
-
-            // Calculate current and minimum-non-intersecting distances between centers.
-            float distanceX = centerA.X - centerB.X;
-            float distanceY = centerA.Y - centerB.Y;
-            float minDistanceX = halfWidthA + halfWidthB;
-            float minDistanceY = halfHeightA + halfHeightB;
-
-            // If we are not intersecting at all, return (0, 0).
-            if (Math.Abs(distanceX) > minDistanceX || Math.Abs(distanceY) > minDistanceY)
-                return Vector2.Zero;
-
-            // Calculate and return intersection depths.
-            float depthX = distanceX > 0 ? minDistanceX - distanceX : -minDistanceX - distanceX;
-            float depthY = distanceY > 0 ? minDistanceY - distanceY : -minDistanceY - distanceY;
-            return new Vector2(depthX, depthY);
         }
     }
 }
