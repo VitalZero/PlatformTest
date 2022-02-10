@@ -1,4 +1,4 @@
-﻿//#define DEBUG_DRAW
+﻿#define DEBUG_DRAW
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -16,9 +16,10 @@ namespace PlatformTest
 #if DEBUG_DRAW
         Texture2D debugTexture;
 #endif
+        public Vector2 Pos { get { return pos; } }
+        public bool isOnGround { get; set; }
 
         private Texture2D texture;
-        public Vector2 Pos { get { return pos; } }
         private Vector2 pos;
         private Vector2 vel;
         private Vector2 origin;
@@ -27,17 +28,16 @@ namespace PlatformTest
         private const float speed = 100f;
         private const float gravity = 20f;
         private const float jumpSpeed = -400f;
-        KeyboardState keyState;
-        ContentManager content;
-        public bool isOnGround { get; set; }
+        private KeyboardState keyState;
+        private ContentManager content;
         private bool isJumping;
         private Rectangle aabb;
-        Camera camera;
-        SpriteEffects flip;
-        Animation standing;
-        Animation run;
-        Animation jump;
-        AnimationPlayer animPlayer;
+        private Camera camera;
+        private SpriteEffects flip;
+        private Animation standing;
+        private Animation run;
+        private Animation jump;
+        private AnimationPlayer animPlayer;
         private Map map;
 
         public Player(Camera camera, Map map)
@@ -68,16 +68,6 @@ namespace PlatformTest
             run = new Animation(texture, .1f, true, 16, 4, 16, 0);
             jump = new Animation(texture, .1f, true, 16, 1, 16 * 6, 0);
             animPlayer.PlayAnimation(standing);
-        }
-
-        public void MoveX(float x)
-        {
-            pos.X += x;
-        }
-
-        public void MoveY(float y)
-        {
-            pos.Y += y;
         }
 
         public void Input(GameTime gameTime)
@@ -135,16 +125,22 @@ namespace PlatformTest
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            animPlayer.Draw(spriteBatch, new Vector2(pos.X - camera.XOffset + origin.X, pos.Y - camera.YOffset + origin.Y), flip);
+            animPlayer.Draw(spriteBatch, new Vector2(pos.X - camera.XOffset, pos.Y - camera.YOffset), flip);
 
 #if DEBUG_DRAW
             Rectangle aabbDebug = GetAABB();
-            aabbDebug.X += (int)-camera.XOffset;
-            aabbDebug.Y += (int)-camera.YOffset;
-            spriteBatch.Draw(debugTexture, aabbDebug, new Color(Color.Red, 0.2f));
+            //aabbDebug.X += (int)-camera.XOffset;
+            //aabbDebug.Y += (int)-camera.YOffset;
+            //spriteBatch.Draw(debugTexture, aabbDebug, new Color(Color.Red, 0.2f));
+
+            spriteBatch.Draw(debugTexture, new Rectangle(aabbDebug.Left - (int)camera.XOffset, aabbDebug.Bottom - (int)camera.YOffset, 16, 16),
+                new Color(Color.White, 0.2f));
+            spriteBatch.Draw(debugTexture, new Rectangle(aabbDebug.Right - (int)camera.XOffset, aabbDebug.Bottom - (int)camera.YOffset, 16, 16),
+                new Color(Color.Green, 0.2f));
+
             spriteBatch.Draw(debugTexture, new Rectangle(
-                (int)(pos.X  + (origin.X * 2) - camera.XOffset) - 1, 
-                (int)(pos.Y + (origin.Y * 2) - camera.YOffset) - 1,
+                (int)(pos.X + origin.X - camera.XOffset) - 1, 
+                (int)(pos.Y + origin.Y - camera.YOffset) - 1,
                 2, 2),
                 new Color(Color.White, 0.8f));
 #endif
@@ -152,7 +148,7 @@ namespace PlatformTest
 
         public Rectangle GetAABB()
         {
-            return new Rectangle((int)pos.X + aabb.X + (int)origin.X, (int)pos.Y + aabb.Y + (int)origin.Y, aabb.Width, aabb.Height);
+            return new Rectangle((int)pos.X + aabb.X, (int)pos.Y + aabb.Y, aabb.Width, aabb.Height);
         }
 
         private void Physics(GameTime gameTime)
@@ -177,13 +173,176 @@ namespace PlatformTest
             pos.X = (float)Math.Round(pos.X);
 
             HandleCollisionsX();
+            //HandlecollisionHorizontal();
 
             pos.Y += vel.Y;
             pos.Y = (float)Math.Round(pos.Y);
 
             isOnGround = false;
 
+            //HandlecollisionVertical();
+
             HandleCollisionsY();
+        }
+
+        private void HandlecollisionHorizontal()
+        {
+            Rectangle bounds = GetAABB();
+
+            int top = bounds.Top / 16;
+            int bottom = bounds.Bottom / 16;
+            int left = bounds.Left / 16;
+            int right = bounds.Right / 16;
+
+            if(vel.X > 0)
+            {
+                Tile t1 = map.GetTile(right, top);
+                
+                if(t1.collision != TileCollision.none)
+                {
+                    Rectangle tileBounds = map.GetBounds(right, top);
+
+                    if(bounds.Intersects(tileBounds))
+                    {
+                        float depth = bounds.Right - tileBounds.Left;
+
+                        pos.X -= depth;
+                    }
+                }
+
+                Tile t2 = map.GetTile(right, bottom);
+
+                bounds = GetAABB();
+
+                if (t2.collision != TileCollision.none)
+                {
+                    Rectangle tileBounds = map.GetBounds(right, bottom);
+
+                    if (bounds.Intersects(tileBounds))
+                    {
+                        float depth = bounds.Right - tileBounds.Left;
+
+                        pos.X -= depth;
+                    }
+                }
+            }
+            else if(vel.X < 0)
+            {
+                bounds = GetAABB();
+
+                Tile t1 = map.GetTile(left, top);
+
+                if (t1.collision != TileCollision.none)
+                {
+                    Rectangle tileBounds = map.GetBounds(left, top);
+
+                    if (bounds.Intersects(tileBounds))
+                    {
+                        float depth = bounds.Left - tileBounds.Right;
+
+                        pos.X -= depth;
+                    }
+                }
+
+                Tile t2 = map.GetTile(left, bottom);
+
+                bounds = GetAABB();
+
+                if (t2.collision != TileCollision.none)
+                {
+                    Rectangle tileBounds = map.GetBounds(left, bottom);
+
+                    if (bounds.Intersects(tileBounds))
+                    {
+                        float depth = bounds.Left - tileBounds.Right;
+
+                        pos.X -= depth;
+                    }
+                }
+            }
+        }
+
+        private void HandlecollisionVertical()
+        {
+            Rectangle bounds = GetAABB();
+
+            int top = bounds.Top / 16;
+            int bottom = bounds.Bottom / 16;
+            int left = bounds.Left / 16;
+            int right = bounds.Right / 16;
+
+            if (vel.Y > 0)
+            {
+                Tile t1 = map.GetTile(left, bottom);
+
+                if (t1.collision != TileCollision.none)
+                {
+                    Rectangle tileBounds = map.GetBounds(left, bottom);
+
+                    if (bounds.Intersects(tileBounds))
+                    {
+                        float depth = bounds.Bottom - tileBounds.Top;
+
+                        pos.Y -= depth;
+                        isOnGround = true;
+                        vel.Y = 0;
+                    }
+                }
+
+                Tile t2 = map.GetTile(right, bottom);
+
+                bounds = GetAABB();
+
+                if (t2.collision != TileCollision.none)
+                {
+                    Rectangle tileBounds = map.GetBounds(right, bottom);
+
+                    if (bounds.Intersects(tileBounds))
+                    {
+                        float depth = bounds.Bottom - tileBounds.Top;
+
+                        pos.Y -= depth;
+                        isOnGround = true;
+                        vel.Y = 0;
+                    }
+                }
+            }
+            else if (vel.Y < 0)
+            {
+                bounds = GetAABB();
+
+                Tile t1 = map.GetTile(left, top);
+
+                if (t1.collision != TileCollision.none)
+                {
+                    Rectangle tileBounds = map.GetBounds(left, top);
+
+                    if (bounds.Intersects(tileBounds))
+                    {
+                        float depth = bounds.Top - tileBounds.Bottom;
+
+                        pos.Y -= depth;
+                        vel.Y = 0;
+                    }
+                }
+
+                Tile t2 = map.GetTile(right, top);
+
+                bounds = GetAABB();
+
+                if (t2.collision != TileCollision.none)
+                {
+                    Rectangle tileBounds = map.GetBounds(right, top);
+
+                    if (bounds.Intersects(tileBounds))
+                    {
+                        float depth = bounds.Top - tileBounds.Bottom;
+
+                        pos.Y -= depth;
+                        vel.Y = 0;
+                    }
+                }
+            }
         }
 
         private void HandleCollisionsX()
