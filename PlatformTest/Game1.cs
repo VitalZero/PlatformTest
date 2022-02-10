@@ -29,7 +29,7 @@ namespace PlatformTest
             IsMouseVisible = true;
             camera = new Camera(this, 0, 0);
             map = new Map(camera);
-            player = new Player(camera);
+            player = new Player(camera, map);
         }
 
         protected override void Initialize()
@@ -68,7 +68,7 @@ namespace PlatformTest
 
             player.Input(gameTime);
 
-            player.Update(gameTime, map);
+            player.Update(gameTime);
 
             camera.CenterOnPlayer(player);
 

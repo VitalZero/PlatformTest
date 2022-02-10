@@ -38,8 +38,9 @@ namespace PlatformTest
         Animation run;
         Animation jump;
         AnimationPlayer animPlayer;
+        private Map map;
 
-        public Player(Camera camera)
+        public Player(Camera camera, Map map)
         {
             pos = new Vector2(50f, 50f);
             size = new Vector2(16, 31);
@@ -50,6 +51,7 @@ namespace PlatformTest
             this.camera = camera;
             animPlayer = new AnimationPlayer();
             isOnGround = false;
+            this.map = map;
         }
 
         public void Load(IServiceProvider serviceProvider)
@@ -97,9 +99,9 @@ namespace PlatformTest
             }
         }
 
-        public void Update(GameTime gameTime, Map map)
+        public void Update(GameTime gameTime)
         {
-            Physics(gameTime, map);
+            Physics(gameTime);
 
             if (vel.X > 0)
             {
@@ -153,7 +155,7 @@ namespace PlatformTest
             return new Rectangle((int)pos.X + aabb.X + (int)origin.X, (int)pos.Y + aabb.Y + (int)origin.Y, aabb.Width, aabb.Height);
         }
 
-        private void Physics(GameTime gameTime, Map map)
+        private void Physics(GameTime gameTime)
         {
             // was on physics before
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -174,17 +176,17 @@ namespace PlatformTest
             pos.X += vel.X;
             pos.X = (float)Math.Round(pos.X);
 
-            HandleCollisionsX(map);
+            HandleCollisionsX();
 
             pos.Y += vel.Y;
             pos.Y = (float)Math.Round(pos.Y);
 
             isOnGround = false;
 
-            HandleCollisionsY(map);
+            HandleCollisionsY();
         }
 
-        private void HandleCollisionsX(Map map)
+        private void HandleCollisionsX()
         {
             Rectangle bounds = GetAABB();
 
@@ -231,7 +233,7 @@ namespace PlatformTest
             }
         }
 
-        private void HandleCollisionsY(Map map)
+        private void HandleCollisionsY()
         {
             Rectangle bounds = GetAABB();
 
