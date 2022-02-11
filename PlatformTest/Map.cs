@@ -141,7 +141,7 @@ namespace PlatformTest
                 int ty = (bouncingTile.TextureID / textureColumns) * tileSize;
 
                 spriteBatch.Draw(texture,
-                    new Vector2(bouncingTile.X - camera.XOffset, bouncingTile.Y - camera.YOffset),
+                    new Vector2((int)bouncingTile.X - (int)camera.XOffset, (int)bouncingTile.Y - (int)camera.YOffset),
                     new Rectangle(tx, ty, tileSize, tileSize),
                     Color.White);
             }

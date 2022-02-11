@@ -18,7 +18,7 @@ namespace PlatformTest
             this.game = game;
         }
 
-        public void Move(float xAmount, float yAmount)
+        public void Move(float xAmount, float yAmount) // not used atm
         {
             XOffset += xAmount;
             YOffset += yAmount;
@@ -29,8 +29,8 @@ namespace PlatformTest
             XOffset = player.Pos.X - game.Width / 2;
             YOffset = player.Pos.Y - game.Height / 2;
 
-            XOffset = Math.Clamp(XOffset, 0, (71*16) - game.Width);
-            YOffset = 0;
+            XOffset = Math.Clamp(XOffset, 0, (71*16) - game.Width); // clamp to map area
+            YOffset = 0; // should not move on y
         }
     }
 }
