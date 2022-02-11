@@ -123,11 +123,11 @@ namespace PlatformTest
                     if (tileTexture >= 0)
                     {
                         int dx = (tileTexture % textureColumns) * tileSize;
-                        int dy = (tileTexture / textureColumns) *tileSize;
+                        int dy = (tileTexture / textureColumns) * tileSize;
 
                         spriteBatch.Draw(
                             texture,
-                            new Vector2((int)((x * tileSize) - camera.XOffset), (int)((y * tileSize) - camera.YOffset)),
+                            new Vector2((x * tileSize) - (int)camera.XOffset, (y * tileSize) - (int)camera.YOffset),
                             new Rectangle(dx, dy, tileSize, tileSize),
                             Color.White     
                             );
@@ -149,7 +149,10 @@ namespace PlatformTest
 
         public Tile GetTile(int x, int y)
         {
-            if ((x + mapWidth * y) >= map.Length)
+            if (x < 0 ||
+                x >= mapWidth ||
+                y < 0 ||
+                y > mapHeight)
                 return new Tile();
 
              return map[x + mapWidth * y];

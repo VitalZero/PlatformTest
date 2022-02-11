@@ -1,4 +1,4 @@
-﻿#define DEBUG_DRAW
+﻿//#define DEBUG_DRAW
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -125,7 +125,9 @@ namespace PlatformTest
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            animPlayer.Draw(spriteBatch, new Vector2(pos.X - camera.XOffset, pos.Y - camera.YOffset), flip);
+            animPlayer.Draw(spriteBatch, 
+                new Vector2((int)pos.X - (int)camera.XOffset, (int)pos.Y - (int)camera.YOffset), 
+                flip);
 
 #if DEBUG_DRAW
             Rectangle aabbDebug = GetAABB();
@@ -133,9 +135,9 @@ namespace PlatformTest
             //aabbDebug.Y += (int)-camera.YOffset;
             //spriteBatch.Draw(debugTexture, aabbDebug, new Color(Color.Red, 0.2f));
 
-            spriteBatch.Draw(debugTexture, new Rectangle(aabbDebug.Left - (int)camera.XOffset, aabbDebug.Bottom - (int)camera.YOffset, 16, 16),
+            spriteBatch.Draw(debugTexture, new Rectangle(((aabbDebug.Right / 16) * 16) - (int)camera.XOffset, ((aabbDebug.Top / 16) * 16) - (int)camera.YOffset, 16, 16),
                 new Color(Color.White, 0.2f));
-            spriteBatch.Draw(debugTexture, new Rectangle(aabbDebug.Right - (int)camera.XOffset, aabbDebug.Bottom - (int)camera.YOffset, 16, 16),
+            spriteBatch.Draw(debugTexture, new Rectangle(((aabbDebug.Right / 16) * 16) - (int)camera.XOffset, ((aabbDebug.Bottom / 16) * 16) - (int)camera.YOffset, 16, 16),
                 new Color(Color.Green, 0.2f));
 
             spriteBatch.Draw(debugTexture, new Rectangle(
@@ -170,93 +172,85 @@ namespace PlatformTest
             //
 
             pos.X += vel.X;
-            pos.X = (float)Math.Round(pos.X);
-
-            HandleCollisionsX();
-            //HandlecollisionHorizontal();
+            //pos.X = (float)Math.Round(pos.X);
+            
+            //HandleCollisionsX();
+            HandlecollisionHorizontal();
 
             pos.Y += vel.Y;
-            pos.Y = (float)Math.Round(pos.Y);
+            //pos.Y = (float)Math.Round(pos.Y);
 
             isOnGround = false;
 
-            //HandlecollisionVertical();
-
-            HandleCollisionsY();
+            HandlecollisionVertical();
+            //HandleCollisionsY();
         }
 
         private void HandlecollisionHorizontal()
         {
-            Rectangle bounds = GetAABB();
-
-            int top = bounds.Top / 16;
-            int bottom = bounds.Bottom / 16;
-            int left = bounds.Left / 16;
-            int right = bounds.Right / 16;
-
+            // if we're going right, check all the tiles to the right, from top to bottom
             if(vel.X > 0)
             {
-                Tile t1 = map.GetTile(right, top);
-                
-                if(t1.collision != TileCollision.none)
+                Rectangle bounds = GetAABB();
+
+                int top = bounds.Top / 16;
+                int bottom = bounds.Bottom / 16;
+                int left = bounds.Left / 16;
+                int right = bounds.Right / 16;
+
+                List<Tile> tilesToCheck = new List<Tile>();
+
+                for(int i = top; i <= bottom; ++i)
                 {
-                    Rectangle tileBounds = map.GetBounds(right, top);
-
-                    if(bounds.Intersects(tileBounds))
-                    {
-                        float depth = bounds.Right - tileBounds.Left;
-
-                        pos.X -= depth;
-                    }
+                    tilesToCheck.Add(map.GetTile(right, i));
                 }
 
-                Tile t2 = map.GetTile(right, bottom);
-
-                bounds = GetAABB();
-
-                if (t2.collision != TileCollision.none)
+                foreach (var t in tilesToCheck)
                 {
-                    Rectangle tileBounds = map.GetBounds(right, bottom);
-
-                    if (bounds.Intersects(tileBounds))
+                    if (t.collision != TileCollision.none)
                     {
-                        float depth = bounds.Right - tileBounds.Left;
+                        Rectangle tileBounds = map.GetBounds(t.X, t.Y);
 
-                        pos.X -= depth;
+                        if (bounds.Intersects(tileBounds))
+                        {
+                            float depth = bounds.Right - tileBounds.Left;
+
+                            pos.X -= depth;
+                            break;
+                        }
                     }
                 }
             }
-            else if(vel.X < 0)
+            // if we're going left, check all the tiles to the left, from top to bottom
+            else if (vel.X < 0)
             {
-                bounds = GetAABB();
+                Rectangle bounds = GetAABB();
 
-                Tile t1 = map.GetTile(left, top);
+                int top = bounds.Top / 16;
+                int bottom = bounds.Bottom / 16;
+                int left = bounds.Left / 16;
+                int right = bounds.Right / 16;
 
-                if (t1.collision != TileCollision.none)
+                List<Tile> tilesToCheck = new List<Tile>();
+
+                for (int i = top; i <= bottom; ++i)
                 {
-                    Rectangle tileBounds = map.GetBounds(left, top);
-
-                    if (bounds.Intersects(tileBounds))
-                    {
-                        float depth = bounds.Left - tileBounds.Right;
-
-                        pos.X -= depth;
-                    }
+                    tilesToCheck.Add(map.GetTile(left, i));
                 }
 
-                Tile t2 = map.GetTile(left, bottom);
-
-                bounds = GetAABB();
-
-                if (t2.collision != TileCollision.none)
+                foreach (var t in tilesToCheck)
                 {
-                    Rectangle tileBounds = map.GetBounds(left, bottom);
-
-                    if (bounds.Intersects(tileBounds))
+                    if (t.collision != TileCollision.none)
                     {
-                        float depth = bounds.Left - tileBounds.Right;
+                        Rectangle tileBounds = map.GetBounds(t.X, t.Y);
 
-                        pos.X -= depth;
+                        if (bounds.Intersects(tileBounds))
+                        {
+                            float depth = bounds.Left - tileBounds.Right;
+
+                            pos.X -= depth;
+                            break;
+                        }
                     }
                 }
             }
@@ -264,82 +258,77 @@ namespace PlatformTest
 
         private void HandlecollisionVertical()
         {
-            Rectangle bounds = GetAABB();
-
-            int top = bounds.Top / 16;
-            int bottom = bounds.Bottom / 16;
-            int left = bounds.Left / 16;
-            int right = bounds.Right / 16;
-
+            // if we're going down, check the bottom tiles from left to right
             if (vel.Y > 0)
             {
-                Tile t1 = map.GetTile(left, bottom);
+                Rectangle bounds = GetAABB();
 
-                if (t1.collision != TileCollision.none)
+                int top = bounds.Top / 16;
+                int bottom = bounds.Bottom / 16;
+                int left = bounds.Left / 16;
+                int right = bounds.Right / 16;
+
+                List<Tile> tilesToCheck = new List<Tile>();
+
+                for (int i = left; i <= right; ++i)
                 {
-                    Rectangle tileBounds = map.GetBounds(left, bottom);
-
-                    if (bounds.Intersects(tileBounds))
-                    {
-                        float depth = bounds.Bottom - tileBounds.Top;
-
-                        pos.Y -= depth;
-                        isOnGround = true;
-                        vel.Y = 0;
-                    }
+                    tilesToCheck.Add(map.GetTile(i, bottom));
                 }
 
-                Tile t2 = map.GetTile(right, bottom);
-
-                bounds = GetAABB();
-
-                if (t2.collision != TileCollision.none)
+                foreach (var t in tilesToCheck)
                 {
-                    Rectangle tileBounds = map.GetBounds(right, bottom);
-
-                    if (bounds.Intersects(tileBounds))
+                    if (t.collision != TileCollision.none)
                     {
-                        float depth = bounds.Bottom - tileBounds.Top;
+                        Rectangle tileBounds = map.GetBounds(t.X, t.Y);
 
-                        pos.Y -= depth;
-                        isOnGround = true;
-                        vel.Y = 0;
+                        if (bounds.Intersects(tileBounds))
+                        {
+                            float depth = bounds.Bottom - tileBounds.Top;
+
+                            pos.Y -= depth;
+                            isOnGround = true;
+                            vel.Y = 0;
+                            break;
+                        }
                     }
                 }
             }
+            // if we're going up, check the top tiles from left to right
             else if (vel.Y < 0)
             {
-                bounds = GetAABB();
+                Rectangle bounds = GetAABB();
 
-                Tile t1 = map.GetTile(left, top);
+                int top = bounds.Top / 16;
+                int bottom = bounds.Bottom / 16;
+                int left = bounds.Left / 16;
+                int right = bounds.Right / 16;
 
-                if (t1.collision != TileCollision.none)
+                List<Tile> tilesToCheck = new List<Tile>();
+
+                for (int i = left; i <= right; ++i)
                 {
-                    Rectangle tileBounds = map.GetBounds(left, top);
-
-                    if (bounds.Intersects(tileBounds))
-                    {
-                        float depth = bounds.Top - tileBounds.Bottom;
-
-                        pos.Y -= depth;
-                        vel.Y = 0;
-                    }
+                    tilesToCheck.Add(map.GetTile(i, top));
                 }
 
-                Tile t2 = map.GetTile(right, top);
-
-                bounds = GetAABB();
-
-                if (t2.collision != TileCollision.none)
+                foreach (var t in tilesToCheck)
                 {
-                    Rectangle tileBounds = map.GetBounds(right, top);
-
-                    if (bounds.Intersects(tileBounds))
+                    if (t.collision != TileCollision.none)
                     {
-                        float depth = bounds.Top - tileBounds.Bottom;
+                        Rectangle tileBounds = map.GetBounds(t.X, t.Y);
 
-                        pos.Y -= depth;
-                        vel.Y = 0;
+                        if (bounds.Intersects(tileBounds))
+                        {
+                            float depth = bounds.Top - tileBounds.Bottom;
+
+                            if (t.collision == TileCollision.breakable)
+                                map.RemoveTile(t.X, t.Y);
+                            else if (t.collision == TileCollision.item)
+                                map.usedTileItem(t.X, t.Y);
+
+                            pos.Y -= depth;
+                            vel.Y = 0;
+                            break;
+                        }
                     }
                 }
             }
