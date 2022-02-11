@@ -12,6 +12,7 @@ namespace PlatformTest
 {
     public class Player
     {
+        private enum States { stand, run, jump }
 
 #if DEBUG_DRAW
         Texture2D debugTexture;
@@ -39,6 +40,7 @@ namespace PlatformTest
         private Animation jump;
         private AnimationPlayer animPlayer;
         private Map map;
+        States state;
 
         public Player(Camera camera, Map map)
         {
@@ -52,6 +54,8 @@ namespace PlatformTest
             animPlayer = new AnimationPlayer();
             isOnGround = false;
             this.map = map;
+
+            state = States.jump;
         }
 
         public void Load(IServiceProvider serviceProvider)
@@ -91,6 +95,84 @@ namespace PlatformTest
 
         public void Update(GameTime gameTime)
         {
+            //float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            //KeyboardState oldState = keyState;
+            //keyState = Keyboard.GetState();
+
+            //switch (state)
+            //{
+            //    case States.jump:
+            //        {
+            //            vel.Y += gravity * elapsed;
+            //            if(isOnGround)
+            //            {
+            //                state = States.stand;
+            //                animPlayer.PlayAnimation(standing);
+            //            }
+            //        }
+            //            break;
+
+            //    case States.run:
+            //        {
+            //            if (keyState.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
+            //            {
+            //                isJumping = true;
+            //                isOnGround = false;
+            //                state = States.jump;
+            //                vel.Y = jumpSpeed * elapsed;
+            //                animPlayer.PlayAnimation(jump);
+            //                break;
+            //            }
+
+            //            if (dir > 0)
+            //            {
+            //                flip = SpriteEffects.None;
+            //            }
+            //            else if (dir < 0)
+            //            {
+            //                flip = SpriteEffects.FlipHorizontally;
+            //            }
+            //            else
+            //            {
+            //                state = States.stand;
+            //                animPlayer.PlayAnimation(standing);
+
+            //            }
+            //        }
+            //        break;
+
+            //    case States.stand:
+            //        {
+            //            vel = Vector2.Zero;
+
+            //            if (keyState.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
+            //            {
+            //                isJumping = true;
+            //                isOnGround = false;
+            //                state = States.jump;
+            //                vel.Y = jumpSpeed * elapsed;
+            //                animPlayer.PlayAnimation(jump);
+            //                break;
+            //            }
+
+            //            if (keyState.IsKeyDown(Keys.Right))
+            //            {
+            //                dir = 1f;
+            //                state = States.run;
+            //                animPlayer.PlayAnimation(run);
+            //            }
+            //            else if (keyState.IsKeyDown(Keys.Left))
+            //            {
+            //                dir = -1f;
+            //                state = States.run;
+            //                animPlayer.PlayAnimation(run);
+            //            }
+
+            //        }
+            //        break;
+            //}
+
             Physics(gameTime);
 
             if (vel.X > 0)
@@ -112,7 +194,7 @@ namespace PlatformTest
             }
             else
             {
-                if(isOnGround)
+                if (isOnGround)
                     animPlayer.PlayAnimation(standing);
             }
 
@@ -169,7 +251,7 @@ namespace PlatformTest
                 }
             }
 
-            //
+
 
             pos.X += vel.X;
             //pos.X = (float)Math.Round(pos.X);
@@ -285,6 +367,7 @@ namespace PlatformTest
 
                             pos.Y -= depth;
                             isOnGround = true;
+                            state = States.stand;
                             vel.Y = 0;
                             //break;
                         }
