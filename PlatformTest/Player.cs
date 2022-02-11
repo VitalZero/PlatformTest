@@ -95,108 +95,127 @@ namespace PlatformTest
 
         public void Update(GameTime gameTime)
         {
-            //float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            //KeyboardState oldState = keyState;
-            //keyState = Keyboard.GetState();
+            KeyboardState oldState = keyState;
+            keyState = Keyboard.GetState();
 
-            //switch (state)
-            //{
-            //    case States.jump:
-            //        {
-            //            vel.Y += gravity * elapsed;
-            //            if(isOnGround)
-            //            {
-            //                state = States.stand;
-            //                animPlayer.PlayAnimation(standing);
-            //            }
-            //        }
-            //            break;
+            switch (state)
+            {
+                case States.jump:
+                    {
+                        animPlayer.PlayAnimation(jump);
 
-            //    case States.run:
-            //        {
-            //            if (keyState.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
-            //            {
-            //                isJumping = true;
-            //                isOnGround = false;
-            //                state = States.jump;
-            //                vel.Y = jumpSpeed * elapsed;
-            //                animPlayer.PlayAnimation(jump);
-            //                break;
-            //            }
+                        vel.Y += gravity * elapsed;
 
-            //            if (dir > 0)
-            //            {
-            //                flip = SpriteEffects.None;
-            //            }
-            //            else if (dir < 0)
-            //            {
-            //                flip = SpriteEffects.FlipHorizontally;
-            //            }
-            //            else
-            //            {
-            //                state = States.stand;
-            //                animPlayer.PlayAnimation(standing);
+                        if (keyState.IsKeyDown(Keys.Right) == keyState.IsKeyDown(Keys.Left))
+                        {
+                            state = States.stand;
+                            vel.X = 0f;
+                        }
+                        
+                        if (keyState.IsKeyDown(Keys.Right))
+                        {
+                            vel.X = speed * elapsed;
+                            flip = SpriteEffects.None;
+                        }
+                        else if (keyState.IsKeyDown(Keys.Left))
+                        {
+                            vel.X = -speed * elapsed;
+                            flip = SpriteEffects.FlipHorizontally;
+                        }
+                    }
+                    break;
 
-            //            }
-            //        }
-            //        break;
+                case States.run:
+                    {
+                        animPlayer.PlayAnimation(run);
 
-            //    case States.stand:
-            //        {
-            //            vel = Vector2.Zero;
+                        if (keyState.IsKeyDown(Keys.Right) == keyState.IsKeyDown(Keys.Left))
+                        {
+                            state = States.stand;
+                            vel.X = 0f;
+                        }
+                        
+                        if (keyState.IsKeyDown(Keys.Right))
+                        {
+                            vel.X = speed * elapsed;
+                            //vel.X = 
+                            flip = SpriteEffects.None;
+                        }
+                        else if (keyState.IsKeyDown(Keys.Left))
+                        {
+                            vel.X = -speed * elapsed;
+                            flip = SpriteEffects.FlipHorizontally;
+                        }
 
-            //            if (keyState.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
-            //            {
-            //                isJumping = true;
-            //                isOnGround = false;
-            //                state = States.jump;
-            //                vel.Y = jumpSpeed * elapsed;
-            //                animPlayer.PlayAnimation(jump);
-            //                break;
-            //            }
+                        if (keyState.IsKeyDown(Keys.Space))
+                        {
+                            state = States.jump;
+                            vel.Y = jumpSpeed * elapsed;
+                            break;
+                        }
+                        
+                        if(!isOnGround)
+                        {
+                            state = States.jump;
+                            break;
+                        }
+                    }
+                    break;
 
-            //            if (keyState.IsKeyDown(Keys.Right))
-            //            {
-            //                dir = 1f;
-            //                state = States.run;
-            //                animPlayer.PlayAnimation(run);
-            //            }
-            //            else if (keyState.IsKeyDown(Keys.Left))
-            //            {
-            //                dir = -1f;
-            //                state = States.run;
-            //                animPlayer.PlayAnimation(run);
-            //            }
+                case States.stand:
+                    {
+                        animPlayer.PlayAnimation(standing);
 
-            //        }
-            //        break;
-            //}
+                        vel.X = 0f;
+
+                        if(!isOnGround)
+                        {
+                            state = States.jump;
+                            break;
+                        }
+
+                        if (keyState.IsKeyDown(Keys.Space))
+                        {
+                            state = States.jump;
+                            vel.Y = jumpSpeed * elapsed;
+                            break;
+                        }
+                        else if (keyState.IsKeyDown(Keys.Right) != keyState.IsKeyDown(Keys.Left))
+                        {
+                            state = States.run;
+                            break;
+                        }
+
+                    }
+                    break;
+            }
 
             Physics(gameTime);
 
-            if (vel.X > 0)
-            {
+            //if (vel.X > 0)
+            //{
 
-                if (isOnGround)
-                {
-                    animPlayer.PlayAnimation(run);
-                    flip = SpriteEffects.None;
-                }
-            }
-            else if (vel.X < 0)
-            {
-                if (isOnGround)
-                {
-                    animPlayer.PlayAnimation(run);
-                    flip = SpriteEffects.FlipHorizontally;
-                }
-            }
-            else
-            {
-                if (isOnGround)
-                    animPlayer.PlayAnimation(standing);
-            }
+            //    if (isOnGround)
+            //    {
+            //        animPlayer.PlayAnimation(run);
+            //        flip = SpriteEffects.None;
+            //    }
+            //}
+            //else if (vel.X < 0)
+            //{
+            //    if (isOnGround)
+            //    {
+            //        animPlayer.PlayAnimation(run);
+            //        flip = SpriteEffects.FlipHorizontally;
+            //    }
+            //}
+            //else
+            //{
+            //    if (isOnGround)
+            //        animPlayer.PlayAnimation(standing);
+            //}
 
             animPlayer.Update(gameTime);
 
@@ -240,16 +259,16 @@ namespace PlatformTest
             // was on physics before
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            vel.X = dir * speed * elapsed;
-            vel.Y = MathHelper.Clamp(vel.Y + gravity * elapsed, -10f, 10f);
+            //vel.X = dir * speed * elapsed;
+            //vel.Y = MathHelper.Clamp(vel.Y + gravity * elapsed, -10f, 10f);
 
-            if (isJumping && isOnGround)
-            {
-                {
-                    animPlayer.PlayAnimation(jump);
-                    vel.Y = jumpSpeed * elapsed;
-                }
-            }
+            //if (isJumping && isOnGround)
+            //{
+            //    {
+            //        animPlayer.PlayAnimation(jump);
+            //        vel.Y = jumpSpeed * elapsed;
+            //    }
+            //}
 
 
 
@@ -346,7 +365,6 @@ namespace PlatformTest
             // if we're going down, check the bottom tiles from left to right
             if (vel.Y > 0)
             {
-
                 List<Tile> tilesToCheck = new List<Tile>();
 
                 for (int i = left; i <= right; ++i)
@@ -367,7 +385,6 @@ namespace PlatformTest
 
                             pos.Y -= depth;
                             isOnGround = true;
-                            state = States.stand;
                             vel.Y = 0;
                             //break;
                         }

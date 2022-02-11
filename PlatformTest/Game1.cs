@@ -66,7 +66,7 @@ namespace PlatformTest
 
             map.Update(gameTime);
 
-            player.Input(gameTime);
+            //player.Input(gameTime);
 
             player.Update(gameTime);
 
