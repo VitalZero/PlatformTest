@@ -188,15 +188,16 @@ namespace PlatformTest
 
         private void HandlecollisionHorizontal()
         {
-            // if we're going right, check all the tiles to the right, from top to bottom
-            if(vel.X > 0)
-            {
-                Rectangle bounds = GetAABB();
+            Rectangle bounds = GetAABB();
 
-                int top = bounds.Top / 16;
-                int bottom = bounds.Bottom / 16;
-                int left = bounds.Left / 16;
-                int right = bounds.Right / 16;
+            int top = bounds.Top / 16;
+            int bottom = bounds.Bottom / 16;
+            int left = bounds.Left / 16;
+            int right = bounds.Right / 16;
+
+            // if we're going right, check all the tiles to the right, from top to bottom
+            if (vel.X > 0)
+            {
 
                 List<Tile> tilesToCheck = new List<Tile>();
 
@@ -209,6 +210,7 @@ namespace PlatformTest
                 {
                     if (t.collision != TileCollision.none)
                     {
+                        bounds = GetAABB();
                         Rectangle tileBounds = map.GetBounds(t.X, t.Y);
 
                         if (bounds.Intersects(tileBounds))
@@ -224,13 +226,6 @@ namespace PlatformTest
             // if we're going left, check all the tiles to the left, from top to bottom
             else if (vel.X < 0)
             {
-                Rectangle bounds = GetAABB();
-
-                int top = bounds.Top / 16;
-                int bottom = bounds.Bottom / 16;
-                int left = bounds.Left / 16;
-                int right = bounds.Right / 16;
-
                 List<Tile> tilesToCheck = new List<Tile>();
 
                 for (int i = top; i <= bottom; ++i)
@@ -242,6 +237,7 @@ namespace PlatformTest
                 {
                     if (t.collision != TileCollision.none)
                     {
+                        bounds = GetAABB();
                         Rectangle tileBounds = map.GetBounds(t.X, t.Y);
 
                         if (bounds.Intersects(tileBounds))
@@ -258,15 +254,16 @@ namespace PlatformTest
 
         private void HandlecollisionVertical()
         {
+            Rectangle bounds = GetAABB();
+
+            int top = bounds.Top / 16;
+            int bottom = bounds.Bottom / 16;
+            int left = bounds.Left / 16;
+            int right = bounds.Right / 16;
+
             // if we're going down, check the bottom tiles from left to right
             if (vel.Y > 0)
             {
-                Rectangle bounds = GetAABB();
-
-                int top = bounds.Top / 16;
-                int bottom = bounds.Bottom / 16;
-                int left = bounds.Left / 16;
-                int right = bounds.Right / 16;
 
                 List<Tile> tilesToCheck = new List<Tile>();
 
@@ -279,6 +276,7 @@ namespace PlatformTest
                 {
                     if (t.collision != TileCollision.none)
                     {
+                        bounds = GetAABB();
                         Rectangle tileBounds = map.GetBounds(t.X, t.Y);
 
                         if (bounds.Intersects(tileBounds))
@@ -288,7 +286,7 @@ namespace PlatformTest
                             pos.Y -= depth;
                             isOnGround = true;
                             vel.Y = 0;
-                            break;
+                            //break;
                         }
                     }
                 }
@@ -296,13 +294,6 @@ namespace PlatformTest
             // if we're going up, check the top tiles from left to right
             else if (vel.Y < 0)
             {
-                Rectangle bounds = GetAABB();
-
-                int top = bounds.Top / 16;
-                int bottom = bounds.Bottom / 16;
-                int left = bounds.Left / 16;
-                int right = bounds.Right / 16;
-
                 List<Tile> tilesToCheck = new List<Tile>();
 
                 for (int i = left; i <= right; ++i)
@@ -314,6 +305,7 @@ namespace PlatformTest
                 {
                     if (t.collision != TileCollision.none)
                     {
+                        bounds = GetAABB();
                         Rectangle tileBounds = map.GetBounds(t.X, t.Y);
 
                         if (bounds.Intersects(tileBounds))

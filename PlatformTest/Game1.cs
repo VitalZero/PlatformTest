@@ -12,7 +12,7 @@ namespace PlatformTest
         public int Height { get { return height; } }
         private const int width = 320;
         private const int height = 240;
-        private const int pixels = 4;
+        private const int pixels = 3;
         private const int windowWidth = width * pixels;
         private const int windowHeight = height * pixels;
         private Map map;
@@ -80,7 +80,8 @@ namespace PlatformTest
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null, globalTransformation);
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null,
+                 globalTransformation);
             map.Draw(spriteBatch);
             player.Draw(spriteBatch);
 
