@@ -23,6 +23,8 @@ namespace PlatformTest
                 this.animation = animation;
                 this.frameIndex = 0;
                 this.time = 0f;
+
+                source = new Rectangle((FrameIndex * Animation.FrameWidth) + animation.StartFrameX, 0, Animation.FrameWidth, Animation.FrameHeight);
             }
         }
 

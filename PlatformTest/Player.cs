@@ -38,9 +38,16 @@ namespace PlatformTest
         private Animation standing;
         private Animation run;
         private Animation jump;
+        private Animation fall;
         private AnimationPlayer animPlayer;
         private Map map;
         States currState;
+        public bool Pause { get; set; }
+
+        //for debug purposes
+        List<string> playerStates = new List<string>();
+        SpriteFont font;
+        //
 
         public Player(Camera camera, Map map)
         {
@@ -54,8 +61,16 @@ namespace PlatformTest
             animPlayer = new AnimationPlayer();
             isOnGround = false;
             this.map = map;
+            Pause = false;
 
-            currState = States.jump;
+            currState = States.fall;
+
+            //for debug
+            playerStates.Add("STAND");
+            playerStates.Add("RUN");
+            playerStates.Add("JUMP");
+            playerStates.Add("FALL");
+            //
         }
 
         public void Load(IServiceProvider serviceProvider)
@@ -71,7 +86,9 @@ namespace PlatformTest
             standing = new Animation(texture, 1f, true, 16, 1, 0, 0);
             run = new Animation(texture, .1f, true, 16, 4, 16, 0);
             jump = new Animation(texture, .1f, true, 16, 1, 16 * 6, 0);
+            fall = new Animation(texture, 1f, true, 16, 1, 16 * 5, 0);
             animPlayer.PlayAnimation(standing);
+            font = content.Load<SpriteFont>("Arial");
         }
 
         public void Input(GameTime gameTime)
@@ -100,6 +117,12 @@ namespace PlatformTest
             KeyboardState oldState = keyboard;
             keyboard = Keyboard.GetState();
 
+            if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A))
+                Pause = !Pause;
+
+            if (Pause)
+                return;
+
             vel.Y += gravity * elapsed;
 
             switch (currState)
@@ -111,7 +134,7 @@ namespace PlatformTest
 
                         if (!isOnGround)
                         {
-                            currState = States.jump;
+                            currState = States.fall;
                             break;
                         }
 
@@ -161,7 +184,7 @@ namespace PlatformTest
                         }
                         else if (!isOnGround)
                         {
-                            currState = States.jump;
+                            currState = States.fall;
                             break;
                         }
                     }
@@ -191,18 +214,42 @@ namespace PlatformTest
                             if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                             {
                                 currState = States.stand;
-                                vel.X = 0;
+                                vel = Vector2.Zero;
+                                break;
                             }
                             else
                             {
-                                currState = States.stand;
+                                currState = States.run;
                                 vel.Y = 0f;
+                                break;
                             }
+                        }
+
+                        if(vel.Y > 0)
+                        {
+                            currState = States.fall;
+                            break;
                         }
                     }
                     break;
 
                 case States.fall:
+
+                    //animPlayer.PlayAnimation(fall);
+
+                    if (isOnGround)
+                    {
+                        if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
+                        {
+                            currState = States.stand;
+                            vel = Vector2.Zero;
+                        }
+                        else
+                        {
+                            currState = States.run;
+                            vel.Y = 0f;
+                        }
+                    }
 
                     break;
             }
@@ -232,7 +279,8 @@ namespace PlatformTest
             //        animPlayer.PlayAnimation(standing);
             //}
 
-            animPlayer.Update(gameTime);
+            if(currState != States.fall)
+                animPlayer.Update(gameTime);
 
             isJumping = false;
 
@@ -244,6 +292,9 @@ namespace PlatformTest
             animPlayer.Draw(spriteBatch, 
                 new Vector2((int)pos.X - (int)camera.XOffset, (int)pos.Y - (int)camera.YOffset), 
                 flip);
+
+            spriteBatch.DrawString(font, playerStates[(int)currState], 
+                new Vector2((int)pos.X - 10 - (int)camera.XOffset, (int)pos.Y - 20 - (int)camera.YOffset), Color.Crimson);
 
 #if DEBUG_DRAW
             Rectangle aabbDebug = GetAABB();
@@ -381,7 +432,7 @@ namespace PlatformTest
             if (vel.Y > 0)
             {
                 List<Tile> tilesToCheck = new List<Tile>();
-
+                
                 for (int i = left; i <= right; ++i)
                 {
                     tilesToCheck.Add(map.GetTile(i, bottom));
@@ -402,6 +453,15 @@ namespace PlatformTest
                             isOnGround = true;
                             vel.Y = 0;
                             //break;
+                        }
+                    }
+                    else
+                    {
+                        bounds = GetAABB();
+
+                        if (bounds.Bottom > (t.Y * 16) + 1)
+                        {
+                            isOnGround = false;
                         }
                     }
                 }

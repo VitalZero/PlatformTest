@@ -67,7 +67,6 @@ namespace PlatformTest
             map.Update(gameTime);
 
             //player.Input(gameTime);
-
             player.Update(gameTime);
 
             camera.CenterOnPlayer(player);
