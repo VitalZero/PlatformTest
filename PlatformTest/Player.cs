@@ -26,7 +26,7 @@ namespace PlatformTest
         private Vector2 origin;
         private Vector2 size;
         private float dir;
-        private const float speed = 100f;
+        private const float speed = 150f;
         private const float gravity = 20f;
         private const float jumpSpeed = -400f;
         private KeyboardState keyboard;
@@ -201,12 +201,12 @@ namespace PlatformTest
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
                             vel.X = speed * elapsed;
-                            flip = SpriteEffects.None;
+                            //flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = -speed * elapsed;
-                            flip = SpriteEffects.FlipHorizontally;
+                            vel.X = -speed * elapsed;;
+                            //flip = SpriteEffects.FlipHorizontally;
                         }
 
                         if(isOnGround)
