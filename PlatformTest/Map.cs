@@ -152,7 +152,7 @@ namespace PlatformTest
             if (x < 0 ||
                 x >= mapWidth ||
                 y < 0 ||
-                y > mapHeight)
+                y >= mapHeight)
                 return new Tile();
 
              return map[x + mapWidth * y];
