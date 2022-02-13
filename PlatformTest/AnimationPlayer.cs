@@ -15,6 +15,7 @@ namespace PlatformTest
         //public Vector2 Origin { get { return new Vector2(Animation.FrameWidth / 2, Animation.FrameHeight); } }
         float time;
         Rectangle source;
+        private bool freeze;
 
         public void PlayAnimation(Animation animation)
         {
@@ -24,8 +25,15 @@ namespace PlatformTest
                 this.frameIndex = 0;
                 this.time = 0f;
 
+                freeze = false;
+
                 source = new Rectangle((FrameIndex * Animation.FrameWidth) + animation.StartFrameX, 0, Animation.FrameWidth, Animation.FrameHeight);
             }
+        }
+
+        public void Freeze()
+        {
+            freeze = true;
         }
 
         public void Update(GameTime gameTime)
@@ -33,23 +41,30 @@ namespace PlatformTest
             if (Animation == null)
                 throw new NotSupportedException("No animation is currently playing!");
 
-            time += (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            while(time > Animation.FrameTime)
+            if (!freeze)
             {
-                time -= Animation.FrameTime;
+                time += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                if(Animation.IsLooping)
+                while (time > Animation.FrameTime)
                 {
-                    frameIndex = (frameIndex + 1) % Animation.FrameCount;
-                }
-                else
-                {
-                    frameIndex = Math.Min(frameIndex + 1, Animation.FrameCount - 1);
+                    time -= Animation.FrameTime;
+
+                    if (Animation.IsLooping)
+                    {
+                        frameIndex = (frameIndex + 1) % Animation.FrameCount;
+                    }
+                    else
+                    {
+                        frameIndex = Math.Min(frameIndex + 1, Animation.FrameCount - 1);
+                    }
                 }
             }
+            else
+            {
+                freeze = false;
+            }
 
-            source = new Rectangle((FrameIndex * Animation.FrameWidth) + animation.StartFrameX, 0, Animation.FrameWidth, Animation.FrameHeight);
+                source = new Rectangle((FrameIndex * Animation.FrameWidth) + animation.StartFrameX, 0, Animation.FrameWidth, Animation.FrameHeight);
         }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 pos, SpriteEffects effects)

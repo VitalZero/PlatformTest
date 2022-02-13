@@ -21,6 +21,7 @@ namespace PlatformTest
         private Camera camera;
         private float fps;
         SpriteFont font;
+        private Goomba goomba1;
 
         public Game1()
         {
@@ -29,7 +30,8 @@ namespace PlatformTest
             IsMouseVisible = true;
             camera = new Camera(this, 0, 0);
             map = new Map(camera);
-            player = new Player(camera, map);
+            player = new Player(map, camera);
+            goomba1 = new Goomba(map, camera);
         }
 
         protected override void Initialize()
@@ -54,6 +56,7 @@ namespace PlatformTest
             map.Load(Services);
             player.Load(Services);
             font = Content.Load<SpriteFont>("Arial");
+            goomba1.Load(Services);
             // TODO: use this.Content to load your game content here
         }
 
@@ -66,7 +69,8 @@ namespace PlatformTest
 
             map.Update(gameTime);
 
-            //player.Input(gameTime);
+            goomba1.Update(gameTime);
+
             player.Update(gameTime);
 
             camera.CenterOnPlayer(player);
@@ -82,6 +86,7 @@ namespace PlatformTest
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null,
                  globalTransformation);
             map.Draw(spriteBatch);
+            goomba1.Draw(spriteBatch);
             player.Draw(spriteBatch);
 
             spriteBatch.End();
