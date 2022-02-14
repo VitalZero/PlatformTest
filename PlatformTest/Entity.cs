@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace PlatformTest
         protected bool FloorHit;
         protected bool CeilingHit;
         protected bool active;
+        protected ContentManager content;
         public bool Active { get { return active; } }
 
 
@@ -36,14 +38,6 @@ namespace PlatformTest
             elapsed = 0;
             tileHit = Point.Zero;
             active = true;
-        }
-
-        public void Init(float speed, float gravity, float jumpSpeed)
-        {
-            this.speed = speed;
-            this.gravity = gravity;
-            this.jumpSpeed = jumpSpeed;
-
         }
 
         public override void Draw(SpriteBatch spriteBatch)

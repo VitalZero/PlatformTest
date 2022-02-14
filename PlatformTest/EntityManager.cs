@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace PlatformTest
@@ -27,15 +28,21 @@ namespace PlatformTest
 
             foreach(var entity in entities)
             {
-                entity.Update(gameTime);
+                if(entity.Active)
+                    entity.Update(gameTime);
             }
+
+            HandleCollisions();
+            //entities.Where(e => e.Active).ToList();
+            //goombas.Where(e => e.Active).ToList();
         }
 
         public static void Draw(SpriteBatch spriteBatch)
         {
             foreach (var entity in entities)
             {
-                entity.Draw(spriteBatch);
+                if (entity.Active)
+                    entity.Draw(spriteBatch);
             }
         }
 
@@ -50,24 +57,27 @@ namespace PlatformTest
         private static void HandleCollisions()
         {
             for(int i = 0; i < goombas.Count; ++i)
-            {                    
-                Rectangle penetration;
-                Rectangle pAABB = Player.Instance.GetAABB();
-                Rectangle gAABB = goombas[i].GetAABB();
-
-                Rectangle.Intersect(ref pAABB, ref gAABB, out penetration);
-
-                if(penetration != Rectangle.Empty)
+            {
+                if (goombas[i].Active)
                 {
-                    if(penetration.Height < penetration.Width)
+                    Rectangle penetration;
+                    Rectangle pAABB = Player.Instance.GetAABB();
+                    Rectangle gAABB = goombas[i].GetAABB();
+
+                    Rectangle.Intersect(ref pAABB, ref gAABB, out penetration);
+
+                    if (penetration != Rectangle.Empty)
                     {
-                        Player.Instance.Kill();
-                        break;
-                    }
-                    else
-                    {
-                        goombas[i].Kill();
-                        break;
+                        if (penetration.Height < penetration.Width)
+                        {
+                            goombas[i].Kill();
+                            return;
+                        }
+                        else
+                        {
+                            Player.Instance.Kill();
+                            return;
+                        }
                     }
                 }
 

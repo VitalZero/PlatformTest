@@ -28,7 +28,6 @@ namespace PlatformTest
         private Vector2 origin;
         private float dir;
         private KeyboardState keyboard;
-        private ContentManager content;
         private bool isJumping;
         private SpriteEffects flip;
         private Animation standing;

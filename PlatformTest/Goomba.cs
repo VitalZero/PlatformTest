@@ -9,7 +9,6 @@ namespace PlatformTest
 {
     public class Goomba : Entity
     {
-        private ContentManager content;
         private Animation walking;
         private AnimationPlayer animPlayer;
 
