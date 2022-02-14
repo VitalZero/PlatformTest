@@ -233,9 +233,12 @@ namespace PlatformTest
                     break;
             }
 
+            animPlayer.Update(gameTime);
+
             LateUpdate(gameTime);
 
-            animPlayer.Update(gameTime);
+            if (CeilingHit)
+                Pause = true;
 
             isJumping = false;
 

@@ -16,6 +16,10 @@ namespace PlatformTest
         protected float jumpSpeed = -400f;
         protected bool isOnGround;
         protected float elapsed;
+        protected bool RightWallHit;
+        protected bool LeftWallHit;
+        protected bool FloorHit;
+        protected bool CeilingHit;
 
         public Vector2 Pos { get { return pos; } }
 
@@ -50,6 +54,11 @@ namespace PlatformTest
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
             elapsed = dt / 2;
 
+            RightWallHit = false;
+            LeftWallHit = false;
+            FloorHit = false;
+            CeilingHit = false;
+
             while (dt > 0.0f)
             {
                 Physics();
@@ -64,8 +73,6 @@ namespace PlatformTest
 
         private void Physics()
         {
-            //float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
             pos.X += vel.X;
             //pos.X = (float)Math.Round(pos.X);
             HandlecollisionHorizontal();
@@ -113,8 +120,14 @@ namespace PlatformTest
                             float depth = bounds.Right - tileBounds.Left;
 
                             pos.X -= depth;
+                            pos.X = (int)pos.X;
+                            RightWallHit = true;
                             break;
                         }
+                    }
+                    else
+                    {
+                        RightWallHit = false;
                     }
                 }
             }
@@ -140,6 +153,8 @@ namespace PlatformTest
                             float depth = bounds.Left - tileBounds.Right;
 
                             pos.X -= depth;
+                            pos.X = (int)pos.X;
+                            LeftWallHit = true;
                             break;
                         }
                     }
@@ -178,7 +193,9 @@ namespace PlatformTest
                             float depth = bounds.Bottom - tileBounds.Top;
 
                             pos.Y -= depth;
+                            pos.Y = (int)pos.Y;
                             isOnGround = true;
+                            FloorHit = true;
                             vel.Y = 0;
                             //break;
                         }
@@ -215,12 +232,14 @@ namespace PlatformTest
                         {
                             float depth = bounds.Top - tileBounds.Bottom;
 
-                            if (t.collision == TileCollision.breakable)
-                                map.RemoveTile(t.X, t.Y);
-                            else if (t.collision == TileCollision.item)
-                                map.usedTileItem(t.X, t.Y);
+                            //if (t.collision == TileCollision.breakable)
+                            //    map.RemoveTile(t.X, t.Y);
+                            //else if (t.collision == TileCollision.item)
+                            //    map.usedTileItem(t.X, t.Y);
 
                             pos.Y -= depth;
+                            pos.Y = (int)pos.Y;
+                            CeilingHit = true;
                             vel.Y = 0;
                             break;
                         }

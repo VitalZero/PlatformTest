@@ -19,6 +19,7 @@ namespace PlatformTest
             pos = new Vector2(200, 50);
             aabb = new Rectangle(2, 3, 14, 13);
             animPlayer = new AnimationPlayer();
+            speed = 20f;
         }
 
         public void Load(IServiceProvider serviceProvider)
@@ -32,15 +33,20 @@ namespace PlatformTest
 
         public override void Update(GameTime gameTime)
         {
-            ApplyGravity();
+            vel.X = speed * elapsed;
 
-            vel.X = -20f * elapsed;
+            ApplyGravity();
 
             animPlayer.PlayAnimation(walking);
 
             animPlayer.Update(gameTime);
 
             LateUpdate(gameTime);
+
+            if(RightWallHit || LeftWallHit)
+            {
+                speed = -speed;
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
