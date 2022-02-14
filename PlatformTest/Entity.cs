@@ -20,6 +20,11 @@ namespace PlatformTest
         protected bool LeftWallHit;
         protected bool FloorHit;
         protected bool CeilingHit;
+        protected bool active;
+        public bool Active { get { return active; } }
+
+
+        private Point tileHit;
 
         public Vector2 Pos { get { return pos; } }
 
@@ -29,6 +34,8 @@ namespace PlatformTest
             this.camera = camera;
             isOnGround = false;
             elapsed = 0;
+            tileHit = Point.Zero;
+            active = true;
         }
 
         public void Init(float speed, float gravity, float jumpSpeed)
@@ -36,6 +43,7 @@ namespace PlatformTest
             this.speed = speed;
             this.gravity = gravity;
             this.jumpSpeed = jumpSpeed;
+
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -49,6 +57,11 @@ namespace PlatformTest
         {
         }
 
+        public void Kill()
+        {
+            active = false;
+        }
+
         protected void LateUpdate(GameTime gameTime)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -58,12 +71,18 @@ namespace PlatformTest
             LeftWallHit = false;
             FloorHit = false;
             CeilingHit = false;
+            tileHit = Point.Zero;
 
             while (dt > 0.0f)
             {
                 Physics();
                 dt -= elapsed;
             }
+        }
+
+        protected Point GetContactTile()
+        {
+            return tileHit;
         }
 
         protected void ApplyGravity()
@@ -236,6 +255,7 @@ namespace PlatformTest
                             //    map.RemoveTile(t.X, t.Y);
                             //else if (t.collision == TileCollision.item)
                             //    map.usedTileItem(t.X, t.Y);
+                            tileHit = new Point(t.X, t.Y);
 
                             pos.Y -= depth;
                             pos.Y = (int)pos.Y;

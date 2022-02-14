@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace PlatformTest
 {
-    public class Game1 : Game
+    public class Platformer : Game
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
@@ -16,14 +16,14 @@ namespace PlatformTest
         private const int windowWidth = width * pixels;
         private const int windowHeight = height * pixels;
         private Map map;
-        private Player player;
         private Matrix globalTransformation;
         private Camera camera;
         private float fps;
         SpriteFont font;
         private Goomba goomba1;
+        private Player player;
 
-        public Game1()
+        public Platformer()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -45,6 +45,9 @@ namespace PlatformTest
             map.Initialize(Content.RootDirectory);
 
             globalTransformation = Matrix.CreateScale((float)pixels);
+
+            EntityManager.Add(player);
+            EntityManager.Add(goomba1);
 
             base.Initialize();
         }
@@ -69,9 +72,10 @@ namespace PlatformTest
 
             map.Update(gameTime);
 
-            goomba1.Update(gameTime);
+            //goomba1.Update(gameTime);
 
-            player.Update(gameTime);
+            //player.Update(gameTime);
+            EntityManager.Update(gameTime);
 
             camera.CenterOnPlayer(player);
 
@@ -86,8 +90,9 @@ namespace PlatformTest
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null,
                  globalTransformation);
             map.Draw(spriteBatch);
-            goomba1.Draw(spriteBatch);
-            player.Draw(spriteBatch);
+            EntityManager.Draw(spriteBatch);
+            //goomba1.Draw(spriteBatch);
+            //player.Draw(spriteBatch);
 
             spriteBatch.End();
 

@@ -12,6 +12,14 @@ namespace PlatformTest
 {
     public class Player : Entity
     {
+        private static Player instance = null;
+        public static Player Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
         private enum States { stand, run, jump, fall }
 
 #if DEBUG_DRAW
@@ -48,6 +56,8 @@ namespace PlatformTest
             animPlayer = new AnimationPlayer();
             isOnGround = false;
             Pause = false;
+
+            instance = this;
 
             currState = States.fall;
 
@@ -238,7 +248,16 @@ namespace PlatformTest
             LateUpdate(gameTime);
 
             if (CeilingHit)
-                Pause = true;
+            {
+                //Pause = true;
+                Point tilePos = GetContactTile();
+                Tile t = map.GetTile(tilePos.X, tilePos.Y);
+
+                if (t.collision == TileCollision.breakable)
+                    map.RemoveTile(tilePos.X, tilePos.Y);
+                else if (t.collision == TileCollision.item)
+                    map.usedTileItem(tilePos.X, tilePos.Y);
+            }
 
             isJumping = false;
 
