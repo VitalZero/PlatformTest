@@ -98,6 +98,7 @@ namespace PlatformTest
 
             spriteBatch.Begin();
             spriteBatch.DrawString(font, "FPS:" + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);
+            spriteBatch.DrawString(font, "vel X:" + Player.Instance.Vel.X.ToString("00.0000"), new Vector2(20, 50), Color.Red);
             spriteBatch.End();
 
 

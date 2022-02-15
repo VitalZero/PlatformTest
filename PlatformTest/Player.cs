@@ -22,6 +22,8 @@ namespace PlatformTest
         }
         private enum States { stand, run, jump, fall }
 
+        public Vector2 Vel { get { return vel; } }
+
 #if DEBUG_DRAW
         Texture2D debugTexture;
 #endif
@@ -36,6 +38,8 @@ namespace PlatformTest
         private Animation fall;
         private AnimationPlayer animPlayer;
         States currState;
+        float lerpDuration;
+        float lerpTime;
         public bool Pause { get; set; }
 
         //for debug purposes
@@ -56,6 +60,9 @@ namespace PlatformTest
             Pause = false;
 
             instance = this;
+
+            lerpDuration = 2f;
+            lerpTime = 0f;
 
             currState = States.fall;
 
@@ -92,6 +99,9 @@ namespace PlatformTest
 
         public override void Update(GameTime gameTime)
         {
+
+            lerpTime += elapsed;
+
             KeyboardState oldState = keyboard;
             keyboard = Keyboard.GetState();
 
@@ -109,6 +119,7 @@ namespace PlatformTest
                     {
                         animPlayer.PlayAnimation(standing);
                         vel.X = 0;
+                        lerpTime = 0;
 
                         if (!isOnGround)
                         {
@@ -144,13 +155,13 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X = speed * elapsed;
+                            vel.X = MathHelper.Lerp(vel.X, speed * elapsed, lerpTime / lerpDuration);
 
                             flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = -speed * elapsed;
+                            vel.X = MathHelper.Lerp(vel.X, -speed * elapsed, lerpTime / lerpDuration);
 
                             flip = SpriteEffects.FlipHorizontally;
                         }
