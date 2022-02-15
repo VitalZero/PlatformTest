@@ -65,7 +65,8 @@ namespace PlatformTest
 
                     if (penetration != Rectangle.Empty)
                     {
-                        if (penetration.Height < penetration.Width)
+                        if (penetration.Height <= penetration.Width &&
+                            pAABB.Top < gAABB.Top)
                         {
                             goombas[i].Kill();
                             Player.Instance.Move(0, -penetration.Width);
