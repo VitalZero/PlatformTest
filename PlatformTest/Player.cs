@@ -43,8 +43,7 @@ namespace PlatformTest
         SpriteFont font;
         //
 
-        public Player(Map map, Camera camera)
-            : base(map, camera)
+        public Player()
         {
             pos = new Vector2(50f, 50f);
             size = new Vector2(16, 31);
@@ -79,11 +78,16 @@ namespace PlatformTest
             texture = content.Load<Texture2D>("mariobasic");
 
             standing = new Animation(texture, 1f, true, 16, 1, 0, 0);
-            run = new Animation(texture, .1f, true, 16, 4, 16, 0);
+            run = new Animation(texture, .04f, true, 16, 4, 16, 0);
             jump = new Animation(texture, .1f, true, 16, 1, 16 * 6, 0);
             fall = new Animation(texture, 1f, true, 16, 1, 16 * 5, 0);
             animPlayer.PlayAnimation(standing);
             font = content.Load<SpriteFont>("Arial");
+        }
+
+        public void Bounce()
+        {
+            vel.Y = (jumpSpeed / 2f) * elapsed;
         }
 
         public override void Update(GameTime gameTime)
@@ -141,11 +145,13 @@ namespace PlatformTest
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
                             vel.X = speed * elapsed;
+
                             flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
                             vel.X = -speed * elapsed;
+
                             flip = SpriteEffects.FlipHorizontally;
                         }
 
@@ -250,12 +256,12 @@ namespace PlatformTest
             {
                 //Pause = true;
                 Point tilePos = GetContactTile();
-                Tile t = map.GetTile(tilePos.X, tilePos.Y);
+                Tile t = Map.Instance.GetTile(tilePos.X, tilePos.Y);
 
                 if (t.collision == TileCollision.breakable)
-                    map.RemoveTile(tilePos.X, tilePos.Y);
+                    Map.Instance.RemoveTile(tilePos.X, tilePos.Y);
                 else if (t.collision == TileCollision.item)
-                    map.usedTileItem(tilePos.X, tilePos.Y);
+                    Map.Instance.usedTileItem(tilePos.X, tilePos.Y);
             }
 
             isJumping = false;
@@ -266,11 +272,11 @@ namespace PlatformTest
         public override void Draw(SpriteBatch spriteBatch)
         {
             animPlayer.Draw(spriteBatch, 
-                new Vector2((int)pos.X - (int)camera.XOffset, (int)pos.Y - (int)camera.YOffset), 
+                new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset), 
                 flip);
 
             spriteBatch.DrawString(font, playerStates[(int)currState], 
-                new Vector2((int)pos.X - 10 - (int)camera.XOffset, (int)pos.Y - 20 - (int)camera.YOffset), Color.Crimson);
+                new Vector2((int)pos.X - 10 - (int)Camera.Instance.XOffset, (int)pos.Y - 20 - (int)Camera.Instance.YOffset), Color.Crimson);
 
 #if DEBUG_DRAW
             Rectangle aabbDebug = GetAABB();
@@ -278,9 +284,9 @@ namespace PlatformTest
             //aabbDebug.Y += (int)-camera.YOffset;
             //spriteBatch.Draw(debugTexture, aabbDebug, new Color(Color.Red, 0.2f));
 
-            spriteBatch.Draw(debugTexture, new Rectangle(((aabbDebug.Right / 16) * 16) - (int)camera.XOffset, ((aabbDebug.Top / 16) * 16) - (int)camera.YOffset, 16, 16),
+            spriteBatch.Draw(debugTexture, new Rectangle(((aabbDebug.Right / 16) * 16) - (int)Camera.Instance.XOffset, ((aabbDebug.Top / 16) * 16) - (int)Camera.Instance.YOffset, 16, 16),
                 new Color(Color.White, 0.2f));
-            spriteBatch.Draw(debugTexture, new Rectangle(((aabbDebug.Right / 16) * 16) - (int)camera.XOffset, ((aabbDebug.Bottom / 16) * 16) - (int)camera.YOffset, 16, 16),
+            spriteBatch.Draw(debugTexture, new Rectangle(((aabbDebug.Right / 16) * 16) - (int)Camera.Instance.XOffset, ((aabbDebug.Bottom / 16) * 16) - (int)Camera.Instance.YOffset, 16, 16),
                 new Color(Color.Green, 0.2f));
 
             spriteBatch.Draw(debugTexture, new Rectangle(

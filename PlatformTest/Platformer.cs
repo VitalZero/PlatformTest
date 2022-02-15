@@ -29,9 +29,9 @@ namespace PlatformTest
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             camera = new Camera(this, 0, 0);
-            map = new Map(camera);
-            player = new Player(map, camera);
-            goomba1 = new Goomba(map, camera);
+            map = new Map();
+            player = new Player();
+            goomba1 = new Goomba();
         }
 
         protected override void Initialize()

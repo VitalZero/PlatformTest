@@ -19,13 +19,21 @@ namespace PlatformTest
         private Texture2D texture;
         private string textureName;
         ContentManager content;
-        Camera camera;
         BouncingTile bouncingTile;
         private int tileIndexRestore = -1;
 
-        public Map(Camera camera)
+        private static Map instance = null;
+        public static Map Instance
         {
-            this.camera = camera;
+            get
+            {
+                return instance;
+            }
+        }
+
+        public Map()
+        {
+            instance = this;
         }
 
         public void Initialize(string directory)
@@ -111,8 +119,8 @@ namespace PlatformTest
         public void Draw(SpriteBatch spriteBatch)
         {
             
-            int xStart = (int)Math.Max(0, (camera.XOffset) / tileSize);
-            int xEnd = (int)Math.Min(mapWidth, (camera.XOffset + (480) / tileSize) + 1);
+            int xStart = (int)Math.Max(0, ((int)Camera.Instance.XOffset) / tileSize);
+            int xEnd = (int)Math.Min(mapWidth, ((int)Camera.Instance.XOffset + (480) / tileSize) + 1);
 
             for (int y = 0; y < mapHeight; ++y)
             {
@@ -127,7 +135,7 @@ namespace PlatformTest
 
                         spriteBatch.Draw(
                             texture,
-                            new Vector2((x * tileSize) - (int)camera.XOffset, (y * tileSize) - (int)camera.YOffset),
+                            new Vector2((x * tileSize) - (int)Camera.Instance.XOffset, (y * tileSize) - (int)Camera.Instance.YOffset),
                             new Rectangle(dx, dy, tileSize, tileSize),
                             Color.White     
                             );
@@ -141,7 +149,7 @@ namespace PlatformTest
                 int ty = (bouncingTile.TextureID / textureColumns) * tileSize;
 
                 spriteBatch.Draw(texture,
-                    new Vector2((int)bouncingTile.X - (int)camera.XOffset, (int)bouncingTile.Y - (int)camera.YOffset),
+                    new Vector2((int)bouncingTile.X - (int)Camera.Instance.XOffset, (int)bouncingTile.Y - (int)Camera.Instance.YOffset),
                     new Rectangle(tx, ty, tileSize, tileSize),
                     Color.White);
             }

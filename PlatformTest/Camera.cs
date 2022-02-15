@@ -10,12 +10,22 @@ namespace PlatformTest
         public float XOffset { get; set; }
         public float YOffset { get; set; }
         private Platformer game;
+        private static Camera instance = null;
+
+        public static Camera Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
 
         public Camera(Platformer game, float xOffset, float yOffset)
         {
             XOffset = xOffset;
             YOffset = yOffset;
             this.game = game;
+            instance = this;
         }
 
         public void Move(float xAmount, float yAmount) // not used atm

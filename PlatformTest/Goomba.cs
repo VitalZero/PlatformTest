@@ -12,8 +12,7 @@ namespace PlatformTest
         private Animation walking;
         private AnimationPlayer animPlayer;
 
-        public Goomba(Map map, Camera camera)
-            : base(map, camera)
+        public Goomba()
         {
             pos = new Vector2(200, 50);
             aabb = new Rectangle(2, 3, 14, 13);
@@ -51,7 +50,7 @@ namespace PlatformTest
         public override void Draw(SpriteBatch spriteBatch)
         {
             animPlayer.Draw(spriteBatch,
-                new Vector2((int)pos.X - (int)camera.XOffset, (int)pos.Y - (int)camera.YOffset),
+                new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
                 SpriteEffects.None);
         }
     }

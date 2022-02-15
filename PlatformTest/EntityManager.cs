@@ -11,7 +11,6 @@ namespace PlatformTest
     {
         static List<Goomba> goombas = new List<Goomba>();
         static List<Entity> entities = new List<Entity>();
-        static List<Entity> entitiesToDelete = new List<Entity>();
 
         public static int Count { get { return entities.Count; } }
 
@@ -28,21 +27,19 @@ namespace PlatformTest
 
             foreach(var entity in entities)
             {
-                if(entity.Active)
-                    entity.Update(gameTime);
+                entity.Update(gameTime);
             }
 
             HandleCollisions();
-            //entities.Where(e => e.Active).ToList();
-            //goombas.Where(e => e.Active).ToList();
+            entities = entities.Where(e => e.Active).ToList();
+            goombas = goombas.Where(e => e.Active).ToList();
         }
 
         public static void Draw(SpriteBatch spriteBatch)
         {
             foreach (var entity in entities)
             {
-                if (entity.Active)
-                    entity.Draw(spriteBatch);
+                entity.Draw(spriteBatch);
             }
         }
 
@@ -71,6 +68,8 @@ namespace PlatformTest
                         if (penetration.Height < penetration.Width)
                         {
                             goombas[i].Kill();
+                            Player.Instance.Move(0, -penetration.Width);
+                            Player.Instance.Bounce();
                             return;
                         }
                         else

@@ -9,10 +9,8 @@ namespace PlatformTest
 {
     public class Entity : GameObject
     {
-        protected Map map;
-        protected Camera camera;
         protected Vector2 vel;
-        protected float speed = 150f;
+        protected float speed = 160f;
         protected float gravity = 20f;
         protected float jumpSpeed = -400f;
         protected bool isOnGround;
@@ -28,22 +26,26 @@ namespace PlatformTest
 
         private Point tileHit;
 
-        public Vector2 Pos { get { return pos; } }
+        public Vector2 Pos { get { return pos; }  }
 
-        public Entity(Map map, Camera camera)
+        public Entity()
         {
-            this.map = map;
-            this.camera = camera;
             isOnGround = false;
             elapsed = 0;
             tileHit = Point.Zero;
             active = true;
         }
 
+        public void Move(float x, float y)
+        {
+            pos.X += x;
+            pos.Y += y;
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, 
-                new Vector2((int)pos.X - (int)camera.XOffset, (int)pos.Y - (int)camera.YOffset),
+                new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
                 Color.White);
         }
 
@@ -96,11 +98,6 @@ namespace PlatformTest
             //HandleCollisionsY();
         }
 
-        public Rectangle GetAABB()
-        {
-            return new Rectangle((int)pos.X + aabb.X, (int)pos.Y + aabb.Y, aabb.Width, aabb.Height);
-        }
-
         private void HandlecollisionHorizontal()
         {
             Rectangle bounds = GetAABB();
@@ -118,7 +115,7 @@ namespace PlatformTest
 
                 for (int i = top; i <= bottom; ++i)
                 {
-                    tilesToCheck.Add(map.GetTile(right, i));
+                    tilesToCheck.Add(Map.Instance.GetTile(right, i));
                 }
 
                 foreach (var t in tilesToCheck)
@@ -126,7 +123,7 @@ namespace PlatformTest
                     if (t.collision != TileCollision.none)
                     {
                         bounds = GetAABB();
-                        Rectangle tileBounds = map.GetBounds(t.X, t.Y);
+                        Rectangle tileBounds = Map.Instance.GetBounds(t.X, t.Y);
 
                         if (bounds.Intersects(tileBounds))
                         {
@@ -151,7 +148,7 @@ namespace PlatformTest
 
                 for (int i = top; i <= bottom; ++i)
                 {
-                    tilesToCheck.Add(map.GetTile(left, i));
+                    tilesToCheck.Add(Map.Instance.GetTile(left, i));
                 }
 
                 foreach (var t in tilesToCheck)
@@ -159,7 +156,7 @@ namespace PlatformTest
                     if (t.collision != TileCollision.none)
                     {
                         bounds = GetAABB();
-                        Rectangle tileBounds = map.GetBounds(t.X, t.Y);
+                        Rectangle tileBounds = Map.Instance.GetBounds(t.X, t.Y);
 
                         if (bounds.Intersects(tileBounds))
                         {
@@ -191,7 +188,7 @@ namespace PlatformTest
 
                 for (int i = left; i <= right; ++i)
                 {
-                    tilesToCheck.Add(map.GetTile(i, bottom));
+                    tilesToCheck.Add(Map.Instance.GetTile(i, bottom));
                 }
 
                 foreach (var t in tilesToCheck)
@@ -199,7 +196,7 @@ namespace PlatformTest
                     if (t.collision != TileCollision.none)
                     {
                         bounds = GetAABB();
-                        Rectangle tileBounds = map.GetBounds(t.X, t.Y);
+                        Rectangle tileBounds = Map.Instance.GetBounds(t.X, t.Y);
 
                         if (bounds.Intersects(tileBounds))
                         {
@@ -231,7 +228,7 @@ namespace PlatformTest
 
                 for (int i = left; i <= right; ++i)
                 {
-                    tilesToCheck.Add(map.GetTile(i, top));
+                    tilesToCheck.Add(Map.Instance.GetTile(i, top));
                 }
 
                 foreach (var t in tilesToCheck)
@@ -239,7 +236,7 @@ namespace PlatformTest
                     if (t.collision != TileCollision.none)
                     {
                         bounds = GetAABB();
-                        Rectangle tileBounds = map.GetBounds(t.X, t.Y);
+                        Rectangle tileBounds = Map.Instance.GetBounds(t.X, t.Y);
 
                         if (bounds.Intersects(tileBounds))
                         {
