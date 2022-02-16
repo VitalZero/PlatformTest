@@ -20,7 +20,6 @@ namespace PlatformTest
         protected bool FloorHit;
         protected bool CeilingHit;
         protected bool active;
-        protected ContentManager content;
         public bool Active { get { return active; } }
 
 
@@ -48,6 +47,9 @@ namespace PlatformTest
                 new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
                 Color.White);
         }
+
+        public virtual void Init()
+        {}
 
         public override void Update(GameTime gameTime)
         {

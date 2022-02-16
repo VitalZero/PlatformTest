@@ -17,21 +17,15 @@ namespace PlatformTest
         private const int windowHeight = height * pixels;
         private Map map;
         private Matrix globalTransformation;
-        private Camera camera;
         private float fps;
         SpriteFont font;
-        private Goomba goomba1;
-        private Player player;
 
         public Platformer()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            camera = new Camera(this, 0, 0);
             map = new Map();
-            player = new Player();
-            goomba1 = new Goomba();
         }
 
         protected override void Initialize()
@@ -42,24 +36,28 @@ namespace PlatformTest
             //graphics.PreferMultiSampling = false;
             graphics.ApplyChanges();
 
+            Camera.Instance.Init(this, 0, 0);
+
             map.Initialize(Content.RootDirectory);
 
             globalTransformation = Matrix.CreateScale((float)pixels);
 
-            EntityManager.Add(player);
-            EntityManager.Add(goomba1);
+            EntityManager.Add(Player.Instance);
+            EntityManager.Add(new Goomba());
 
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
+            ResourceManager.Load(Content);
+
+            EntityManager.Init();
+
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             map.Load(Services);
-            player.Load(Services);
-            font = Content.Load<SpriteFont>("Arial");
-            goomba1.Load(Services);
+            font = ResourceManager.Arial;
             // TODO: use this.Content to load your game content here
         }
 
@@ -72,12 +70,9 @@ namespace PlatformTest
 
             map.Update(gameTime);
 
-            //goomba1.Update(gameTime);
-
-            //player.Update(gameTime);
             EntityManager.Update(gameTime);
 
-            camera.CenterOnPlayer(player);
+            Camera.Instance.CenterOnPlayer();
 
             // TODO: Add your update logic here
 
@@ -91,14 +86,12 @@ namespace PlatformTest
                  globalTransformation);
             map.Draw(spriteBatch);
             EntityManager.Draw(spriteBatch);
-            //goomba1.Draw(spriteBatch);
-            //player.Draw(spriteBatch);
 
             spriteBatch.End();
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(font, "FPS:" + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);
-            spriteBatch.DrawString(font, "vel X:" + Player.Instance.Vel.X.ToString("00.0000"), new Vector2(20, 50), Color.Red);
+            spriteBatch.DrawString(ResourceManager.Arial, "FPS:" + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);
+            spriteBatch.DrawString(ResourceManager.Arial, "vel X:" + Player.Instance.Vel.X.ToString("00.0000"), new Vector2(20, 50), Color.Red);
             spriteBatch.End();
 
 

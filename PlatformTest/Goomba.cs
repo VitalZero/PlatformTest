@@ -20,11 +20,9 @@ namespace PlatformTest
             speed = 20f;
         }
 
-        public void Load(IServiceProvider serviceProvider)
+        public override void Init()
         {
-            content = new ContentManager(serviceProvider, "Content");
-
-            texture = content.Load<Texture2D>("goomba");
+            texture = ResourceManager.Goomba;
 
             walking = new Animation(texture, 0.2f, true, 16, 2, 0, 0);
         }

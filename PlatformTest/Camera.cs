@@ -16,16 +16,18 @@ namespace PlatformTest
         {
             get
             {
+                if (instance == null)
+                    instance = new Camera();
+
                 return instance;
             }
         }
 
-        public Camera(Platformer game, float xOffset, float yOffset)
+        public void Init(Platformer game, float xOffset, float yOffset)
         {
             XOffset = xOffset;
             YOffset = yOffset;
             this.game = game;
-            instance = this;
         }
 
         public void Move(float xAmount, float yAmount) // not used atm
@@ -34,10 +36,10 @@ namespace PlatformTest
             YOffset += yAmount;
         }
 
-        public void CenterOnPlayer(Player player)
+        public void CenterOnPlayer()
         {
-            XOffset = player.Pos.X - game.Width / 2;
-            YOffset = player.Pos.Y - game.Height / 2;
+            XOffset = Player.Instance.Pos.X - game.Width / 2;
+            YOffset = Player.Instance.Pos.Y - game.Height / 2;
 
             XOffset = Math.Clamp(XOffset, 0, (71*16) - game.Width); // clamp to map area
             YOffset = 0; // should not move on y

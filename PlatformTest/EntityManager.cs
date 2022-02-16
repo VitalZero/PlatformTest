@@ -22,6 +22,14 @@ namespace PlatformTest
                 goombas.Add(entity as Goomba);
         }
 
+        public static void Init()
+        {
+            foreach (var entity in entities)
+            {
+                entity.Init();
+            }
+        }
+
         public static void Update(GameTime gameTime)
         {
 
