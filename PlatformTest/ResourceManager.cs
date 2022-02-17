@@ -12,6 +12,7 @@ namespace PlatformTest
         public static Texture2D Goomba { get; private set; }
         public static Texture2D Level { get; private set; }
         public static Texture2D Pixel { get; private set; }
+        public static Texture2D Turtle { get; private set; }
 
         public static SpriteFont Arial { get; private set; }
 
@@ -21,6 +22,7 @@ namespace PlatformTest
             Goomba = content.Load<Texture2D>("goomba");
             Level = content.Load<Texture2D>("mariotilessimple");
             Pixel = content.Load<Texture2D>("pixel");
+            Turtle = content.Load<Texture2D>("turtle");
 
             Arial = content.Load<SpriteFont>("Arial");
         }

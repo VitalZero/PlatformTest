@@ -10,6 +10,7 @@ namespace PlatformTest
     public class EntityManager
     {
         static List<Goomba> goombas = new List<Goomba>();
+        static List<Turtle> turtles = new List<Turtle>();
         static List<Entity> entities = new List<Entity>();
 
         public static int Count { get { return entities.Count; } }
@@ -20,6 +21,8 @@ namespace PlatformTest
 
             if (entity is Goomba)
                 goombas.Add(entity as Goomba);
+            else if (entity is Turtle)
+                turtles.Add(entity as Turtle);
         }
 
         public static void Init()
@@ -41,6 +44,7 @@ namespace PlatformTest
             HandleCollisions();
             entities = entities.Where(e => e.Active).ToList();
             goombas = goombas.Where(e => e.Active).ToList();
+            turtles = turtles.Where(e => e.Active).ToList();
         }
 
         public static void Draw(SpriteBatch spriteBatch)
@@ -63,7 +67,7 @@ namespace PlatformTest
         {
             for(int i = 0; i < goombas.Count; ++i)
             {
-                if (goombas[i].Active)
+                if (goombas[i].CanCollide && Player.Instance.CanCollide)
                 {
                     Rectangle penetration;
                     Rectangle pAABB = Player.Instance.GetAABB();
@@ -76,14 +80,57 @@ namespace PlatformTest
                         if (penetration.Height <= penetration.Width &&
                             pAABB.Top < gAABB.Top)
                         {
-                            goombas[i].Kill();
+                            goombas[i].Hit();
                             Player.Instance.Move(0, -penetration.Width);
                             Player.Instance.Bounce();
                             return;
                         }
                         else
                         {
-                            Player.Instance.Kill();
+                            if(goombas[i].CanKill)
+                                Player.Instance.Hit();
+
+                            return;
+                        }
+                    }
+                }
+
+            }
+
+            for (int i = 0; i < turtles.Count; ++i)
+            {
+                if (turtles[i].CanCollide && Player.Instance.CanCollide)
+                {
+                    Rectangle penetration;
+                    Rectangle pAABB = Player.Instance.GetAABB();
+                    Rectangle gAABB = turtles[i].GetAABB();
+
+                    Rectangle.Intersect(ref pAABB, ref gAABB, out penetration);
+
+                    if (penetration != Rectangle.Empty)
+                    {
+                        if (penetration.Height <= penetration.Width &&
+                            pAABB.Top < gAABB.Top)
+                        {
+                            turtles[i].Hit();
+                            Player.Instance.Move(0, -penetration.Height);
+                            Player.Instance.Bounce();
+                            return;
+                        }
+                        else
+                        {
+                            if (turtles[i].CanKill) 
+                                Player.Instance.Hit();
+                            else
+                            {
+                                if(pAABB.Left > gAABB.Left)
+                                    turtles[i].Move(-penetration.Width, 0);
+                                else if(pAABB.Right < gAABB.Right)
+                                    turtles[i].Move(penetration.Width, 0);
+
+                                turtles[i].Hit();
+                            }
+
                             return;
                         }
                     }

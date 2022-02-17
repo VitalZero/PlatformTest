@@ -19,9 +19,8 @@ namespace PlatformTest
         protected bool LeftWallHit;
         protected bool FloorHit;
         protected bool CeilingHit;
-        protected bool active;
-        public bool Active { get { return active; } }
-
+        public bool Active { get; set; }
+        public bool CanCollide { get; set; }
 
         private Point tileHit;
 
@@ -32,7 +31,8 @@ namespace PlatformTest
             isOnGround = false;
             elapsed = 0;
             tileHit = Point.Zero;
-            active = true;
+            Active = true;
+            CanCollide = true;
         }
 
         public void Move(float x, float y)
@@ -51,13 +51,16 @@ namespace PlatformTest
         public virtual void Init()
         {}
 
+        public virtual void Hit()
+        {}
+
         public override void Update(GameTime gameTime)
         {
         }
 
         public void Kill()
         {
-            active = false;
+            Active = false;
         }
 
         protected void LateUpdate(GameTime gameTime)

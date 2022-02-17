@@ -98,9 +98,14 @@ namespace PlatformTest
             vel.Y = (jumpSpeed / 2f) * elapsed;
         }
 
+        public override void Hit()
+        {
+            CanCollide = false;
+            Active = false;
+        }
+
         public override void Update(GameTime gameTime)
         {
-
             lerpTime += elapsed;
 
             KeyboardState oldState = keyboard;
@@ -119,7 +124,8 @@ namespace PlatformTest
                 case States.stand:
                     {
                         animPlayer.PlayAnimation(standing);
-                        vel.X = MathHelper.Lerp(vel.X, 0, lerpTime / stopLerp);
+
+                        vel.X = 0;
 
                         if (!isOnGround)
                         {
@@ -142,7 +148,6 @@ namespace PlatformTest
                             isOnGround = false;
                             break;
                         }
-
                     }
                     break;
 
@@ -154,18 +159,17 @@ namespace PlatformTest
                         {
                             currState = States.stand;
                             lerpTime = 0;
-                            //vel.X = 0;
                             break;
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X = MathHelper.Lerp(vel.X, speed * elapsed, lerpTime / lerpDuration);
+                            vel.X = speed * elapsed;
 
                             flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = MathHelper.Lerp(vel.X, -speed * elapsed, lerpTime / lerpDuration);
+                            vel.X = -speed * elapsed;
 
                             flip = SpriteEffects.FlipHorizontally;
                         }
@@ -193,16 +197,16 @@ namespace PlatformTest
 
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = MathHelper.Lerp(vel.X, 0, lerpTime / lerpDuration);
+                            vel.X = 0;
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X = MathHelper.Lerp(vel.X, speed * elapsed, lerpTime / jumpLerp);
+                            vel.X = speed * elapsed;
                             //flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = MathHelper.Lerp(vel.X, -speed * elapsed, lerpTime / jumpLerp);
+                            vel.X = -speed * elapsed;
                             //flip = SpriteEffects.FlipHorizontally;
                         }
 
@@ -238,16 +242,16 @@ namespace PlatformTest
                     //animPlayer.PlayAnimation(fall);
                     if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                     {
-                        vel.X = MathHelper.Lerp(vel.X, 0, lerpTime / lerpDuration);
+                        vel.X = 0;
                     }
                     else if (keyboard.IsKeyDown(Keys.Right))
                     {
-                        vel.X = MathHelper.Lerp(vel.X, speed * elapsed, lerpTime / jumpLerp);
+                        vel.X = speed * elapsed;
                         //flip = SpriteEffects.None;
                     }
                     else if (keyboard.IsKeyDown(Keys.Left))
                     {
-                        vel.X = MathHelper.Lerp(vel.X, -speed * elapsed, lerpTime / jumpLerp);
+                        vel.X = -speed * elapsed;
                         //flip = SpriteEffects.FlipHorizontally;
                     }
 

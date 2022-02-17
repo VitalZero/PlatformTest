@@ -14,8 +14,10 @@ namespace PlatformTest
         public int FrameIndex { get { return frameIndex; } }
         //public Vector2 Origin { get { return new Vector2(Animation.FrameWidth / 2, Animation.FrameHeight); } }
         float time;
+        private float totalTime;
         Rectangle source;
         private bool freeze;
+        private bool ended;
 
         public void PlayAnimation(Animation animation)
         {
@@ -24,8 +26,8 @@ namespace PlatformTest
                 this.animation = animation;
                 this.frameIndex = 0;
                 this.time = 0f;
-
-                freeze = false;
+                totalTime = 0f;
+                ended = false;
 
                 source = new Rectangle((FrameIndex * Animation.FrameWidth) + animation.StartFrameX, 0, Animation.FrameWidth, Animation.FrameHeight);
             }

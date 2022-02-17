@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -7,23 +6,25 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public class Goomba : Entity
+    public class Turtle : Entity
     {
-        private enum States { wandering, stomped }
+        private enum States { wandering, stomped, rebounding }
 
         private Animation walking;
         private Animation stomped;
+        private Animation awaking;
         private AnimationPlayer animPlayer;
         private float deadTime;
         private float deadTimeAcc;
         private States currState;
+        private SpriteEffects flip;
         public bool CanKill { get; set; }
         float dir;
 
-        public Goomba()
+        public Turtle()
         {
-            pos = new Vector2(360, 50);
-            aabb = new Rectangle(2, 3, 14, 13);
+            pos = new Vector2(364, 50);
+            aabb = new Rectangle(2, 8, 14, 16);
             animPlayer = new AnimationPlayer();
             speed = 20f;
             deadTime = 1f;
@@ -35,17 +36,28 @@ namespace PlatformTest
 
         public override void Init()
         {
-            texture = ResourceManager.Goomba;
+            texture = ResourceManager.Turtle;
 
             walking = new Animation(texture, 0.2f, true, 16, 2, 0, 0);
             stomped = new Animation(texture, 1f, false, 16, 1, 32, 0);
+            flip = SpriteEffects.None;
         }
 
         public override void Hit()
         {
-            currState = States.stomped;
-            CanKill = false;
-            CanCollide = false;
+            if (currState == States.wandering)
+            {
+                currState = States.stomped;
+            }
+            else if (currState == States.stomped)
+            {
+                currState = States.rebounding;
+            }
+            else if (currState == States.rebounding)
+            {
+                currState = States.stomped;
+            }
+            //CanCollide = false;
         }
 
         public override void Update(GameTime gameTime)
@@ -56,8 +68,15 @@ namespace PlatformTest
             {
                 case States.wandering:
                     {
+                        CanKill = true;
                         animPlayer.PlayAnimation(walking);
+
                         vel.X = speed * elapsed * dir;
+
+                        if(vel.X > 0)
+                            flip = SpriteEffects.None;
+                        else if(vel.X < 0)
+                            flip = SpriteEffects.FlipHorizontally;
 
                         if (RightWallHit)
                         {
@@ -71,13 +90,28 @@ namespace PlatformTest
                     break;
                 case States.stomped:
                     {
-                        deadTimeAcc += elapsed;
-                        vel.X = 0f;
+                        CanKill = false;
+
+                        animPlayer.PlayAnimation(stomped);
+                        vel.X = 0;
+                    }
+                    break;
+                case States.rebounding:
+                    {
+                        CanKill = true;
 
                         animPlayer.PlayAnimation(stomped);
 
-                        if(deadTimeAcc >= deadTime)
-                            Active = false;
+                        vel.X = (speed * 10f) * elapsed * dir;
+
+                        if (RightWallHit)
+                        {
+                            dir = -1f;
+                        }
+                        else if (LeftWallHit)
+                        {
+                            dir = 1f;
+                        }
                     }
                     break;
             }
@@ -91,7 +125,7 @@ namespace PlatformTest
         {
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
-                SpriteEffects.None);
+                flip);
         }
     }
 }
