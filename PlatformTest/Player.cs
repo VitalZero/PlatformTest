@@ -96,6 +96,7 @@ namespace PlatformTest
         public void Bounce()
         {
             vel.Y = (jumpSpeed / 2f) * elapsed;
+            currState = States.jump;
         }
 
         public override void Hit()

@@ -98,8 +98,9 @@ namespace PlatformTest
 
         public void Load(IServiceProvider serviceProvider)
         {
-            content = new ContentManager(serviceProvider, "Content");
-            texture = content.Load<Texture2D>(textureName);
+            //content = new ContentManager(serviceProvider, "Content");
+            //texture = content.Load<Texture2D>(textureName);
+            texture = ResourceManager.Level;
         }
 
         public void Update(GameTime gameTime)

@@ -22,7 +22,7 @@ namespace PlatformTest
 
         public Goomba()
         {
-            pos = new Vector2(360, 50);
+            pos = new Vector2(200, 50);
             aabb = new Rectangle(2, 3, 14, 13);
             animPlayer = new AnimationPlayer();
             speed = 20f;

@@ -43,6 +43,7 @@ namespace PlatformTest
             globalTransformation = Matrix.CreateScale((float)pixels);
 
             EntityManager.Add(Player.Instance);
+            EntityManager.Add(new Goomba());
             EntityManager.Add(new Turtle());
 
             base.Initialize();

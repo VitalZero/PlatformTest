@@ -103,14 +103,15 @@ namespace PlatformTest
                 {
                     Rectangle penetration;
                     Rectangle pAABB = Player.Instance.GetAABB();
-                    Rectangle gAABB = turtles[i].GetAABB();
+                    Rectangle tAABB = turtles[i].GetAABB();
 
-                    Rectangle.Intersect(ref pAABB, ref gAABB, out penetration);
+                    Rectangle.Intersect(ref pAABB, ref tAABB, out penetration);
 
                     if (penetration != Rectangle.Empty)
                     {
                         if (penetration.Height <= penetration.Width &&
-                            pAABB.Top < gAABB.Top)
+                            pAABB.Top < tAABB.Top)
+                        //if(pAABB.Bottom < tAABB.Center.Y)
                         {
                             turtles[i].Hit();
                             Player.Instance.Move(0, -penetration.Height);
@@ -123,10 +124,16 @@ namespace PlatformTest
                                 Player.Instance.Hit();
                             else
                             {
-                                if(pAABB.Left > gAABB.Left)
+                                if (pAABB.Left > tAABB.Left)
+                                {
                                     turtles[i].Move(-penetration.Width, 0);
-                                else if(pAABB.Right < gAABB.Right)
+                                    turtles[i].SetDir(-1);
+                                }
+                                else if (pAABB.Right < tAABB.Right)
+                                {
                                     turtles[i].Move(penetration.Width, 0);
+                                    turtles[i].SetDir(1);
+                                }
 
                                 turtles[i].Hit();
                             }

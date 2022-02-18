@@ -40,10 +40,6 @@ namespace PlatformTest
 
             if (Active)
             {
-                //Y = Lerp(yOrigin, yOrigin - 16f, EaseInOut(time/duration));
-
-                //if(time <= duration)
-                //    time += dt;
                 if (bouncing)
                 {
                     yVel = upSpeed * dt;
