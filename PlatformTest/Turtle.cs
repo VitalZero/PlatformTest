@@ -21,17 +21,17 @@ namespace PlatformTest
         public bool CanKill { get; set; }
         float dir;
 
-        public Turtle()
+        public Turtle(Vector2 pos)
         {
-            pos = new Vector2(364, 50);
+            this.pos = pos;
             aabb = new Rectangle(2, 8, 14, 16);
             animPlayer = new AnimationPlayer();
-            speed = 20f;
+            speed = 15f;
             awakeTime = 3f;
             awakeTimeAcc = 0;
             currState = States.wandering;
             CanKill = true;
-            dir = 1f;
+            dir = -1f;
         }
 
         public override void Init()
@@ -122,7 +122,7 @@ namespace PlatformTest
                     {
                         animPlayer.PlayAnimation(stomped);
 
-                        vel.X = (speed * 10f) * elapsed * dir;
+                        vel.X = (speed * 30f) * elapsed * dir;
 
                         if (RightWallHit)
                         {

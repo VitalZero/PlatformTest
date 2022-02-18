@@ -20,17 +20,17 @@ namespace PlatformTest
         public bool CanKill { get; set; }
         float dir;
 
-        public Goomba()
+        public Goomba(Vector2 pos)
         {
-            pos = new Vector2(200, 50);
+            this.pos = pos;
             aabb = new Rectangle(2, 3, 14, 13);
             animPlayer = new AnimationPlayer();
-            speed = 20f;
+            speed = 15f;
             deadTime = 1f;
             deadTimeAcc = 0;
             currState = States.wandering;
             CanKill = true;
-            dir = 1f;
+            dir = -1f;
         }
 
         public override void Init()
