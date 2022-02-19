@@ -17,8 +17,6 @@ namespace PlatformTest
         private float deadTime;
         private float deadTimeAcc;
         private States currState;
-        public bool CanKill { get; set; }
-        float dir;
 
         public Goomba(Vector2 pos)
         {

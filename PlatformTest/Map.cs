@@ -18,7 +18,6 @@ namespace PlatformTest
         private int textureColumns;
         private Texture2D texture;
         private string textureName;
-        ContentManager content;
         BouncingTile bouncingTile;
         private int tileIndexRestore = -1;
 

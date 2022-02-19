@@ -21,6 +21,8 @@ namespace PlatformTest
         protected bool CeilingHit;
         public bool Active { get; set; }
         public bool CanCollide { get; set; }
+        public bool CanKill { get; set; }
+        protected float dir;
 
         private Point tileHit;
 
@@ -39,6 +41,11 @@ namespace PlatformTest
         {
             pos.X += x;
             pos.Y += y;
+        }
+
+        public void SetDir(int dir)
+        {
+            this.dir = dir;
         }
 
         public override void Draw(SpriteBatch spriteBatch)

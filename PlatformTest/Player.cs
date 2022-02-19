@@ -31,9 +31,7 @@ namespace PlatformTest
         Texture2D debugTexture;
 #endif
         private Vector2 origin;
-        private float dir;
         private KeyboardState keyboard;
-        private bool isJumping;
         private SpriteEffects flip;
         private Animation standing;
         private Animation run;
@@ -268,8 +266,6 @@ namespace PlatformTest
                 else if (t.collision == TileCollision.item)
                     Map.Instance.usedTileItem(tilePos.X, tilePos.Y);
             }
-
-            isJumping = false;
 
             dir = 0f;
         }

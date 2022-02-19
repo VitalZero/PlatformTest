@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public class Turtle : Entity
+    public class KoopaTrooper : Entity
     {
         private enum States { wandering, stomped, rebounding }
 
@@ -18,10 +18,8 @@ namespace PlatformTest
         private float awakeTimeAcc;
         private States currState;
         private SpriteEffects flip;
-        public bool CanKill { get; set; }
-        float dir;
 
-        public Turtle(Vector2 pos)
+        public KoopaTrooper(Vector2 pos)
         {
             this.pos = pos;
             aabb = new Rectangle(2, 8, 14, 16);
@@ -64,11 +62,6 @@ namespace PlatformTest
                 CanKill = false;
             }
             //CanCollide = false;
-        }
-
-        public void SetDir(int dir)
-        {
-            this.dir = dir;
         }
 
         public override void Update(GameTime gameTime)
