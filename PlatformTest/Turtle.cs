@@ -81,7 +81,7 @@ namespace PlatformTest
                     {
                         animPlayer.PlayAnimation(walking);
 
-                        vel.X = speed * elapsed * dir;
+                        vel.X = speed * dir;
 
                         if(vel.X > 0)
                             flip = SpriteEffects.None;
@@ -122,7 +122,7 @@ namespace PlatformTest
                     {
                         animPlayer.PlayAnimation(stomped);
 
-                        vel.X = (speed * 30f) * elapsed * dir;
+                        vel.X = (speed * 20f) *  dir;
 
                         if (RightWallHit)
                         {

@@ -10,7 +10,7 @@ namespace PlatformTest
     public class Entity : GameObject
     {
         protected Vector2 vel;
-        protected float speed = 160f;
+        protected float speed = 192f;
         protected float gravity = 20f;
         protected float jumpSpeed = -400f;
         protected bool isOnGround;
@@ -65,19 +65,18 @@ namespace PlatformTest
 
         protected void LateUpdate(GameTime gameTime)
         {
-            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            elapsed = dt / 2;
-
+            elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            elapsed *= 0.5f;
             RightWallHit = false;
             LeftWallHit = false;
             FloorHit = false;
             CeilingHit = false;
             tileHit = Point.Zero;
 
-            while (dt > 0.0f)
+            for (int i = 0; i < 2; ++i)
             {
+
                 Physics();
-                dt -= elapsed;
             }
         }
 
@@ -88,16 +87,16 @@ namespace PlatformTest
 
         protected void ApplyGravity()
         {
-            vel.Y += gravity * elapsed;
+            vel.Y += gravity;
         }
 
         private void Physics()
         {
-            pos.X += vel.X;
+            pos.X += vel.X * elapsed;
             //pos.X = (float)Math.Round(pos.X);
             HandlecollisionHorizontal();
 
-            pos.Y += vel.Y;
+            pos.Y += vel.Y * elapsed;
             //pos.Y = (float)Math.Round(pos.Y);
             HandlecollisionVertical();
             //HandleCollisionsY();
@@ -132,7 +131,7 @@ namespace PlatformTest
 
                         if (bounds.Intersects(tileBounds))
                         {
-                            float depth = bounds.Right - tileBounds.Left;
+                            int depth = bounds.Right - tileBounds.Left;
 
                             pos.X -= depth;
                             pos.X = (int)pos.X;
@@ -165,7 +164,7 @@ namespace PlatformTest
 
                         if (bounds.Intersects(tileBounds))
                         {
-                            float depth = bounds.Left - tileBounds.Right;
+                            int depth = bounds.Left - tileBounds.Right;
 
                             pos.X -= depth;
                             pos.X = (int)pos.X;
@@ -205,7 +204,7 @@ namespace PlatformTest
 
                         if (bounds.Intersects(tileBounds))
                         {
-                            float depth = bounds.Bottom - tileBounds.Top;
+                            int depth = bounds.Bottom - tileBounds.Top;
 
                             pos.Y -= depth;
                             pos.Y = (int)pos.Y;
@@ -245,7 +244,7 @@ namespace PlatformTest
 
                         if (bounds.Intersects(tileBounds))
                         {
-                            float depth = bounds.Top - tileBounds.Bottom;
+                            int depth = bounds.Top - tileBounds.Bottom;
 
                             //if (t.collision == TileCollision.breakable)
                             //    map.RemoveTile(t.X, t.Y);

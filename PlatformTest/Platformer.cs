@@ -51,7 +51,7 @@ namespace PlatformTest
             EntityManager.Add(new Goomba(new Vector2(77 * 16, 3 * 16)));
             EntityManager.Add(new Goomba(new Vector2(89 * 16, 12 * 16)));
             EntityManager.Add(new Goomba(new Vector2(90 * 16 + 8, 12 * 16)));
-            EntityManager.Add(new Turtle(new Vector2(98 * 16, 12 * 16)));
+            EntityManager.Add(new Turtle(new Vector2(98 * 16, 11 * 16)));
 
             base.Initialize();
         }

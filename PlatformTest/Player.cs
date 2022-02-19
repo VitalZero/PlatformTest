@@ -41,10 +41,6 @@ namespace PlatformTest
         private Animation fall;
         private AnimationPlayer animPlayer;
         States currState;
-        float lerpDuration;
-        float stopLerp;
-        float jumpLerp;
-        float lerpTime;
         public bool Pause { get; set; }
 
         //for debug purposes
@@ -65,11 +61,6 @@ namespace PlatformTest
             Pause = false;
 
             instance = this;
-
-            lerpDuration = 1f;
-            stopLerp = .3f;
-            jumpLerp = 2f;
-            lerpTime = 0f;
 
             currState = States.fall;
 
@@ -95,7 +86,7 @@ namespace PlatformTest
 
         public void Bounce()
         {
-            vel.Y = (jumpSpeed / 2f) * elapsed;
+            vel.Y = (jumpSpeed / 2f);
             currState = States.jump;
         }
 
@@ -107,8 +98,6 @@ namespace PlatformTest
 
         public override void Update(GameTime gameTime)
         {
-            lerpTime += elapsed;
-
             KeyboardState oldState = keyboard;
             keyboard = Keyboard.GetState();
 
@@ -131,21 +120,18 @@ namespace PlatformTest
                         if (!isOnGround)
                         {
                             currState = States.fall;
-                            lerpTime = 0f;
                             break;
                         }
 
                         if (keyboard.IsKeyDown(Keys.Right) != keyboard.IsKeyDown(Keys.Left))
                         {
                             currState = States.run;
-                            lerpTime = 0;
                             break;
                         }
                         else if (keyboard.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
                         {
                             currState = States.jump;
-                            lerpTime = 0;
-                            vel.Y = jumpSpeed * elapsed;
+                            vel.Y = jumpSpeed;
                             isOnGround = false;
                             break;
                         }
@@ -159,18 +145,17 @@ namespace PlatformTest
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
                             currState = States.stand;
-                            lerpTime = 0;
                             break;
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X = speed * elapsed;
+                            vel.X = speed;
 
                             flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = -speed * elapsed;
+                            vel.X = -speed;
 
                             flip = SpriteEffects.FlipHorizontally;
                         }
@@ -178,15 +163,13 @@ namespace PlatformTest
                         if (keyboard.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
                         {
                             currState = States.jump;
-                            lerpTime = 0;
-                            vel.Y = jumpSpeed * elapsed;
+                            vel.Y = jumpSpeed;
                             isOnGround = false;
                             break;
                         }
                         else if (!isOnGround)
                         {
                             currState = States.fall;
-                            lerpTime = 0;
                             break;
                         }
                     }
@@ -202,12 +185,12 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X = speed * elapsed;
+                            vel.X = speed;
                             //flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = -speed * elapsed;
+                            vel.X = -speed;
                             //flip = SpriteEffects.FlipHorizontally;
                         }
 
@@ -216,14 +199,12 @@ namespace PlatformTest
                             if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                             {
                                 currState = States.stand;
-                                lerpTime = 0;
                                 vel = Vector2.Zero;
                                 break;
                             }
                             else
                             {
                                 currState = States.run;
-                                lerpTime = 0;
                                 vel.Y = 0f;
                                 break;
                             }
@@ -232,7 +213,6 @@ namespace PlatformTest
                         if(vel.Y > 0)
                         {
                             currState = States.fall;
-                            lerpTime = 0f;
                             break;
                         }
                     }
@@ -247,12 +227,12 @@ namespace PlatformTest
                     }
                     else if (keyboard.IsKeyDown(Keys.Right))
                     {
-                        vel.X = speed * elapsed;
+                        vel.X = speed;
                         //flip = SpriteEffects.None;
                     }
                     else if (keyboard.IsKeyDown(Keys.Left))
                     {
-                        vel.X = -speed * elapsed;
+                        vel.X = -speed;
                         //flip = SpriteEffects.FlipHorizontally;
                     }
 
@@ -261,13 +241,11 @@ namespace PlatformTest
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
                             currState = States.stand;
-                            lerpTime = 0f;
                             vel = Vector2.Zero;
                         }
                         else
                         {
                             currState = States.run;
-                            lerpTime = 0f;
                             vel.Y = 0f;
                         }
                     }

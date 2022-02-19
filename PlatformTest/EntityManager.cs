@@ -77,13 +77,13 @@ namespace PlatformTest
 
                     if (penetration != Rectangle.Empty)
                     {
-                        if (penetration.Height <= penetration.Width &&
-                            pAABB.Top < gAABB.Top)
+                        //if (penetration.Height <= penetration.Width &&
+                        if(pAABB.Bottom <= gAABB.Center.Y)
                         {
                             goombas[i].Hit();
                             Player.Instance.Move(0, -penetration.Width);
                             Player.Instance.Bounce();
-                            return;
+                            //return;
                         }
                         else
                         {
@@ -109,9 +109,8 @@ namespace PlatformTest
 
                     if (penetration != Rectangle.Empty)
                     {
-                        if (penetration.Height <= penetration.Width &&
-                            pAABB.Top < tAABB.Top)
-                        //if(pAABB.Bottom < tAABB.Center.Y)
+                        //if (penetration.Height <= penetration.Width &&
+                        if(pAABB.Bottom <= tAABB.Center.Y)
                         {
                             turtles[i].Hit();
                             Player.Instance.Move(0, -penetration.Height);
