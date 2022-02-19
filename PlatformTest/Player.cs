@@ -259,12 +259,12 @@ namespace PlatformTest
             {
                 //Pause = true;
                 Point tilePos = GetContactTile();
-                Tile t = Map.Instance.GetTile(tilePos.X, tilePos.Y);
+                Tile t = World.Instance.GetTile(tilePos.X, tilePos.Y);
 
                 if (t.collision == TileCollision.breakable)
-                    Map.Instance.RemoveTile(tilePos.X, tilePos.Y);
+                    World.Instance.RemoveTile(tilePos.X, tilePos.Y);
                 else if (t.collision == TileCollision.item)
-                    Map.Instance.usedTileItem(tilePos.X, tilePos.Y);
+                    World.Instance.usedTileItem(tilePos.X, tilePos.Y);
             }
 
             dir = 0f;
@@ -276,8 +276,6 @@ namespace PlatformTest
                 new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset), 
                 flip);
 
-            spriteBatch.DrawString(font, playerStates[(int)currState], 
-                new Vector2((int)pos.X - 10 - (int)Camera.Instance.XOffset, (int)pos.Y - 20 - (int)Camera.Instance.YOffset), Color.Crimson);
 
 #if DEBUG_DRAW
             Rectangle aabbDebug = GetAABB();
@@ -295,6 +293,9 @@ namespace PlatformTest
                 (int)(pos.Y + origin.Y - camera.YOffset) - 1,
                 2, 2),
                 new Color(Color.White, 0.8f));
+
+            spriteBatch.DrawString(font, playerStates[(int)currState], 
+                new Vector2((int)pos.X - 10 - (int)Camera.Instance.XOffset, (int)pos.Y - 20 - (int)Camera.Instance.YOffset), Color.Crimson);
 #endif
         }
     }

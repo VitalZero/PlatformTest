@@ -24,6 +24,7 @@ namespace PlatformTest
             this.pos = pos;
             aabb = new Rectangle(2, 8, 14, 16);
             animPlayer = new AnimationPlayer();
+            animPlayer.AnimationEnded = HandleAnimationEnded;
             speed = 15f;
             awakeTime = 3f;
             awakeTimeAcc = 0;
@@ -62,6 +63,11 @@ namespace PlatformTest
                 CanKill = false;
             }
             //CanCollide = false;
+        }
+
+        public void HandleAnimationEnded(Object sender, EventArgs args)
+        {
+            currState = States.wandering;
         }
 
         public override void Update(GameTime gameTime)

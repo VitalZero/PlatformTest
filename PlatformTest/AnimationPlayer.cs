@@ -14,20 +14,19 @@ namespace PlatformTest
         public int FrameIndex { get { return frameIndex; } }
         //public Vector2 Origin { get { return new Vector2(Animation.FrameWidth / 2, Animation.FrameHeight); } }
         float time;
-        private float totalTime;
         Rectangle source;
         private bool freeze;
-        private bool ended;
+        public EventHandler AnimationEnded;
+        private bool animationEnded;
 
         public void PlayAnimation(Animation animation)
         {
             if(Animation != animation)
             {
                 this.animation = animation;
-                this.frameIndex = 0;
-                this.time = 0f;
-                totalTime = 0f;
-                ended = false;
+                frameIndex = 0;
+                time = 0f;
+                animationEnded = false;
 
                 source = new Rectangle((FrameIndex * Animation.FrameWidth) + animation.StartFrameX, 0, Animation.FrameWidth, Animation.FrameHeight);
             }
@@ -36,6 +35,14 @@ namespace PlatformTest
         public void Freeze()
         {
             freeze = true;
+        }
+
+        public void OnAnimationEnded()
+        {
+            if(AnimationEnded != null)
+            {
+                AnimationEnded(this, EventArgs.Empty);
+            }
         }
 
         public void Update(GameTime gameTime)
@@ -58,6 +65,8 @@ namespace PlatformTest
                     else
                     {
                         frameIndex = Math.Min(frameIndex + 1, Animation.FrameCount - 1);
+                        if (frameIndex + 1 >= Animation.FrameCount)
+                            OnAnimationEnded();
                     }
                 }
             }

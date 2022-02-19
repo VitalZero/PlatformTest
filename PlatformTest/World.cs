@@ -9,7 +9,7 @@ using System.IO;
 
 namespace PlatformTest
 {
-    public class Map
+    public class World
     {
         private Tile[] map;
         public int mapWidth;
@@ -21,8 +21,8 @@ namespace PlatformTest
         BouncingTile bouncingTile;
         private int tileIndexRestore = -1;
 
-        private static Map instance = null;
-        public static Map Instance
+        private static World instance = null;
+        public static World Instance
         {
             get
             {
@@ -30,7 +30,7 @@ namespace PlatformTest
             }
         }
 
-        public Map()
+        public World()
         {
             instance = this;
         }

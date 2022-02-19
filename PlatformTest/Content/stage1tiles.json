@@ -1,9 +1,9 @@
 {
   "columns": 10,
   "image": "mariotilessimple",
-  "imageheight": 32,
+  "imageheight": 64,
   "imagewidth": 160,
-  "tilecount": 20,
+  "tilecount": 40,
   "tileheight": 16,
   "tilewidth": 16,
   "__comment": "collision: 0 = none, 1 = solid, 2 = breakable, 3 = item",
@@ -87,6 +87,86 @@
     {
       "id": 19,
       "collision": 1
+    },
+    {
+      "id": 20,
+      "collision": 0
+    },
+    {
+      "id": 21,
+      "collision": 0
+    },
+    {
+      "id": 22,
+      "collision": 0
+    },
+    {
+      "id": 23,
+      "collision": 0
+    },
+    {
+      "id": 24,
+      "collision": 0
+    },
+    {
+      "id": 25,
+      "collision": 0
+    },
+    {
+      "id": 26,
+      "collision": 0
+    },
+    {
+      "id": 27,
+      "collision": 0
+    },
+    {
+      "id": 28,
+      "collision": 0
+    },
+    {
+      "id": 29,
+      "collision": 0
+    },
+    {
+      "id": 30,
+      "collision": 0
+    },
+    {
+      "id": 31,
+      "collision": 0
+    },
+    {
+      "id": 32,
+      "collision": 0
+    },
+    {
+      "id": 33,
+      "collision": 0
+    },
+    {
+      "id": 34,
+      "collision": 0
+    },
+    {
+      "id": 35,
+      "collision": 0
+    },
+    {
+      "id": 36,
+      "collision": 0
+    },
+    {
+      "id": 37,
+      "collision": 0
+    },
+    {
+      "id": 38,
+      "collision": 0
+    },
+    {
+      "id": 39,
+      "collision": 0
     }
   ]
 }

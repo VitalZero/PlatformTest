@@ -15,7 +15,7 @@ namespace PlatformTest
         private const int pixels = 3;
         private const int windowWidth = width * pixels;
         private const int windowHeight = height * pixels;
-        private Map map;
+        private World world;
         private Matrix globalTransformation;
         private float fps;
         SpriteFont font;
@@ -25,7 +25,7 @@ namespace PlatformTest
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            map = new Map();
+            world = new World();
         }
 
         protected override void Initialize()
@@ -38,7 +38,7 @@ namespace PlatformTest
 
             Camera.Instance.Init(this, 0, 0);
 
-            map.Initialize(Content.RootDirectory);
+            world.Initialize(Content.RootDirectory);
 
             globalTransformation = Matrix.CreateScale((float)pixels);
 
@@ -64,7 +64,7 @@ namespace PlatformTest
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            map.Load(Services);
+            world.Load(Services);
             font = ResourceManager.Arial;
             // TODO: use this.Content to load your game content here
         }
@@ -76,7 +76,7 @@ namespace PlatformTest
 
             fps = 1f / (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            map.Update(gameTime);
+            world.Update(gameTime);
 
             EntityManager.Update(gameTime);
 
@@ -92,7 +92,7 @@ namespace PlatformTest
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null,
                  globalTransformation);
-            map.Draw(spriteBatch);
+            world.Draw(spriteBatch);
             EntityManager.Draw(spriteBatch);
 
             spriteBatch.End();
