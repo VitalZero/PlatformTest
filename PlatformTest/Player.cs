@@ -1,6 +1,4 @@
-﻿//#define DEBUG_DRAW
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -27,14 +25,13 @@ namespace PlatformTest
 
         public Vector2 Vel { get { return vel; } }
 
-#if DEBUG_DRAW
-        Texture2D debugTexture;
-#endif
         private Vector2 origin;
         private KeyboardState keyboard;
         private SpriteEffects flip;
         private AnimationPlayer animPlayer;
-        States currState;
+        private States currState;
+        private float jumpHoldTime = 0.2f;
+        private float localHoldTime = 0;
         public bool Pause { get; set; }
 
         //for debug purposes
@@ -48,10 +45,11 @@ namespace PlatformTest
             size = new Vector2(16, 31);
             vel = Vector2.Zero;
             dir = 0f;
+            jumpSpeed = -160;
+            speed = 160f;
             aabb = new Rectangle(2, 4, 12, 27);
             origin = new Vector2(size.X / 2, size.Y);
             animPlayer = new AnimationPlayer();
-            isOnGround = false;
             Pause = false;
 
             instance = this;
@@ -80,7 +78,7 @@ namespace PlatformTest
 
         public void Bounce()
         {
-            vel.Y = (jumpSpeed / 2f);
+            vel.Y = jumpSpeed;
             currState = States.jump;
         }
 
@@ -126,6 +124,7 @@ namespace PlatformTest
                         {
                             currState = States.jump;
                             vel.Y = jumpSpeed;
+                            localHoldTime = jumpHoldTime;
                             isOnGround = false;
                             break;
                         }
@@ -158,6 +157,7 @@ namespace PlatformTest
                         {
                             currState = States.jump;
                             vel.Y = jumpSpeed;
+                            localHoldTime = jumpHoldTime;
                             isOnGround = false;
                             break;
                         }
@@ -187,8 +187,23 @@ namespace PlatformTest
                             vel.X = -speed;
                             //flip = SpriteEffects.FlipHorizontally;
                         }
+                        if (keyboard.IsKeyDown(Keys.Space))
+                        {
+                            if (localHoldTime > 0)
+                                vel.Y = jumpSpeed;
+                            else
+                                localHoldTime = 0;
 
-                        if(isOnGround)
+                            if (CeilingHit)
+                            {
+                                localHoldTime = 0;
+                                vel.Y = 0;
+                            }
+                        }
+
+                        localHoldTime -= elapsed;
+
+                        if (isOnGround)
                         {
                             if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                             {
@@ -268,31 +283,11 @@ namespace PlatformTest
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            animPlayer.Draw(spriteBatch, 
-                new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset), 
+            animPlayer.Draw(spriteBatch,
+                new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
                 flip);
 
-
-#if DEBUG_DRAW
-            Rectangle aabbDebug = GetAABB();
-            //aabbDebug.X += (int)-camera.XOffset;
-            //aabbDebug.Y += (int)-camera.YOffset;
-            //spriteBatch.Draw(debugTexture, aabbDebug, new Color(Color.Red, 0.2f));
-
-            spriteBatch.Draw(debugTexture, new Rectangle(((aabbDebug.Right / 16) * 16) - (int)Camera.Instance.XOffset, ((aabbDebug.Top / 16) * 16) - (int)Camera.Instance.YOffset, 16, 16),
-                new Color(Color.White, 0.2f));
-            spriteBatch.Draw(debugTexture, new Rectangle(((aabbDebug.Right / 16) * 16) - (int)Camera.Instance.XOffset, ((aabbDebug.Bottom / 16) * 16) - (int)Camera.Instance.YOffset, 16, 16),
-                new Color(Color.Green, 0.2f));
-
-            spriteBatch.Draw(debugTexture, new Rectangle(
-                (int)(pos.X + origin.X - camera.XOffset) - 1, 
-                (int)(pos.Y + origin.Y - camera.YOffset) - 1,
-                2, 2),
-                new Color(Color.White, 0.8f));
-
-            spriteBatch.DrawString(font, playerStates[(int)currState], 
-                new Vector2((int)pos.X - 10 - (int)Camera.Instance.XOffset, (int)pos.Y - 20 - (int)Camera.Instance.YOffset), Color.Crimson);
-#endif
+            base.Draw(spriteBatch);
         }
     }
 }

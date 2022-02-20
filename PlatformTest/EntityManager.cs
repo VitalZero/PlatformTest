@@ -26,11 +26,16 @@ namespace PlatformTest
         }
 
         public static void Init()
-        {
+        {   
             foreach (var entity in entities)
             {
                 entity.Init();
             }
+        }
+
+        public static void RemoveInactiveEntities()
+        {
+            entities = entities.Where(e => e.Active).ToList();
         }
 
         public static void Update(GameTime gameTime)
@@ -41,11 +46,12 @@ namespace PlatformTest
                 entity.Update(gameTime);
             }
 
-            HandleCollisions();
+            //HandleCollisions();
+            CollideAndResolveBetweenEntities();
             // clean up after update, remove entities that are not active
             entities = entities.Where(e => e.Active).ToList();
-            goombas = goombas.Where(e => e.Active).ToList();
-            koopaTroopers = koopaTroopers.Where(e => e.Active).ToList();
+            //goombas = goombas.Where(e => e.Active).ToList();
+            //koopaTroopers = koopaTroopers.Where(e => e.Active).ToList();
         }
 
         public static void Draw(SpriteBatch spriteBatch)

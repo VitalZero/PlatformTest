@@ -19,7 +19,7 @@ namespace PlatformTest
         public Goomba(Vector2 pos)
         {
             this.pos = pos;
-            aabb = new Rectangle(2, 3, 14, 13);
+            aabb = new Rectangle(2, 3, 12, 13);
             animPlayer = new AnimationPlayer();
             speed = 15f;
             deadTime = 0.5f;
@@ -88,6 +88,8 @@ namespace PlatformTest
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
                 SpriteEffects.None);
+
+            base.Draw(spriteBatch);
         }
     }
 }

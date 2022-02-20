@@ -1,18 +1,17 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
+﻿#define DEBUG_DRAW
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace PlatformTest
 {
     public class Entity : GameObject
     {
         protected Vector2 vel;
-        protected float speed = 192f;
+        protected float speed;
         protected float gravity = 20f;
-        protected float jumpSpeed = -400f;
+        protected float jumpSpeed;
         protected bool isOnGround;
         protected float elapsed;
         protected bool RightWallHit;
@@ -50,9 +49,36 @@ namespace PlatformTest
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, 
-                new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
-                Color.White);
+            //spriteBatch.Draw(texture, 
+            //    new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
+            //    Color.White);
+
+#if DEBUG_DRAW
+            Rectangle aabbDebug = GetAABB();
+            aabbDebug.X += (int)-Camera.Instance.XOffset;
+            aabbDebug.Y += (int)-Camera.Instance.YOffset;
+            spriteBatch.Draw(ResourceManager.Pixel, aabbDebug, new Color(Color.Blue, 0.5f));
+
+            //spriteBatch.Draw(debugTexture, new Rectangle(((aabbDebug.Right / 16) * 16) - (int)Camera.Instance.XOffset, ((aabbDebug.Top / 16) * 16) - (int)Camera.Instance.YOffset, 16, 16),
+            //    new Color(Color.White, 0.2f));
+            //spriteBatch.Draw(debugTexture, new Rectangle(((aabbDebug.Right / 16) * 16) - (int)Camera.Instance.XOffset, ((aabbDebug.Bottom / 16) * 16) - (int)Camera.Instance.YOffset, 16, 16),
+            //    new Color(Color.Green, 0.2f));
+
+            spriteBatch.Draw(ResourceManager.Pixel, new Rectangle(
+                (int)(aabbDebug.Center.X),
+                (int)(aabbDebug.Bottom),
+                1, 1),
+                new Color(Color.White, 0.8f)) ;
+
+            spriteBatch.Draw(ResourceManager.Pixel, new Rectangle(
+                (int)(aabbDebug.Center.X),
+                (int)(aabbDebug.Center.Y),
+                1, 1),
+                new Color(Color.Yellow, 0.8f));
+
+            //spriteBatch.DrawString(ResourceManager.Arial, playerStates[(int)currState], 
+            //    new Vector2((int)pos.X - 10 - (int)Camera.Instance.XOffset, (int)pos.Y - 20 - (int)Camera.Instance.YOffset), Color.Crimson);
+#endif
         }
 
         public virtual void Init()
@@ -103,6 +129,7 @@ namespace PlatformTest
             //pos.X = (float)Math.Round(pos.X);
             HandlecollisionHorizontal();
 
+            vel.Y = MathHelper.Clamp(vel.Y, -500f, 500f);
             pos.Y += vel.Y * elapsed;
             //pos.Y = (float)Math.Round(pos.Y);
             HandlecollisionVertical();
@@ -121,7 +148,6 @@ namespace PlatformTest
             // if we're going right, check all the tiles to the right, from top to bottom
             if (vel.X > 0)
             {
-
                 List<Tile> tilesToCheck = new List<Tile>();
 
                 for (int i = top; i <= bottom; ++i)
@@ -241,6 +267,9 @@ namespace PlatformTest
                 {
                     tilesToCheck.Add(World.Instance.GetTile(i, top));
                 }
+
+                if (dir < 0f)
+                    tilesToCheck.Reverse();
 
                 foreach (var t in tilesToCheck)
                 {

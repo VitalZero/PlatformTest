@@ -19,7 +19,7 @@ namespace PlatformTest
         public KoopaTrooper(Vector2 pos)
         {
             this.pos = pos;
-            aabb = new Rectangle(2, 8, 14, 16);
+            aabb = new Rectangle(1,11, 13, 13);
             animPlayer = new AnimationPlayer();
             speed = 15f;
             awakeTime = 3f;
@@ -136,6 +136,8 @@ namespace PlatformTest
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
                 flip);
+
+            base.Draw(spriteBatch);
         }
     }
 }
