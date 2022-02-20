@@ -10,9 +10,6 @@ namespace PlatformTest
     {
         private enum States { wandering, stomped, rebounding }
 
-        private Animation walking;
-        private Animation stomped;
-        private Animation awaking;
         private AnimationPlayer animPlayer;
         private float awakeTime;
         private float awakeTimeAcc;
@@ -24,7 +21,6 @@ namespace PlatformTest
             this.pos = pos;
             aabb = new Rectangle(2, 8, 14, 16);
             animPlayer = new AnimationPlayer();
-            animPlayer.AnimationEnded = HandleAnimationEnded;
             speed = 15f;
             awakeTime = 3f;
             awakeTimeAcc = 0;
@@ -37,9 +33,9 @@ namespace PlatformTest
         {
             texture = ResourceManager.Turtle;
 
-            walking = new Animation(texture, 0.2f, true, 16, 2, 0, 0);
-            stomped = new Animation(texture, 1.5f, false, 16, 1, 32, 0);
-            awaking = new Animation(texture, 0.25f, true, 16, 2, 32, 0);
+            animPlayer.Add("walking", new Animation(texture, 0.2f, true, 16, 2, 0, 0));
+            animPlayer.Add("stomped", new Animation(texture, 1.5f, false, 16, 1, 32, 0));
+            animPlayer.Add("awaking", new Animation(texture, 0.25f, true, 16, 2, 32, 0));
             flip = SpriteEffects.None;
             CanKill = true;
         }
@@ -65,11 +61,6 @@ namespace PlatformTest
             //CanCollide = false;
         }
 
-        public void HandleAnimationEnded(Object sender, EventArgs args)
-        {
-            currState = States.wandering;
-        }
-
         public override void Update(GameTime gameTime)
         {
             ApplyGravity();
@@ -78,7 +69,7 @@ namespace PlatformTest
             {
                 case States.wandering:
                     {
-                        animPlayer.PlayAnimation(walking);
+                        animPlayer.PlayAnimation("walking");
 
                         vel.X = speed * dir;
 
@@ -112,14 +103,14 @@ namespace PlatformTest
                         }
 
                         if(awakeTimeAcc < (awakeTime * 0.5))
-                            animPlayer.PlayAnimation(stomped);
+                            animPlayer.PlayAnimation("stomped");
                         else
-                            animPlayer.PlayAnimation(awaking);
+                            animPlayer.PlayAnimation("awaking");
                     }
                     break;
                 case States.rebounding:
                     {
-                        animPlayer.PlayAnimation(stomped);
+                        animPlayer.PlayAnimation("stomped");
 
                         vel.X = (speed * 20f) *  dir;
 

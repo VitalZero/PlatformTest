@@ -33,10 +33,6 @@ namespace PlatformTest
         private Vector2 origin;
         private KeyboardState keyboard;
         private SpriteEffects flip;
-        private Animation standing;
-        private Animation run;
-        private Animation jump;
-        private Animation fall;
         private AnimationPlayer animPlayer;
         States currState;
         public bool Pause { get; set; }
@@ -74,11 +70,11 @@ namespace PlatformTest
         {
             texture = ResourceManager.Player;
 
-            standing = new Animation(texture, 1f, true, 16, 1, 0, 0);
-            run = new Animation(texture, .04f, true, 16, 4, 16, 0);
-            jump = new Animation(texture, .1f, true, 16, 1, 16 * 6, 0);
-            fall = new Animation(texture, 1f, true, 16, 1, 16 * 5, 0);
-            animPlayer.PlayAnimation(standing);
+            animPlayer.Add("idle", new Animation(texture, 1f, true, 16, 1, 0, 0));
+            animPlayer.Add("running", new Animation(texture, .04f, true, 16, 4, 16, 0));
+            animPlayer.Add("jumping", new Animation(texture, .1f, true, 16, 1, 16 * 6, 0));
+            animPlayer.Add("falling", new Animation(texture, 1f, true, 16, 1, 16 * 5, 0));
+            animPlayer.PlayAnimation("idle");
             font = ResourceManager.Arial;
         }
 
@@ -111,7 +107,7 @@ namespace PlatformTest
             {
                 case States.stand:
                     {
-                        animPlayer.PlayAnimation(standing);
+                        animPlayer.PlayAnimation("idle");
 
                         vel.X = 0;
 
@@ -138,7 +134,7 @@ namespace PlatformTest
 
                 case States.run:
                     {
-                        animPlayer.PlayAnimation(run);
+                        animPlayer.PlayAnimation("running");
 
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
@@ -175,7 +171,7 @@ namespace PlatformTest
 
                 case States.jump:
                     {
-                        animPlayer.PlayAnimation(jump);
+                        animPlayer.PlayAnimation("jumping");
 
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {

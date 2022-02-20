@@ -11,8 +11,6 @@ namespace PlatformTest
     {
         private enum States { wandering, stomped }
 
-        private Animation walking;
-        private Animation stomped;
         private AnimationPlayer animPlayer;
         private float deadTime;
         private float deadTimeAcc;
@@ -35,8 +33,8 @@ namespace PlatformTest
         {
             texture = ResourceManager.Goomba;
 
-            walking = new Animation(texture, 0.2f, true, 16, 2, 0, 0);
-            stomped = new Animation(texture, 1f, false, 16, 1, 32, 0);
+            animPlayer.Add("walking", new Animation(texture, 0.2f, true, 16, 2, 0, 0));
+            animPlayer.Add("stomped", new Animation(texture, 1f, false, 16, 1, 32, 0));
         }
 
         public override void Hit()
@@ -54,7 +52,7 @@ namespace PlatformTest
             {
                 case States.wandering:
                     {
-                        animPlayer.PlayAnimation(walking);
+                        animPlayer.PlayAnimation("walking");
                         vel.X = speed * dir;
 
                         if (RightWallHit)
@@ -72,7 +70,7 @@ namespace PlatformTest
                         deadTimeAcc += elapsed;
                         vel.X = 0f;
 
-                        animPlayer.PlayAnimation(stomped);
+                        animPlayer.PlayAnimation("stomped");
 
                         if(deadTimeAcc >= deadTime)
                             Active = false;

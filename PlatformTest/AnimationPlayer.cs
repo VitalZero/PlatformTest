@@ -8,8 +8,6 @@ namespace PlatformTest
 {
     class AnimationPlayer
     {
-        Animation animation;
-        public Animation Animation { get { return animation; } }
         int frameIndex;
         public int FrameIndex { get { return frameIndex; } }
         //public Vector2 Origin { get { return new Vector2(Animation.FrameWidth / 2, Animation.FrameHeight); } }
@@ -18,17 +16,39 @@ namespace PlatformTest
         private bool freeze;
         public EventHandler AnimationEnded;
         private bool animationEnded;
+        private Dictionary<string, Animation> animations;
+        string currentAnimation;
 
-        public void PlayAnimation(Animation animation)
+        public AnimationPlayer()
         {
-            if(Animation != animation)
+            animations = new Dictionary<string, Animation>();
+        }
+
+        public void PlayAnimation(string animationName)
+        {
+            if(!animations.ContainsKey(animationName))
+                throw new NotSupportedException("The animation doesnt exist!");
+
+            if (currentAnimation != animationName)
             {
-                this.animation = animation;
+                currentAnimation = animationName;
                 frameIndex = 0;
                 time = 0f;
                 animationEnded = false;
 
-                source = new Rectangle((FrameIndex * Animation.FrameWidth) + animation.StartFrameX, 0, Animation.FrameWidth, Animation.FrameHeight);
+                source = new Rectangle(
+                    (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX, 
+                    0, 
+                    animations[currentAnimation].FrameWidth,
+                    animations[currentAnimation].FrameHeight);
+            }
+        }
+
+        public void Add(string animationName, Animation animation)
+        {
+            if(!animations.ContainsKey(animationName))
+            {
+                animations.Add(animationName, animation);
             }
         }
 
@@ -47,25 +67,25 @@ namespace PlatformTest
 
         public void Update(GameTime gameTime)
         {
-            if (Animation == null)
-                throw new NotSupportedException("No animation is currently playing!");
+            if (animations.Count == 0)
+                throw new NotSupportedException("The player doesnt contain any animation!");
 
             if (!freeze)
             {
                 time += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                while (time > Animation.FrameTime)
+                while (time > animations[currentAnimation].FrameTime)
                 {
-                    time -= Animation.FrameTime;
+                    time -= animations[currentAnimation].FrameTime;
 
-                    if (Animation.IsLooping)
+                    if (animations[currentAnimation].IsLooping)
                     {
-                        frameIndex = (frameIndex + 1) % Animation.FrameCount;
+                        frameIndex = (frameIndex + 1) % animations[currentAnimation].FrameCount;
                     }
                     else
                     {
-                        frameIndex = Math.Min(frameIndex + 1, Animation.FrameCount - 1);
-                        if (frameIndex + 1 >= Animation.FrameCount)
+                        frameIndex = Math.Min(frameIndex + 1, animations[currentAnimation].FrameCount - 1);
+                        if (frameIndex + 1 >= animations[currentAnimation].FrameCount)
                             OnAnimationEnded();
                     }
                 }
@@ -75,12 +95,17 @@ namespace PlatformTest
                 freeze = false;
             }
 
-                source = new Rectangle((FrameIndex * Animation.FrameWidth) + animation.StartFrameX, 0, Animation.FrameWidth, Animation.FrameHeight);
+            source = new Rectangle(
+                (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX, 
+                0,
+                animations[currentAnimation].FrameWidth,
+                animations[currentAnimation].FrameHeight);
         }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 pos, SpriteEffects effects)
         {
-            spriteBatch.Draw(Animation.Texture, pos, source, Color.White, 0f, Vector2.Zero, 1f, effects, 0f);
+            spriteBatch.Draw(animations[currentAnimation].Texture, pos, source, Color.White, 
+                0f, Vector2.Zero, 1f, effects, 0f);
         }
     }
 }
