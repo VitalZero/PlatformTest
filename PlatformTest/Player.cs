@@ -30,9 +30,13 @@ namespace PlatformTest
         private SpriteEffects flip;
         private AnimationPlayer animPlayer;
         private States currState;
-        private float jumpHoldTime = 0.18f;
+        private const float jumpHoldTime = 0.25f;
         private float localHoldTime = 0;
         public bool Pause { get; set; }
+        private const float maxWalkSpeed = 90f;
+        private const float maxRunSpeed = 150;
+        private const float moveXAccel = 3.26f;
+        private const float stopAccel = 3.26f;
 
         //for debug purposes
         List<string> playerStates = new List<string>();
@@ -45,8 +49,8 @@ namespace PlatformTest
             size = new Vector2(16, 31);
             vel = Vector2.Zero;
             dir = 0f;
-            jumpSpeed = -250;
-            speed = 160f;
+            jumpSpeed = -220;
+            speed = maxRunSpeed;
             aabb = new Rectangle(2, 4, 12, 27);
             origin = new Vector2(size.X / 2, size.Y);
             animPlayer = new AnimationPlayer();
