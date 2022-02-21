@@ -90,7 +90,7 @@ namespace PlatformTest
                         // if cant kill (ie stomped), generate a hit as soon as player touches the koopatropper
                         // adjust koopatrooper position and velocity based on penetration, player position
                         if (!e.CanKill)
-                        {
+                         {
                             if (pAABB.Left > tAABB.Left)
                             {
                                 e.Move(-penetration.Width, 0);

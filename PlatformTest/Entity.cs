@@ -99,18 +99,17 @@ namespace PlatformTest
         protected void LateUpdate(GameTime gameTime)
         {
             elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            elapsed *= 0.5f;
+            //elapsed *= 0.5f;
             RightWallHit = false;
             LeftWallHit = false;
             FloorHit = false;
             CeilingHit = false;
             tileHit = Point.Zero;
 
-            for (int i = 0; i < 2; ++i)
-            {
-
+            //for (int i = 0; i < 1; ++i)
+            //{
                 Physics();
-            }
+            //}
         }
 
         protected Point GetContactTile()
@@ -120,17 +119,18 @@ namespace PlatformTest
 
         protected void ApplyGravity()
         {
-            vel.Y += gravity;
+            vel.Y += gravity * elapsed;
         }
 
         private void Physics()
         {
-            pos.X += vel.X * elapsed;
+            vel.Y = MathHelper.Clamp(vel.Y, (-430f * elapsed), (430f * elapsed));
+
+            pos.X += vel.X;
             //pos.X = (float)Math.Round(pos.X);
             HandlecollisionHorizontal();
 
-            vel.Y = MathHelper.Clamp(vel.Y, -500f, 500f);
-            pos.Y += vel.Y * elapsed;
+            pos.Y += vel.Y;
             //pos.Y = (float)Math.Round(pos.Y);
             HandlecollisionVertical();
             //HandleCollisionsY();

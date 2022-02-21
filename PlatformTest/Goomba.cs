@@ -53,7 +53,7 @@ namespace PlatformTest
                 case States.wandering:
                     {
                         animPlayer.PlayAnimation("walking");
-                        vel.X = speed * dir;
+                        vel.X = speed * elapsed * dir;
 
                         if (RightWallHit)
                         {

@@ -30,7 +30,7 @@ namespace PlatformTest
         private SpriteEffects flip;
         private AnimationPlayer animPlayer;
         private States currState;
-        private float jumpHoldTime = 0.2f;
+        private float jumpHoldTime = 0.18f;
         private float localHoldTime = 0;
         public bool Pause { get; set; }
 
@@ -45,7 +45,7 @@ namespace PlatformTest
             size = new Vector2(16, 31);
             vel = Vector2.Zero;
             dir = 0f;
-            jumpSpeed = -160;
+            jumpSpeed = -250;
             speed = 160f;
             aabb = new Rectangle(2, 4, 12, 27);
             origin = new Vector2(size.X / 2, size.Y);
@@ -78,7 +78,7 @@ namespace PlatformTest
 
         public void Bounce()
         {
-            vel.Y = jumpSpeed;
+            vel.Y = jumpSpeed * elapsed;
             currState = States.jump;
         }
 
@@ -98,8 +98,6 @@ namespace PlatformTest
 
             if (Pause)
                 return;
-
-            ApplyGravity();
 
             switch (currState)
             {
@@ -123,7 +121,7 @@ namespace PlatformTest
                         else if (keyboard.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
                         {
                             currState = States.jump;
-                            vel.Y = jumpSpeed;
+                            vel.Y = jumpSpeed * elapsed;
                             localHoldTime = jumpHoldTime;
                             isOnGround = false;
                             break;
@@ -142,13 +140,13 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X = speed;
+                            vel.X = speed * elapsed;
 
                             flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = -speed;
+                            vel.X = -speed * elapsed;
 
                             flip = SpriteEffects.FlipHorizontally;
                         }
@@ -156,7 +154,7 @@ namespace PlatformTest
                         if (keyboard.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
                         {
                             currState = States.jump;
-                            vel.Y = jumpSpeed;
+                            vel.Y = jumpSpeed * elapsed;
                             localHoldTime = jumpHoldTime;
                             isOnGround = false;
                             break;
@@ -179,18 +177,18 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X = speed;
+                            vel.X = speed * elapsed;
                             //flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = -speed;
+                            vel.X = -speed * elapsed;
                             //flip = SpriteEffects.FlipHorizontally;
                         }
                         if (keyboard.IsKeyDown(Keys.Space))
                         {
                             if (localHoldTime > 0)
-                                vel.Y = jumpSpeed;
+                                vel.Y = jumpSpeed * elapsed;
                             else
                                 localHoldTime = 0;
 
@@ -236,12 +234,12 @@ namespace PlatformTest
                     }
                     else if (keyboard.IsKeyDown(Keys.Right))
                     {
-                        vel.X = speed;
+                        vel.X = speed * elapsed;
                         //flip = SpriteEffects.None;
                     }
                     else if (keyboard.IsKeyDown(Keys.Left))
                     {
-                        vel.X = -speed;
+                        vel.X = -speed * elapsed;
                         //flip = SpriteEffects.FlipHorizontally;
                     }
 
@@ -261,6 +259,8 @@ namespace PlatformTest
 
                     break;
             }
+
+            ApplyGravity();
 
             animPlayer.Update(gameTime);
 
