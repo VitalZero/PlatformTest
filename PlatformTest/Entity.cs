@@ -9,6 +9,7 @@ namespace PlatformTest
     public class Entity : GameObject
     {
         protected Vector2 vel;
+        protected Vector2 prevPos;
         protected float speed;
         protected float gravity = 20f;
         protected float jumpSpeed;
@@ -25,7 +26,8 @@ namespace PlatformTest
 
         private Point tileHit;
 
-        public Vector2 Pos { get { return pos; }  }
+        public Vector2 Pos { get { return pos; } }
+        public Vector2 PrevPos { get { return prevPos; } }
 
         public Entity()
         {
@@ -124,6 +126,8 @@ namespace PlatformTest
 
         private void Physics()
         {
+            prevPos = pos;
+
             vel.Y = MathHelper.Clamp(vel.Y, (-430f * elapsed), (430f * elapsed));
 
             pos.X += vel.X;

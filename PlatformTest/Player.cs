@@ -30,7 +30,7 @@ namespace PlatformTest
         private SpriteEffects flip;
         private AnimationPlayer animPlayer;
         private States currState;
-        private const float jumpHoldTime = 0.25f;
+        private const float jumpHoldTime = 0.4f; //0.25f;
         private float localHoldTime = 0;
         public bool Pause { get; set; }
         private const float maxWalkSpeed = 90f;
@@ -49,7 +49,7 @@ namespace PlatformTest
             size = new Vector2(16, 31);
             vel = Vector2.Zero;
             dir = 0f;
-            jumpSpeed = -220;
+            jumpSpeed = -180f; //-220f;
             speed = maxRunSpeed;
             aabb = new Rectangle(2, 4, 12, 27);
             origin = new Vector2(size.X / 2, size.Y);
@@ -122,7 +122,7 @@ namespace PlatformTest
                             currState = States.run;
                             break;
                         }
-                        else if (keyboard.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
+                        else if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
                             currState = States.jump;
                             vel.Y = jumpSpeed * elapsed;
@@ -155,7 +155,7 @@ namespace PlatformTest
                             flip = SpriteEffects.FlipHorizontally;
                         }
 
-                        if (keyboard.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
+                        if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
                             currState = States.jump;
                             vel.Y = jumpSpeed * elapsed;
@@ -189,7 +189,7 @@ namespace PlatformTest
                             vel.X = -speed * elapsed;
                             //flip = SpriteEffects.FlipHorizontally;
                         }
-                        if (keyboard.IsKeyDown(Keys.Space))
+                        if (keyboard.IsKeyDown(Keys.S))
                         {
                             if (localHoldTime > 0)
                                 vel.Y = jumpSpeed * elapsed;
@@ -292,6 +292,16 @@ namespace PlatformTest
                 flip);
 
             base.Draw(spriteBatch);
+        }
+
+        private float Lerp(float startValue, float endValue, float amount)
+        {
+            //return (startValue * (1f - amount)) + (endValue * amount);
+            //return startValue + amount * (endValue - startValue);
+            if (startValue >= endValue)
+                return endValue;
+
+            return startValue + amount;
         }
     }
 }
