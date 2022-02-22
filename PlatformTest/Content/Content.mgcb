@@ -32,6 +32,9 @@
 /processorParam:TextureFormat=Color
 /build:goomba.png
 
+#begin map_level1.json
+/copy:map_level1.json
+
 #begin mariobasic.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -68,11 +71,11 @@
 /processorParam:TextureFormat=Color
 /build:pixel.png
 
-#begin stage1.json
-/copy:stage1.json
+#begin stage1.tmx
+/copy:stage1.tmx
 
-#begin stage1tiles.json
-/copy:stage1tiles.json
+#begin tileset.json
+/copy:tileset.json
 
 #begin turtle.png
 /importer:TextureImporter

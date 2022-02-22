@@ -18,20 +18,23 @@ namespace PlatformTest
         private const float upSpeed = -200f;
         private float yVel;
         private float yOrigin;
-        //float time;
-        //float duration;
+        private Tile backUpTile;
 
-        public BouncingTile(int textureID, float x, float y)
+        public BouncingTile(Tile backUpTile)
         {
-            TextureID = textureID;
-            X = x;
-            Y = y;
-            yOrigin = y;
+            this.backUpTile = backUpTile;
+            TextureID = backUpTile.id;
+            X = backUpTile.X * backUpTile.size;
+            Y = backUpTile.Y * backUpTile.size;
+            yOrigin = Y;
             Active = true;
             Done = false;
             bouncing = true;
-            //time = 0;
-            //duration = .3f;
+        }
+
+        public Tile Restore()
+        {
+            return backUpTile;
         }
 
         public void Update(GameTime gameTime)
@@ -56,42 +59,5 @@ namespace PlatformTest
                 }
             }
         }
-
-        private float Lerp(float startValue, float endValue, float t)
-        {
-            if (t > 0.5f)
-            {
-                swap(ref startValue, ref endValue);
-            }
-
-            if (t <= 0)
-                return startValue;
-
-            if (t >= 1f)
-                return endValue;
-
-            return (startValue + (endValue - startValue) * t);
-        }
-
-        private float EaseIn(float t)
-        {
-            return t * t;
-        }
-
-        private float EaseInOut(float t)
-        {
-            if (t <= 0.5f)
-                return 2 * t * t;
-            else
-                return 1 - (((-2 * t + 2) * (-2 * t + 2)) / 2);
-        }
-
-        private void swap(ref float a, ref float b)
-        {
-            float temp = a;
-            a = b;
-            b = temp;
-        }
-
     }
 }

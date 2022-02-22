@@ -64,7 +64,7 @@ namespace PlatformTest
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            world.Load(Services);
+            world.Load();
             font = ResourceManager.Arial;
             // TODO: use this.Content to load your game content here
         }

@@ -1,11 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Text.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using VZTMXMapLoader;
 
 namespace PlatformTest
 {
@@ -38,23 +36,35 @@ namespace PlatformTest
         public void Initialize(string directory)
         {
             int[] indexMap;
+            TiledMap tiledMap;
+            {
+                TMXMapLoader loader = new TMXMapLoader(directory + "\\stage1.tmx");
+
+                tiledMap = loader.GetObjectMap();
+            }
+
+            mapWidth = tiledMap.width;
+            mapHeight = tiledMap.height;
+            tileSize = tiledMap.tilewidth;
 
             try
             {
-                JsonDocument mapInfo = JsonDocument.Parse(File.ReadAllText(directory + "\\stage1.json"));
+                JsonDocument mapInfo = JsonDocument.Parse(File.ReadAllText(directory + "\\map_level1.json"));
 
                 var mapLayers = mapInfo.RootElement.GetProperty("layers");
 
-                mapWidth = mapLayers[0].GetProperty("width").GetInt32();
-                mapHeight = mapLayers[0].GetProperty("height").GetInt32();
+                //mapWidth = mapLayers[0].GetProperty("width").GetInt32();
+                //mapHeight = mapLayers[0].GetProperty("height").GetInt32();
 
                 indexMap = new int[mapWidth * mapHeight];
-                tileSize = mapInfo.RootElement.GetProperty("tilewidth").GetInt32();
+                //tileSize = mapInfo.RootElement.GetProperty("tilewidth").GetInt32();
 
                 for(int i = 0; i < (mapWidth * mapHeight); ++i)
                 {
                     indexMap[i] = mapLayers[0].GetProperty("data")[i].GetInt32();
                 }
+
+                mapInfo.Dispose();
             }
             catch(Exception e)
             {
@@ -63,7 +73,7 @@ namespace PlatformTest
 
             try
             {
-                JsonDocument doc = JsonDocument.Parse(File.ReadAllText(directory + "\\stage1tiles.json"));
+                JsonDocument doc = JsonDocument.Parse(File.ReadAllText(directory + "\\tileset.json"));
 
                 textureName = doc.RootElement.GetProperty("image").GetString();
                 textureColumns = doc.RootElement.GetProperty("columns").GetInt32();
@@ -73,7 +83,8 @@ namespace PlatformTest
                 {
                     for (int x = 0; x < mapWidth; ++x)
                     {
-                        int tileId = indexMap[x + mapWidth * y] - 1;
+                        //int tileId = indexMap[x + mapWidth * y] - 1;
+                        int tileId = tiledMap.layer.map[x + mapWidth * y] - 1;
 
                         map[x + mapWidth * y] = new Tile();
                         map[x + mapWidth * y].X = x;
@@ -95,10 +106,8 @@ namespace PlatformTest
             }
         }
 
-        public void Load(IServiceProvider serviceProvider)
+        public void Load()
         {
-            //content = new ContentManager(serviceProvider, "Content");
-            //texture = content.Load<Texture2D>(textureName);
             texture = ResourceManager.Level;
         }
 
@@ -170,7 +179,7 @@ namespace PlatformTest
         {
             Tile t = GetTile(x, y);
             tileIndexRestore = x + mapWidth * y;
-            bouncingTile = new BouncingTile(t.id, x * tileSize, y * tileSize);
+            bouncingTile = new BouncingTile(t);
             RemoveTile(x, y);
             //map[x + mapWidth * y].id = 8;
             //map[x + mapWidth * y].collision = TileCollision.solid;

@@ -3017,5 +3017,5 @@
   ],
   "tileheight": 16,
   "tilewidth": 16,
-  "tilesets": "stage1tiles.json"
+  "tilesets": "tileset.json"
 }
