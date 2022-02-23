@@ -279,7 +279,10 @@ namespace PlatformTest
                 if (t.collision == TileCollision.breakable)
                     World.Instance.RemoveTile(tilePos.X, tilePos.Y);
                 else if (t.collision == TileCollision.item)
+                {
                     World.Instance.usedTileItem(tilePos.X, tilePos.Y);
+                    //EntityManager.Add(new Item(ItemType.mushroom, new Vector2(tilePos.X * 16, tilePos.Y * 16)));
+                }
             }
 
             dir = 0f;

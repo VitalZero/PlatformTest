@@ -15,14 +15,17 @@ namespace PlatformTest
 
         public static int Count { get { return entities.Count; } }
 
+        private static Entity currentEntity;
+        private static bool canAdd;
+
         public static void Add(Entity entity)
         {
             entities.Add(entity);
 
             if (entity is Goomba)
-                goombas.Add(entity as Goomba);
+                goombas.Add(currentEntity as Goomba);
             else if (entity is KoopaTrooper)
-                koopaTroopers.Add(entity as KoopaTrooper);
+                koopaTroopers.Add(currentEntity as KoopaTrooper);
         }
 
         public static void Init()
@@ -40,7 +43,6 @@ namespace PlatformTest
 
         public static void Update(GameTime gameTime)
         {
-
             foreach(var entity in entities)
             {
                 entity.Update(gameTime);
