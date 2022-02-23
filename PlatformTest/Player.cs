@@ -26,12 +26,13 @@ namespace PlatformTest
         public Vector2 Vel { get { return vel; } }
 
         private Vector2 origin;
+        protected float jumpSpeed;
+        private const float jumpHoldTime = 0.30f;
+        private float jumpTimer = 0;
         private KeyboardState keyboard;
         private SpriteEffects flip;
         private AnimationPlayer animPlayer;
         private States currState;
-        private const float jumpHoldTime = 0.30f; 
-        private float jumpTimer = 0;
         public bool Pause { get; set; }
         private const float maxWalkSpeed = 90f;
         private const float maxRunSpeed = 150f;

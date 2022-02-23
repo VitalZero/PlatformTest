@@ -12,8 +12,7 @@ namespace PlatformTest
         protected Vector2 vel;
         protected Vector2 prevPos;
         protected float speed;
-        protected float gravity = 20f;
-        protected float jumpSpeed;
+        protected float gravity = 30f;
         protected bool isOnGround;
         protected float elapsed;
         protected bool RightWallHit;
