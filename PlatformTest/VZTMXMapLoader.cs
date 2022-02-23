@@ -22,7 +22,7 @@ namespace VZTMXMapLoader
 
             XmlSerializer serializer = new XmlSerializer(typeof(TiledMap), xRoot);
 
-            using (Stream reader = new FileStream("C:\\Users\\jmichel\\source\\repos\\DeserializeXML\\DeserializeXML\\stage1.tmx", FileMode.Open))
+            using (Stream reader = new FileStream("..\\..\\..\\Content\\stage1.tmx", FileMode.Open))
             {
                 TiledMap m = (TiledMap)serializer.Deserialize(reader);
                 m.layer.CVStoList();
