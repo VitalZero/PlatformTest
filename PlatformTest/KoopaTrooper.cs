@@ -63,8 +63,6 @@ namespace PlatformTest
 
         public override void Update(GameTime gameTime)
         {
-            ApplyGravity();
-
             switch (currState)
             {
                 case States.wandering:

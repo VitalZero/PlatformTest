@@ -2,6 +2,7 @@
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 
 namespace PlatformTest
@@ -51,20 +52,12 @@ namespace PlatformTest
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            //spriteBatch.Draw(texture, 
-            //    new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
-            //    Color.White);
 
 #if DEBUG_DRAW
             Rectangle aabbDebug = GetAABB();
             aabbDebug.X += (int)-Camera.Instance.XOffset;
             aabbDebug.Y += (int)-Camera.Instance.YOffset;
             spriteBatch.Draw(ResourceManager.Pixel, aabbDebug, new Color(Color.Blue, 0.5f));
-
-            //spriteBatch.Draw(debugTexture, new Rectangle(((aabbDebug.Right / 16) * 16) - (int)Camera.Instance.XOffset, ((aabbDebug.Top / 16) * 16) - (int)Camera.Instance.YOffset, 16, 16),
-            //    new Color(Color.White, 0.2f));
-            //spriteBatch.Draw(debugTexture, new Rectangle(((aabbDebug.Right / 16) * 16) - (int)Camera.Instance.XOffset, ((aabbDebug.Bottom / 16) * 16) - (int)Camera.Instance.YOffset, 16, 16),
-            //    new Color(Color.Green, 0.2f));
 
             spriteBatch.Draw(ResourceManager.Pixel, new Rectangle(
                 (int)(aabbDebug.Center.X),
@@ -77,9 +70,6 @@ namespace PlatformTest
                 (int)(aabbDebug.Center.Y),
                 1, 1),
                 new Color(Color.Yellow, 0.8f));
-
-            //spriteBatch.DrawString(ResourceManager.Arial, playerStates[(int)currState], 
-            //    new Vector2((int)pos.X - 10 - (int)Camera.Instance.XOffset, (int)pos.Y - 20 - (int)Camera.Instance.YOffset), Color.Crimson);
 #endif
         }
 
@@ -101,17 +91,15 @@ namespace PlatformTest
         protected void LateUpdate(GameTime gameTime)
         {
             elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //elapsed *= 0.5f;
+
+            // deactivate flags
             RightWallHit = false;
             LeftWallHit = false;
             FloorHit = false;
             CeilingHit = false;
             tileHit = Point.Zero;
-
-            //for (int i = 0; i < 1; ++i)
-            //{
-                Physics();
-            //}
+            
+            Physics();
         }
 
         protected Point GetContactTile()
@@ -128,16 +116,16 @@ namespace PlatformTest
         {
             prevPos = pos;
 
+            if (!isOnGround)
+                ApplyGravity();
+
             vel.Y = MathHelper.Clamp(vel.Y, (-430f * elapsed), (430f * elapsed));
 
             pos.X += vel.X;
-            //pos.X = (float)Math.Round(pos.X);
             HandlecollisionHorizontal();
 
             pos.Y += vel.Y;
-            //pos.Y = (float)Math.Round(pos.Y);
             HandlecollisionVertical();
-            //HandleCollisionsY();
         }
 
         private void HandlecollisionHorizontal()
@@ -222,6 +210,25 @@ namespace PlatformTest
             int left = bounds.Left / 16;
             int right = bounds.Right / 16;
 
+            //check if we are on the ground and the velocity is 0 (we are not falling or jumping)
+            if((int)vel.Y == 0 && isOnGround)
+            {
+                // if solid tiles are found on the bottom (left and right), means we are on ground
+                // dont apply gravity and get out of the function, we dont need to check anything the floor again or the ceiling
+                if(World.Instance.GetTile(left, bottom).collision > TileCollision.none &&
+                    World.Instance.GetTile(right, bottom).collision > TileCollision.none)
+                {
+                    isOnGround = true;
+                    return;
+                }
+                // if the entity doesnt find a solid tile on the feet (left and right side of the bounding box)
+                // means that is not on ground and can start to apply gravity
+                else 
+                {
+                    isOnGround = false;
+                }
+            }
+
             // if we're going down, check the bottom tiles from left to right
             if (vel.Y > 0)
             {
@@ -248,7 +255,6 @@ namespace PlatformTest
                             isOnGround = true;
                             FloorHit = true;
                             vel.Y = 0;
-                            //break;
                         }
                     }
                     else

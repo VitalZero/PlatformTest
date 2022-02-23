@@ -30,11 +30,11 @@ namespace PlatformTest
         private SpriteEffects flip;
         private AnimationPlayer animPlayer;
         private States currState;
-        private const float jumpHoldTime = 0.4f; //0.25f;
-        private float localHoldTime = 0;
+        private const float jumpHoldTime = 0.30f; 
+        private float jumpTimer = 0;
         public bool Pause { get; set; }
         private const float maxWalkSpeed = 90f;
-        private const float maxRunSpeed = 150;
+        private const float maxRunSpeed = 150f;
         private const float moveXAccel = 3.26f;
         private const float stopAccel = 3.26f;
 
@@ -49,7 +49,8 @@ namespace PlatformTest
             size = new Vector2(16, 31);
             vel = Vector2.Zero;
             dir = 0f;
-            jumpSpeed = -180f; //-220f;
+            jumpSpeed = -220f;
+            gravity = 30f;
             speed = maxRunSpeed;
             aabb = new Rectangle(2, 4, 12, 27);
             origin = new Vector2(size.X / 2, size.Y);
@@ -84,6 +85,7 @@ namespace PlatformTest
         {
             vel.Y = jumpSpeed * elapsed;
             currState = States.jump;
+            jumpTimer = jumpHoldTime;
         }
 
         public override void Hit()
@@ -125,8 +127,8 @@ namespace PlatformTest
                         else if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
                             currState = States.jump;
-                            vel.Y = jumpSpeed * elapsed;
-                            localHoldTime = jumpHoldTime;
+                            //vel.Y = jumpSpeed * elapsed;
+                            jumpTimer = jumpHoldTime;
                             isOnGround = false;
                             break;
                         }
@@ -158,8 +160,8 @@ namespace PlatformTest
                         if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
                             currState = States.jump;
-                            vel.Y = jumpSpeed * elapsed;
-                            localHoldTime = jumpHoldTime;
+                            //vel.Y = jumpSpeed * elapsed;
+                            jumpTimer = jumpHoldTime;
                             isOnGround = false;
                             break;
                         }
@@ -182,28 +184,30 @@ namespace PlatformTest
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
                             vel.X = speed * elapsed;
-                            //flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
                             vel.X = -speed * elapsed;
-                            //flip = SpriteEffects.FlipHorizontally;
                         }
                         if (keyboard.IsKeyDown(Keys.S))
                         {
-                            if (localHoldTime > 0)
+                            if (jumpTimer > 0)
                                 vel.Y = jumpSpeed * elapsed;
                             else
-                                localHoldTime = 0;
+                                jumpTimer = 0;
 
                             if (CeilingHit)
                             {
-                                localHoldTime = 0;
-                                vel.Y = 0;
+                                jumpTimer = 0;
+                                vel.Y = (int)0;
                             }
                         }
+                        else if(!keyboard.IsKeyDown(Keys.S))
+                        {
+                            jumpTimer = 0;
+                        }
 
-                        localHoldTime -= elapsed;
+                        jumpTimer -= elapsed;
 
                         if (isOnGround)
                         {
@@ -216,7 +220,7 @@ namespace PlatformTest
                             else
                             {
                                 currState = States.run;
-                                vel.Y = 0f;
+                                vel.Y = (int)0f;
                                 break;
                             }
                         }
@@ -239,12 +243,10 @@ namespace PlatformTest
                     else if (keyboard.IsKeyDown(Keys.Right))
                     {
                         vel.X = speed * elapsed;
-                        //flip = SpriteEffects.None;
                     }
                     else if (keyboard.IsKeyDown(Keys.Left))
                     {
                         vel.X = -speed * elapsed;
-                        //flip = SpriteEffects.FlipHorizontally;
                     }
 
                     if (isOnGround)
@@ -264,15 +266,12 @@ namespace PlatformTest
                     break;
             }
 
-            ApplyGravity();
-
             animPlayer.Update(gameTime);
 
             LateUpdate(gameTime);
 
             if (CeilingHit)
             {
-                //Pause = true;
                 Point tilePos = GetContactTile();
                 Tile t = World.Instance.GetTile(tilePos.X, tilePos.Y);
 
@@ -290,6 +289,7 @@ namespace PlatformTest
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
                 flip);
+
 
             base.Draw(spriteBatch);
         }

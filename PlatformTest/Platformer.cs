@@ -44,7 +44,7 @@ namespace PlatformTest
 
             EntityManager.Add(Player.Instance);
             EntityManager.Add(new Goomba(new Vector2(13 * 16, 12 * 16)));
-            EntityManager.Add(new KoopaTrooper(new Vector2(31 * 16, 12 * 16)));
+            EntityManager.Add(new KoopaTrooper(new Vector2(31 * 16, 11 * 16)));
             EntityManager.Add(new Goomba(new Vector2(42 * 16, 12 * 16)));
             EntityManager.Add(new Goomba(new Vector2(43 * 16 + 8, 12 * 16)));
             EntityManager.Add(new Goomba(new Vector2(75 * 16, 3 * 16)));
@@ -99,7 +99,8 @@ namespace PlatformTest
 
             spriteBatch.Begin();
             spriteBatch.DrawString(ResourceManager.Arial, "FPS:" + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);
-            spriteBatch.DrawString(ResourceManager.Arial, "vel X:" + Player.Instance.Vel.X.ToString("00.0000"), new Vector2(20, 50), Color.Red);
+            spriteBatch.DrawString(ResourceManager.Arial, "vel X:" + Player.Instance.Vel.X.ToString("00.0000"), new Vector2(20, 40), Color.Red);
+            spriteBatch.DrawString(ResourceManager.Arial, "vel Y:" + Player.Instance.Vel.Y.ToString("00.0000"), new Vector2(20, 60), Color.Red);
             spriteBatch.End();
 
 
