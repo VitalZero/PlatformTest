@@ -214,7 +214,7 @@ namespace PlatformTest
             {
                 // if solid tiles are found on the bottom (left and right), means we are on ground
                 // dont apply gravity and get out of the function, we dont need to check anything the floor again or the ceiling
-                if(World.Instance.GetTile(left, bottom).collision > TileCollision.none &&
+                if(World.Instance.GetTile(left, bottom).collision > TileCollision.none ||
                     World.Instance.GetTile(right, bottom).collision > TileCollision.none)
                 {
                     isOnGround = true;

@@ -4,6 +4,7 @@ using System.Text.Json;
 using System;
 using System.IO;
 using VZTMXMapLoader;
+using System.Collections.Generic;
 
 namespace PlatformTest
 {
@@ -120,7 +121,9 @@ namespace PlatformTest
                 {
                     map[tileIndexRestore].id = 8;
                     map[tileIndexRestore].collision = TileCollision.solid;
+                    EntityManager.Add(new Mushroom(new Vector2(bouncingTile.X, bouncingTile.Y)));
                     bouncingTile = null;
+
                 }
             }
         }

@@ -10,62 +10,40 @@ namespace PlatformTest
 
     public class PowerUp : Entity
     {
-        PowerupType type;
-        Rectangle spriteArea;
-        float riseTime = 1f;
-        float riseStart = 0;
+        protected PowerupType type;
+        protected Rectangle spriteArea;
+        protected float riseTime = 1f;
+        protected float riseStart = 0;
+        protected float startY;
+        protected int yOffset;
 
         public PowerUp(PowerupType type, Vector2 pos)
         {
             this.type = type;
             spriteArea = new Rectangle();
             this.pos = pos;
+            pos.X = (int)pos.X;
+            pos.Y = (int)pos.Y;
             CanCollide = false;
             CanKill = false;
-            dir = 1f;
-            speed = 30f;
         }
 
         public override void Init()
         {
             texture = ResourceManager.Items;
             spriteArea = new Rectangle((int)type * 16, 0, 16, 16);
-            aabb = new Rectangle(0, 0, 16, 16);
+            aabb = new Rectangle(3, 4, 10, 11);
         }
+
+        public virtual void Collected() { }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            spriteArea.Height = (int)startY;
+
             spriteBatch.Draw(texture, 
-                new Vector2((int)pos.X -(int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
+                new Vector2((int)pos.X -(int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset - yOffset),
                 spriteArea, Color.White);
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            if(type != PowerupType.coin)
-            {
-                if(riseStart <= riseTime)
-                {
-                    riseStart += (float)gameTime.ElapsedGameTime.TotalSeconds;
-                    pos.Y -= 16f * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                }
-                else
-                {
-                    vel.X = speed * elapsed * dir;
-                    CanCollide = true;
-
-                    if (RightWallHit)
-                    {
-                        dir = -1f;
-                    }
-                    else if (LeftWallHit)
-                    {
-                        dir = 1f;
-                    }
-
-                    LateUpdate(gameTime);
-                }
-            }
         }
     }
 }

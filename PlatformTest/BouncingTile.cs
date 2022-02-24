@@ -54,6 +54,7 @@ namespace PlatformTest
 
                 if (Y >= yOrigin)
                 {
+                    Y = yOrigin;
                     Active = false;
                     Done = true;
                 }
