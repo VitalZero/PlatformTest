@@ -6,16 +6,16 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public enum ItemType { oneup, coin, mushroom, flower, star }
+    public enum PowerupType { oneup, coin, mushroom, flower, star }
 
-    public class Item : Entity
+    public class PowerUp : Entity
     {
-        ItemType type;
+        PowerupType type;
         Rectangle spriteArea;
         float riseTime = 1f;
         float riseStart = 0;
 
-        public Item(ItemType type, Vector2 pos)
+        public PowerUp(PowerupType type, Vector2 pos)
         {
             this.type = type;
             spriteArea = new Rectangle();
@@ -23,6 +23,7 @@ namespace PlatformTest
             CanCollide = false;
             CanKill = false;
             dir = 1f;
+            speed = 30f;
         }
 
         public override void Init()
@@ -41,12 +42,12 @@ namespace PlatformTest
 
         public override void Update(GameTime gameTime)
         {
-            if(type != ItemType.coin)
+            if(type != PowerupType.coin)
             {
                 if(riseStart <= riseTime)
                 {
-                    riseStart += elapsed;
-                    pos.Y -= 20f * elapsed;
+                    riseStart += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    pos.Y -= 16f * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 }
                 else
                 {
@@ -61,10 +62,10 @@ namespace PlatformTest
                     {
                         dir = 1f;
                     }
+
+                    LateUpdate(gameTime);
                 }
             }
-
-            LateUpdate(gameTime);
         }
     }
 }

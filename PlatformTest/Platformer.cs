@@ -42,6 +42,19 @@ namespace PlatformTest
 
             globalTransformation = Matrix.CreateScale((float)pixels);
 
+            base.Initialize();
+        }
+
+        protected override void LoadContent()
+        {
+            ResourceManager.Load(Content);
+
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            world.Load();
+            font = ResourceManager.Arial;
+            // TODO: use this.Content to load your game content here
+
             EntityManager.Add(Player.Instance);
             EntityManager.Add(new Goomba(new Vector2(13 * 16, 12 * 16)));
             EntityManager.Add(new KoopaTrooper(new Vector2(31 * 16, 11 * 16)));
@@ -53,20 +66,7 @@ namespace PlatformTest
             EntityManager.Add(new Goomba(new Vector2(90 * 16 + 8, 12 * 16)));
             EntityManager.Add(new KoopaTrooper(new Vector2(98 * 16, 11 * 16)));
 
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-            ResourceManager.Load(Content);
-
-            EntityManager.Init();
-
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            world.Load();
-            font = ResourceManager.Arial;
-            // TODO: use this.Content to load your game content here
+            //EntityManager.Init();
         }
 
         protected override void Update(GameTime gameTime)

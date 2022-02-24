@@ -281,7 +281,7 @@ namespace PlatformTest
                 else if (t.collision == TileCollision.item)
                 {
                     World.Instance.usedTileItem(tilePos.X, tilePos.Y);
-                    //EntityManager.Add(new Item(ItemType.mushroom, new Vector2(tilePos.X * 16, tilePos.Y * 16)));
+                    EntityManager.Add(new PowerUp(PowerupType.mushroom, new Vector2(tilePos.X * 16, tilePos.Y * 16)));
                 }
             }
 

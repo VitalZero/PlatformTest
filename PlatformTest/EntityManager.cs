@@ -12,6 +12,8 @@ namespace PlatformTest
         static List<Goomba> goombas = new List<Goomba>();
         static List<KoopaTrooper> koopaTroopers = new List<KoopaTrooper>();
         static List<Entity> entities = new List<Entity>();
+        static List<Entity> addedEntities = new List<Entity>();
+        static bool isUpdating;
 
         public static int Count { get { return entities.Count; } }
 
@@ -20,6 +22,19 @@ namespace PlatformTest
 
         public static void Add(Entity entity)
         {
+            if(!isUpdating)
+            {
+                AddEntity(entity);
+            }
+            else
+            {
+                addedEntities.Add(entity);
+            }
+        }
+
+        private static void AddEntity(Entity entity)
+        {
+            entity.Init();
             entities.Add(entity);
 
             if (entity is Goomba)
@@ -43,6 +58,8 @@ namespace PlatformTest
 
         public static void Update(GameTime gameTime)
         {
+            isUpdating = true;
+
             foreach(var entity in entities)
             {
                 entity.Update(gameTime);
@@ -50,6 +67,18 @@ namespace PlatformTest
 
             //HandleCollisions();
             CollideAndResolveBetweenEntities();
+
+            isUpdating = false;
+
+            foreach(var entity in addedEntities)
+            {
+                AddEntity(entity);
+            }
+
+            isUpdating = false;
+
+            addedEntities.Clear();
+
             // clean up after update, remove entities that are not active
             entities = entities.Where(e => e.Active).ToList();
             //goombas = goombas.Where(e => e.Active).ToList();
