@@ -22,6 +22,7 @@ namespace PlatformTest
         public bool Active { get; set; }
         public bool CanCollide { get; set; }
         public bool CanKill { get; set; }
+        public bool Destroyed { get; set; }
         protected float dir;
 
         private Point tileHit;
@@ -36,6 +37,7 @@ namespace PlatformTest
             tileHit = Point.Zero;
             Active = true;
             CanCollide = true;
+            Destroyed = false;
         }
 
         public void Move(float x, float y)
@@ -85,6 +87,7 @@ namespace PlatformTest
         public void Kill()
         {
             Active = false;
+            Destroyed = true;
         }
 
         protected void LateUpdate(GameTime gameTime)

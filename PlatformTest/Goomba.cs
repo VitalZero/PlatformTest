@@ -7,7 +7,7 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public class Goomba : Entity
+    public class Goomba : Enemy
     {
         private enum States { wandering, stomped }
 
@@ -72,8 +72,11 @@ namespace PlatformTest
 
                         animPlayer.PlayAnimation("stomped");
 
-                        if(deadTimeAcc >= deadTime)
+                        if (deadTimeAcc >= deadTime)
+                        {
                             Active = false;
+                            Destroyed = true;
+                        }
                     }
                     break;
             }

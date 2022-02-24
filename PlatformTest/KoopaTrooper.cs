@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public class KoopaTrooper : Entity
+    public class KoopaTrooper : Enemy
     {
         private enum States { wandering, stomped, rebounding }
 

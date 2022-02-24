@@ -35,7 +35,11 @@ namespace PlatformTest
             aabb = new Rectangle(3, 4, 10, 11);
         }
 
-        public virtual void Collected() { }
+        public virtual void Collected() 
+        {
+            Destroyed = true;
+            Active = false;
+        }
 
         public override void Draw(SpriteBatch spriteBatch)
         {

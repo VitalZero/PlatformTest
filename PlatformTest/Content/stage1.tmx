@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="2021.03.23" orientation="orthogonal" renderorder="right-down" width="200" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="23">
+<map version="1.5" tiledversion="2021.03.23" orientation="orthogonal" renderorder="right-down" width="200" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="24">
  <editorsettings>
   <export target="stage1.yy" format="yy"/>
  </editorsettings>
@@ -33,10 +33,10 @@
   <object id="8" type="1" x="233" y="150.5">
    <point/>
   </object>
-  <object id="9" type="3" x="200" y="150.5">
+  <object id="9" type="2" x="200" y="150.5">
    <point/>
   </object>
-  <object id="11" type="5" x="887" y="149">
+  <object id="11" type="0" x="887" y="149">
    <point/>
   </object>
   <object id="12" type="3" x="1112.5" y="150.5">
@@ -45,10 +45,10 @@
   <object id="13" type="1" x="1367.5" y="85.5">
    <point/>
   </object>
-  <object id="14" type="2" x="1367.5" y="148.5">
+  <object id="14" type="1" x="1367.5" y="148.5">
    <point/>
   </object>
-  <object id="15" type="5" x="1480.5" y="148.5">
+  <object id="15" type="4" x="1480.5" y="148.5">
    <point/>
   </object>
   <object id="16" type="1" x="1560" y="149.5">

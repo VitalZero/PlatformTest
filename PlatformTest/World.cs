@@ -19,6 +19,7 @@ namespace PlatformTest
         private string textureName;
         BouncingTile bouncingTile;
         private int tileIndexRestore = -1;
+        private Dictionary<int, PowerUp> powerUps;
 
         private static World instance = null;
         public static World Instance
@@ -32,6 +33,7 @@ namespace PlatformTest
         public World()
         {
             instance = this;
+            powerUps = new Dictionary<int, PowerUp>();
         }
 
         public void Initialize(string directory)
@@ -47,6 +49,35 @@ namespace PlatformTest
             mapWidth = tiledMap.width;
             mapHeight = tiledMap.height;
             tileSize = tiledMap.tilewidth;
+
+            foreach(var p in tiledMap.objectgroup.objects)
+            {
+                int xTile = (int)(p.x / 16);
+                int yTile = (int)(p.y / 16);
+
+                int index = xTile + mapWidth * yTile;
+                
+                if(p.type == (int)PowerupType.mushroom)
+                {
+                    powerUps.Add(index, new Mushroom(new Vector2(xTile * 16, yTile * 16)));
+                }
+                else if (p.type == (int)PowerupType.flower)
+                {
+                    powerUps.Add(index, new Flower(new Vector2(xTile * 16, yTile * 16)));
+                }
+                else if (p.type == (int)PowerupType.star)
+                {
+                    powerUps.Add(index, new Star(new Vector2(xTile * 16, yTile * 16)));
+                }
+                else if (p.type == (int)PowerupType.oneup)
+                {
+                    powerUps.Add(index, new Mushroom(new Vector2(xTile * 16, yTile * 16)));
+                }
+                else if (p.type == (int)PowerupType.coin)
+                {
+                    powerUps.Add(index, new Mushroom(new Vector2(xTile * 16, yTile * 16)));
+                }
+            }
 
             try
             {
@@ -121,7 +152,9 @@ namespace PlatformTest
                 {
                     map[tileIndexRestore].id = 8;
                     map[tileIndexRestore].collision = TileCollision.solid;
-                    EntityManager.Add(new Mushroom(new Vector2(bouncingTile.X, bouncingTile.Y)));
+                    if (powerUps.ContainsKey(tileIndexRestore))
+                        EntityManager.Add(powerUps[tileIndexRestore]);
+                    //EntityManager.Add(new Mushroom(new Vector2(bouncingTile.X, bouncingTile.Y)));
                     bouncingTile = null;
 
                 }
@@ -183,16 +216,33 @@ namespace PlatformTest
             Tile t = GetTile(x, y);
             tileIndexRestore = x + mapWidth * y;
             bouncingTile = new BouncingTile(t);
-            RemoveTile(x, y);
+            DestroyTile(x, y);
             //map[x + mapWidth * y].id = 8;
             //map[x + mapWidth * y].collision = TileCollision.solid;
         }
 
-        public void RemoveTile(int x, int y)
+        private void DestroyTile(int x, int y)
         {
             map[x + mapWidth * y] = new Tile();
             map[x + mapWidth * y].X = x;
             map[x + mapWidth * y].Y = y;
+        }
+
+        public void RemoveTile(int x, int y)
+        {
+            int tmpIndex = x + mapWidth * y;
+
+            if(powerUps.ContainsKey(tmpIndex))
+            {
+                Tile t = GetTile(x, y);
+                tileIndexRestore = tmpIndex;
+                bouncingTile = new BouncingTile(t);
+                DestroyTile(x, y);
+            }
+            else
+            {
+                DestroyTile(x, y);
+            }
         }
 
         public Rectangle GetBounds(int x, int y)

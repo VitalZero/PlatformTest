@@ -9,16 +9,13 @@ namespace PlatformTest
 {
     public class EntityManager
     {
-        static List<Goomba> goombas = new List<Goomba>();
-        static List<KoopaTrooper> koopaTroopers = new List<KoopaTrooper>();
+        static List<Enemy> enemies = new List<Enemy>();
+        static List<PowerUp> powerUps = new List<PowerUp>();
         static List<Entity> entities = new List<Entity>();
         static List<Entity> addedEntities = new List<Entity>();
         static bool isUpdating;
 
         public static int Count { get { return entities.Count; } }
-
-        private static Entity currentEntity;
-        private static bool canAdd;
 
         public static void Add(Entity entity)
         {
@@ -37,10 +34,10 @@ namespace PlatformTest
             entity.Init();
             entities.Add(entity);
 
-            if (entity is Goomba)
-                goombas.Add(currentEntity as Goomba);
-            else if (entity is KoopaTrooper)
-                koopaTroopers.Add(currentEntity as KoopaTrooper);
+            if (entity is Enemy)
+                enemies.Add(entity as Enemy);
+            else if (entity is PowerUp)
+                powerUps.Add(entity as PowerUp);
         }
 
         public static void Init()
@@ -53,7 +50,9 @@ namespace PlatformTest
 
         public static void RemoveInactiveEntities()
         {
-            entities = entities.Where(e => e.Active).ToList();
+            entities = entities.Where(e => !e.Destroyed).ToList();
+            enemies = enemies.Where(e => !e.Destroyed).ToList();
+            powerUps = powerUps.Where(e => !e.Destroyed).ToList();
         }
 
         public static void Update(GameTime gameTime)
@@ -77,12 +76,12 @@ namespace PlatformTest
 
             isUpdating = false;
 
+            RemoveInactiveEntities();
+
             addedEntities.Clear();
 
             // clean up after update, remove entities that are not active
-            entities = entities.Where(e => e.Active).ToList();
-            //goombas = goombas.Where(e => e.Active).ToList();
-            //koopaTroopers = koopaTroopers.Where(e => e.Active).ToList();
+
         }
 
         public static void Draw(SpriteBatch spriteBatch)
@@ -103,7 +102,8 @@ namespace PlatformTest
 
         private static void CollideAndResolveBetweenEntities()
         {
-            foreach(var e in entities)
+            // enemies collision
+            foreach(var e in enemies)
             {
                 if (Player.Instance.Equals(e))
                     continue;
@@ -157,94 +157,109 @@ namespace PlatformTest
                     }
                 }
             }
-        }
 
-        private static void HandleCollisions()
-        {
-            for(int i = 0; i < goombas.Count; ++i)
+            // powerups collision
+            foreach (var p in powerUps)
             {
-                if (goombas[i].CanCollide && Player.Instance.CanCollide)
+                Rectangle penetration;
+                Rectangle pAABB = Player.Instance.GetAABB();
+                Rectangle tAABB = p.GetAABB();
+
+                Rectangle.Intersect(ref pAABB, ref tAABB, out penetration);
+
+                if (penetration != Rectangle.Empty)
                 {
-                    Rectangle penetration;
-                    Rectangle pAABB = Player.Instance.GetAABB();
-                    Rectangle gAABB = goombas[i].GetAABB();
-
-                    Rectangle.Intersect(ref pAABB, ref gAABB, out penetration);
-
-                    if (penetration != Rectangle.Empty)
-                    {
-                        // if can kill, generate a hit only if player lands on top of the goomba, adjust player position and make it bounce
-                        // otherwise, kill the player
-                        if (pAABB.Bottom <= gAABB.Center.Y)
-                        {
-                            goombas[i].Hit();
-                            Player.Instance.Move(0, -penetration.Width);
-                            Player.Instance.Bounce();
-                            //return;
-                        }
-                        else
-                        {
-                            if(goombas[i].CanKill)
-                                Player.Instance.Hit();
-
-                            return;
-                        }
-                    }
+                    p.Collected();
                 }
-
-            }
-
-            for (int i = 0; i < koopaTroopers.Count; ++i)
-            {
-                if (koopaTroopers[i].CanCollide && Player.Instance.CanCollide)
-                {
-                    Rectangle penetration;
-                    Rectangle pAABB = Player.Instance.GetAABB();
-                    Rectangle tAABB = koopaTroopers[i].GetAABB();
-
-                    Rectangle.Intersect(ref pAABB, ref tAABB, out penetration);
-
-                    if (penetration != Rectangle.Empty)
-                    {
-                        // if cant kill (ie stomped), generate a hit as soon as player touches the koopatropper
-                        // adjust koopatrooper position and velocity based on penetration, player position
-                        if (!koopaTroopers[i].CanKill)
-                        {
-                            if (pAABB.Left > tAABB.Left)
-                            {
-                                koopaTroopers[i].Move(-penetration.Width, 0);
-                                koopaTroopers[i].SetDir(-1);
-                            }
-                            else if (pAABB.Right < tAABB.Right)
-                            {
-                                koopaTroopers[i].Move(penetration.Width, 0);
-                                koopaTroopers[i].SetDir(1);
-                            }
-
-                            koopaTroopers[i].Hit();
-                        }
-                        else
-                        {
-                            // if can kill, generate a hit only if player lands on top of the koopatrooper
-                            // adjust player position and make it bounce
-                            // otherwise, kill the player (including when the shell is rebounding)
-                            if (pAABB.Bottom <= tAABB.Center.Y)
-                            {
-                                koopaTroopers[i].Hit();
-                                Player.Instance.Move(0, -penetration.Height);
-                                Player.Instance.Bounce();
-                                //return;
-                            }
-                            else
-                            {
-                                Player.Instance.Hit();
-                                return;
-                            }
-                        }
-                    }
-                }
-
             }
         }
+
+        //private static void HandleCollisions()
+        //{
+        //    for(int i = 0; i < goombas.Count; ++i)
+        //    {
+        //        if (goombas[i].CanCollide && Player.Instance.CanCollide)
+        //        {
+        //            Rectangle penetration;
+        //            Rectangle pAABB = Player.Instance.GetAABB();
+        //            Rectangle gAABB = goombas[i].GetAABB();
+
+        //            Rectangle.Intersect(ref pAABB, ref gAABB, out penetration);
+
+        //            if (penetration != Rectangle.Empty)
+        //            {
+        //                // if can kill, generate a hit only if player lands on top of the goomba, adjust player position and make it bounce
+        //                // otherwise, kill the player
+        //                if (pAABB.Bottom <= gAABB.Center.Y)
+        //                {
+        //                    goombas[i].Hit();
+        //                    Player.Instance.Move(0, -penetration.Width);
+        //                    Player.Instance.Bounce();
+        //                    //return;
+        //                }
+        //                else
+        //                {
+        //                    if(goombas[i].CanKill)
+        //                        Player.Instance.Hit();
+
+        //                    return;
+        //                }
+        //            }
+        //        }
+
+        //    }
+
+        //    for (int i = 0; i < koopaTroopers.Count; ++i)
+        //    {
+        //        if (koopaTroopers[i].CanCollide && Player.Instance.CanCollide)
+        //        {
+        //            Rectangle penetration;
+        //            Rectangle pAABB = Player.Instance.GetAABB();
+        //            Rectangle tAABB = koopaTroopers[i].GetAABB();
+
+        //            Rectangle.Intersect(ref pAABB, ref tAABB, out penetration);
+
+        //            if (penetration != Rectangle.Empty)
+        //            {
+        //                // if cant kill (ie stomped), generate a hit as soon as player touches the koopatropper
+        //                // adjust koopatrooper position and velocity based on penetration, player position
+        //                if (!koopaTroopers[i].CanKill)
+        //                {
+        //                    if (pAABB.Left > tAABB.Left)
+        //                    {
+        //                        koopaTroopers[i].Move(-penetration.Width, 0);
+        //                        koopaTroopers[i].SetDir(-1);
+        //                    }
+        //                    else if (pAABB.Right < tAABB.Right)
+        //                    {
+        //                        koopaTroopers[i].Move(penetration.Width, 0);
+        //                        koopaTroopers[i].SetDir(1);
+        //                    }
+
+        //                    koopaTroopers[i].Hit();
+        //                }
+        //                else
+        //                {
+        //                    // if can kill, generate a hit only if player lands on top of the koopatrooper
+        //                    // adjust player position and make it bounce
+        //                    // otherwise, kill the player (including when the shell is rebounding)
+        //                    if (pAABB.Bottom <= tAABB.Center.Y)
+        //                    {
+        //                        koopaTroopers[i].Hit();
+        //                        Player.Instance.Move(0, -penetration.Height);
+        //                        Player.Instance.Bounce();
+        //                        //return;
+        //                    }
+        //                    else
+        //                    {
+        //                        Player.Instance.Hit();
+        //                        return;
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //    }
+        //}
     }
 }
