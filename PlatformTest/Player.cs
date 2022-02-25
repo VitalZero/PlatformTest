@@ -35,9 +35,9 @@ namespace PlatformTest
         private States currState;
         public bool Pause { get; set; }
         private const float maxWalkSpeed = 90f;
-        private const float maxRunSpeed = 150f;
-        private const float moveXAccel = 3.26f;
-        private const float stopAccel = 3.26f;
+        private const float maxRunSpeed = 164f;
+        private const float moveXAccel = 4f;
+        private const float stopAccel = 5f;
         public Vector2 PrevPos { get; private set; }
 
         //for debug purposes
@@ -51,9 +51,9 @@ namespace PlatformTest
             size = new Vector2(16, 31);
             vel = Vector2.Zero;
             dir = 0f;
-            jumpSpeed = -220f;
-            gravity = 30f;
-            speed = maxRunSpeed;
+            jumpSpeed = -200f;
+            gravity = 20f;
+            speed = maxWalkSpeed;
             aabb = new Rectangle(2, 4, 12, 27);
             origin = new Vector2(size.X / 2, size.Y);
             animPlayer = new AnimationPlayer();
@@ -104,7 +104,7 @@ namespace PlatformTest
             KeyboardState oldState = keyboard;
             keyboard = Keyboard.GetState();
 
-            if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A))
+            if (keyboard.IsKeyDown(Keys.W) && oldState.IsKeyUp(Keys.W))
                 Pause = !Pause;
 
             if (Pause)
@@ -116,7 +116,29 @@ namespace PlatformTest
                     {
                         animPlayer.PlayAnimation("idle");
 
-                        vel.X = 0;
+                        if (keyboard.IsKeyDown(Keys.A))
+                        {
+                            speed = maxRunSpeed;
+                        }
+                        else if (keyboard.IsKeyUp(Keys.A))
+                        {
+                            speed = maxWalkSpeed;
+                        }
+
+                        if (vel.X < 0)
+                        {
+                            vel.X += stopAccel * elapsed;
+                            if (vel.X >= 0)
+                                vel.X = (int)0f;
+                        }
+                        else if (vel.X > 0)
+                        {
+                            vel.X += -stopAccel * elapsed;
+                            if (vel.X <= 0)
+                                vel.X = (int)0f;
+                        }
+
+                        //vel.X = 0;
 
                         if (!isOnGround)
                         {
@@ -144,6 +166,15 @@ namespace PlatformTest
                     {
                         animPlayer.PlayAnimation("running");
 
+                        if(keyboard.IsKeyDown(Keys.A))
+                        {
+                            speed = maxRunSpeed;
+                        }
+                        else if(keyboard.IsKeyUp(Keys.A))
+                        {
+                            speed = maxWalkSpeed;
+                        }
+
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
                             currState = States.stand;
@@ -151,13 +182,15 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X = speed * elapsed;
+                            vel.X += moveXAccel * elapsed;
+                            //vel.X = speed * elapsed;
 
                             flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = -speed * elapsed;
+                            vel.X += -moveXAccel * elapsed;
+                            //vel.X = -speed * elapsed;
 
                             flip = SpriteEffects.FlipHorizontally;
                         }
@@ -166,7 +199,10 @@ namespace PlatformTest
                         {
                             currState = States.jump;
                             //vel.Y = jumpSpeed * elapsed;
-                            jumpTimer = jumpHoldTime; 
+                            if (speed == maxRunSpeed )
+                                jumpTimer = .40f;
+                            else
+                                jumpTimer = jumpHoldTime; 
                             isOnGround = false;
                             break;
                         }
@@ -184,15 +220,30 @@ namespace PlatformTest
 
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = 0;
+                            if (vel.X < 0)
+                            {
+                                vel.X += stopAccel * elapsed;
+                                if (vel.X >= 0)
+                                    vel.X = (int)0f;
+                            }
+                            else if (vel.X > 0)
+                            {
+                                vel.X += -stopAccel * elapsed;
+                                if (vel.X <= 0)
+                                    vel.X = (int)0f;
+                            }
+
+                            //vel.X = 0;
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X = speed * elapsed;
+                            vel.X += moveXAccel * elapsed;
+                            //vel.X = speed * elapsed;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = -speed * elapsed;
+                            vel.X += -moveXAccel * elapsed;
+                            //vel.X = -speed * elapsed;
                         }
                         if (keyboard.IsKeyDown(Keys.S))
                         {
@@ -219,7 +270,8 @@ namespace PlatformTest
                             if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                             {
                                 currState = States.stand;
-                                vel = Vector2.Zero;
+                                //vel = Vector2.Zero;
+                                vel.Y = (int)0f;
                                 break;
                             }
                             else
@@ -243,15 +295,30 @@ namespace PlatformTest
                     //animPlayer.PlayAnimation(fall);
                     if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                     {
-                        vel.X = 0;
+                        if (vel.X < 0)
+                        {
+                            vel.X += stopAccel * elapsed;
+                            if (vel.X >= 0)
+                                vel.X = (int)0f;
+                        }
+                        else if (vel.X > 0)
+                        {
+                            vel.X += -stopAccel * elapsed;
+                            if (vel.X <= 0)
+                                vel.X = (int)0f;
+                        }
+
+                        //vel.X = 0;
                     }
                     else if (keyboard.IsKeyDown(Keys.Right))
                     {
-                        vel.X = speed * elapsed;
+                        vel.X += moveXAccel * elapsed;
+                        //vel.X = speed * elapsed;
                     }
                     else if (keyboard.IsKeyDown(Keys.Left))
                     {
-                        vel.X = -speed * elapsed;
+                        vel.X += -moveXAccel * elapsed;
+                        //vel.X = -speed * elapsed;
                     }
 
                     if (isOnGround)
@@ -259,21 +326,28 @@ namespace PlatformTest
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
                             currState = States.stand;
-                            vel = Vector2.Zero;
+                            //vel = Vector2.Zero;
+                            vel.Y = (int)0f;
                         }
                         else
                         {
                             currState = States.run;
-                            vel.Y = 0f;
+                            vel.Y = (int)0f;
                         }
                     }
 
                     break;
             }
 
+            if (RightWallHit || LeftWallHit)
+                speed = maxWalkSpeed;
+
+            vel.X = Math.Clamp(vel.X, -speed * elapsed, speed * elapsed);
+
             animPlayer.Update(gameTime);
 
             LateUpdate(gameTime);
+
 
             if (CeilingHit)
             {
