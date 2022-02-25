@@ -5,15 +5,13 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public class Star : PowerUp
+    public class OneUp : PowerUp
     {
-        public float bounceSpeed = -400f;
-        public Star(Vector2 pos)
-            : base(PowerupType.star, pos)
+        public OneUp(Vector2 pos)
+                    : base(PowerupType.oneup, pos)
         {
             dir = 1f;
-            speed = 80f;
-            gravity = 16f;
+            speed = 30f;
         }
 
         public override void Update(GameTime gameTime)
@@ -29,13 +27,6 @@ namespace PlatformTest
             {
                 yOffset = 0;
                 vel.X = speed * elapsed * dir;
-
-                if(isOnGround)
-                {
-                    vel.Y = bounceSpeed * elapsed;
-                    isOnGround = false;
-                }
-
                 CanCollide = true;
 
                 if (RightWallHit)

@@ -25,7 +25,6 @@ namespace PlatformTest
             pos.X = (int)pos.X;
             pos.Y = (int)pos.Y;
             CanCollide = false;
-            CanKill = false;
         }
 
         public override void Init()

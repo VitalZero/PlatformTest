@@ -33,9 +33,9 @@ namespace PlatformTest
         {
             texture = ResourceManager.Turtle;
 
-            animPlayer.Add("walking", new Animation(texture, 0.2f, true, 16, 2, 0, 0));
-            animPlayer.Add("stomped", new Animation(texture, 1.5f, false, 16, 1, 32, 0));
-            animPlayer.Add("awaking", new Animation(texture, 0.25f, true, 16, 2, 32, 0));
+            animPlayer.Add("walking", new Animation(texture, 0.2f, true, 16, 24, 2, 0, 0));
+            animPlayer.Add("stomped", new Animation(texture, 1.5f, false, 16, 24, 1, 32, 0));
+            animPlayer.Add("awaking", new Animation(texture, 0.25f, true, 16, 24, 2, 32, 0));
             flip = SpriteEffects.None;
             CanKill = true;
         }

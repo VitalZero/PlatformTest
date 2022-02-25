@@ -71,11 +71,11 @@ namespace PlatformTest
                 }
                 else if (p.type == (int)PowerupType.oneup)
                 {
-                    powerUps.Add(index, new Mushroom(new Vector2(xTile * 16, yTile * 16)));
+                    powerUps.Add(index, new OneUp(new Vector2(xTile * 16, yTile * 16)));
                 }
                 else if (p.type == (int)PowerupType.coin)
                 {
-                    powerUps.Add(index, new Mushroom(new Vector2(xTile * 16, yTile * 16)));
+                    powerUps.Add(index, new CoinBox(new Vector2(xTile * 16, yTile * 16)));
                 }
             }
 

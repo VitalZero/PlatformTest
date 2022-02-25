@@ -14,6 +14,7 @@ namespace PlatformTest
         public static Texture2D Pixel { get; private set; }
         public static Texture2D Turtle { get; private set; }
         public static Texture2D Items { get; private set; }
+        public static Texture2D MiscSprites { get; private set; }
 
         public static SpriteFont Arial { get; private set; }
 
@@ -25,6 +26,7 @@ namespace PlatformTest
             Pixel = content.Load<Texture2D>("pixel");
             Turtle = content.Load<Texture2D>("turtle");
             Items = content.Load<Texture2D>("marioitems");
+            MiscSprites = content.Load<Texture2D>("marioeffects");
 
             Arial = content.Load<SpriteFont>("Arial");
         }

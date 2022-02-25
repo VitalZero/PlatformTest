@@ -10,7 +10,6 @@ namespace PlatformTest
     public class Entity : GameObject
     {
         protected Vector2 vel;
-        protected Vector2 prevPos;
         protected float speed;
         protected float gravity = 30f;
         protected bool isOnGround;
@@ -21,14 +20,12 @@ namespace PlatformTest
         protected bool CeilingHit;
         public bool Active { get; set; }
         public bool CanCollide { get; set; }
-        public bool CanKill { get; set; }
         public bool Destroyed { get; set; }
         protected float dir;
 
         private Point tileHit;
 
         public Vector2 Pos { get { return pos; } }
-        public Vector2 PrevPos { get { return prevPos; } }
 
         public Entity()
         {
@@ -116,8 +113,6 @@ namespace PlatformTest
 
         private void Physics()
         {
-            prevPos = pos;
-
             if (!isOnGround)
                 ApplyGravity();
 

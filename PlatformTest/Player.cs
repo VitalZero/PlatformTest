@@ -38,6 +38,7 @@ namespace PlatformTest
         private const float maxRunSpeed = 150f;
         private const float moveXAccel = 3.26f;
         private const float stopAccel = 3.26f;
+        public Vector2 PrevPos { get; private set; }
 
         //for debug purposes
         List<string> playerStates = new List<string>();
@@ -74,10 +75,10 @@ namespace PlatformTest
         {
             texture = ResourceManager.Player;
 
-            animPlayer.Add("idle", new Animation(texture, 1f, true, 16, 1, 0, 0));
-            animPlayer.Add("running", new Animation(texture, .04f, true, 16, 4, 16, 0));
-            animPlayer.Add("jumping", new Animation(texture, .1f, true, 16, 1, 16 * 6, 0));
-            animPlayer.Add("falling", new Animation(texture, 1f, true, 16, 1, 16 * 5, 0));
+            animPlayer.Add("idle", new Animation(texture, 1f, true, 16, 32, 1, 0, 0));
+            animPlayer.Add("running", new Animation(texture, .04f, true, 16, 32, 4, 16, 0));
+            animPlayer.Add("jumping", new Animation(texture, .1f, true, 16, 32, 1, 16 * 6, 0));
+            animPlayer.Add("falling", new Animation(texture, 1f, true, 16, 32, 1, 16 * 5, 0));
             animPlayer.PlayAnimation("idle");
             font = ResourceManager.Arial;
         }
@@ -93,10 +94,13 @@ namespace PlatformTest
         {
             CanCollide = false;
             Active = false;
+            Destroyed = true;
         }
 
         public override void Update(GameTime gameTime)
         {
+            PrevPos = pos;
+
             KeyboardState oldState = keyboard;
             keyboard = Keyboard.GetState();
 
@@ -162,7 +166,7 @@ namespace PlatformTest
                         {
                             currState = States.jump;
                             //vel.Y = jumpSpeed * elapsed;
-                            jumpTimer = jumpHoldTime;
+                            jumpTimer = jumpHoldTime; 
                             isOnGround = false;
                             break;
                         }

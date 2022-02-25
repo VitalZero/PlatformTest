@@ -37,8 +37,8 @@ namespace PlatformTest
                 animationEnded = false;
 
                 source = new Rectangle(
-                    (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX, 
-                    0, 
+                    (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX,
+                    animations[currentAnimation].StartFrameY, 
                     animations[currentAnimation].FrameWidth,
                     animations[currentAnimation].FrameHeight);
             }
@@ -96,8 +96,8 @@ namespace PlatformTest
             }
 
             source = new Rectangle(
-                (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX, 
-                0,
+                (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX,
+                animations[currentAnimation].StartFrameY,
                 animations[currentAnimation].FrameWidth,
                 animations[currentAnimation].FrameHeight);
         }
