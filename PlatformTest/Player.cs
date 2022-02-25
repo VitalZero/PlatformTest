@@ -27,7 +27,7 @@ namespace PlatformTest
 
         private Vector2 origin;
         protected float jumpSpeed;
-        private const float jumpHoldTime = 0.30f;
+        private const float jumpHoldTime = 0.25f;
         private float jumpTimer = 0;
         private KeyboardState keyboard;
         private SpriteEffects flip;
@@ -51,7 +51,7 @@ namespace PlatformTest
             size = new Vector2(16, 31);
             vel = Vector2.Zero;
             dir = 0f;
-            jumpSpeed = -200f;
+            jumpSpeed = -225f;
             gravity = 20f;
             speed = maxWalkSpeed;
             aabb = new Rectangle(2, 4, 12, 27);
@@ -199,8 +199,8 @@ namespace PlatformTest
                         {
                             currState = States.jump;
                             //vel.Y = jumpSpeed * elapsed;
-                            if (speed == maxRunSpeed )
-                                jumpTimer = .40f;
+                            if (Math.Abs(vel.X / .0167f) >= 150f )
+                                jumpTimer = .35f;
                             else
                                 jumpTimer = jumpHoldTime; 
                             isOnGround = false;
