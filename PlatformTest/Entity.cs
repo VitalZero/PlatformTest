@@ -116,7 +116,7 @@ namespace PlatformTest
             if (!isOnGround)
                 ApplyGravity();
 
-            vel.Y = MathHelper.Clamp(vel.Y, (-430f * elapsed), (430f * elapsed));
+            vel.Y = MathHelper.Clamp(vel.Y, (-240f * elapsed), (240f * elapsed));
 
             pos.X += vel.X;
             HandlecollisionHorizontal();

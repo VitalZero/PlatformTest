@@ -27,7 +27,7 @@ namespace PlatformTest
 
         private Vector2 origin;
         protected float jumpSpeed;
-        private const float jumpHoldTime = 0.25f;
+        private const float jumpHoldTime = 0.1f;
         private float jumpTimer = 0;
         private KeyboardState keyboard;
         private SpriteEffects flip;
@@ -36,8 +36,8 @@ namespace PlatformTest
         public bool Pause { get; set; }
         private const float maxWalkSpeed = 90f;
         private const float maxRunSpeed = 164f;
-        private const float moveXAccel = 4f;
-        private const float stopAccel = 5f;
+        private const float moveXAccel = 5f;
+        private const float stopAccel = 6f;
         public Vector2 PrevPos { get; private set; }
 
         //for debug purposes
@@ -51,8 +51,8 @@ namespace PlatformTest
             size = new Vector2(16, 31);
             vel = Vector2.Zero;
             dir = 0f;
-            jumpSpeed = -225f;
-            gravity = 20f;
+            jumpSpeed = -240f;
+            gravity = 24f;
             speed = maxWalkSpeed;
             aabb = new Rectangle(2, 4, 12, 27);
             origin = new Vector2(size.X / 2, size.Y);
@@ -198,9 +198,9 @@ namespace PlatformTest
                         if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
                             currState = States.jump;
-                            //vel.Y = jumpSpeed * elapsed;
-                            if (Math.Abs(vel.X / .0167f) >= 150f )
-                                jumpTimer = .35f;
+                            vel.Y = jumpSpeed * elapsed;
+                            if (Math.Abs(vel.X / .0167f) >= 160f )
+                                jumpTimer = .15f;
                             else
                                 jumpTimer = jumpHoldTime; 
                             isOnGround = false;
@@ -247,6 +247,8 @@ namespace PlatformTest
                         }
                         if (keyboard.IsKeyDown(Keys.S))
                         {
+                            gravity = 9.8f;
+
                             if (jumpTimer > 0)
                                 vel.Y = jumpSpeed * elapsed;
                             else
@@ -260,6 +262,7 @@ namespace PlatformTest
                         }
                         else if(!keyboard.IsKeyDown(Keys.S))
                         {
+                            gravity = 24f;
                             jumpTimer = 0;
                         }
 
@@ -292,6 +295,7 @@ namespace PlatformTest
 
                 case States.fall:
                     animPlayer.Freeze();
+                    gravity = 24f;
                     //animPlayer.PlayAnimation(fall);
                     if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                     {
