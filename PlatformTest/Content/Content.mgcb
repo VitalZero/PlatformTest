@@ -20,6 +20,12 @@
 /processorParam:TextureFormat=Compressed
 /build:Arial.spritefont
 
+#begin ColorSwap.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:ColorSwap.fx
+
 #begin goomba.png
 /importer:TextureImporter
 /processor:TextureProcessor

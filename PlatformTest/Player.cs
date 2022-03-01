@@ -40,6 +40,8 @@ namespace PlatformTest
         private const float stopAccel = 6f;
         public Vector2 PrevPos { get; private set; }
 
+        private Effect colorSwap;
+
         //for debug purposes
         List<string> playerStates = new List<string>();
         SpriteFont font;
@@ -74,9 +76,10 @@ namespace PlatformTest
         public override void Init()
         {
             texture = ResourceManager.Player;
+            colorSwap = ResourceManager.ColorSwap;
 
             animPlayer.Add("idle", new Animation(texture, 1f, true, 16, 32, 1, 0, 0));
-            animPlayer.Add("running", new Animation(texture, .04f, true, 16, 32, 4, 16, 0));
+            animPlayer.Add("running", new Animation(texture, .04f, true, 16, 32, 3, 16, 0));
             animPlayer.Add("jumping", new Animation(texture, .1f, true, 16, 32, 1, 16 * 6, 0));
             animPlayer.Add("falling", new Animation(texture, 1f, true, 16, 32, 1, 16 * 5, 0));
             animPlayer.PlayAnimation("idle");

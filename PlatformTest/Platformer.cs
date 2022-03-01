@@ -19,6 +19,7 @@ namespace PlatformTest
         private Matrix globalTransformation;
         private float fps;
         SpriteFont font;
+        public GraphicsDevice gfx { get { return GraphicsDevice; } }
 
         public Platformer()
         {
