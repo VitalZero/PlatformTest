@@ -65,7 +65,7 @@ namespace PlatformTest
             jumpSpeed = (float)Math.Sqrt(2 * gravity * jumpHeight);
             bounceSpeed = (float)Math.Sqrt(2 * gravity * bounceHeight);
 
-            gravity *= 0.0167f; // if I dont do this, doesnt jump
+            //gravity *= 0.0167f; // if I dont do this, doesnt jump
 
             speed = maxWalkSpeed;
             aabb = new Rectangle(2, 4, 12, 27);
@@ -159,12 +159,12 @@ namespace PlatformTest
                         else if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
                             currState = States.jump;
-                            vel.Y = -jumpSpeed * elapsed;  // before
+                            //vel.Y = -jumpSpeed;  // before
                             // blink blinkk
                             // blink blinkk
                             // blink blinkk
                             // blink blinkk
-                            //vel.Y = -gravity * timeToJumpPeak; // your code
+                            vel.Y = -gravity * timeToJumpPeak; // your code
                             jumpTimer = jumpHoldTime;
                             isOnGround = false;
                             break;
@@ -192,13 +192,13 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X = speed * elapsed;
+                            vel.X = speed;
 
                             flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = -speed * elapsed;
+                            vel.X = -speed;
 
                             flip = SpriteEffects.FlipHorizontally;
                         }
@@ -206,7 +206,7 @@ namespace PlatformTest
                         if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
                             currState = States.jump;
-                            vel.Y = -jumpSpeed * elapsed;
+                            vel.Y = -jumpSpeed;
                             //if (Math.Abs(vel.X / .0167f) >= 160f )
                             //    jumpTimer = .15f;
                             //else
@@ -229,7 +229,7 @@ namespace PlatformTest
                         if(bounce)
                         {
                             bounce = false;
-                            vel.Y = -bounceSpeed * elapsed;   
+                            vel.Y = -bounceSpeed;   
                         }
 
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
@@ -238,11 +238,11 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X = speed * elapsed;
+                            vel.X = speed;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = -speed * elapsed;
+                            vel.X = -speed;
                         }
                         //if (keyboard.IsKeyDown(Keys.S))
                         //{
@@ -294,19 +294,18 @@ namespace PlatformTest
 
                 case States.fall:
                     animPlayer.Freeze();
-                    //gravity = 24f;
-                    //animPlayer.PlayAnimation(fall);
+
                     if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                     {
                         vel.X = 0;
                     }
                     else if (keyboard.IsKeyDown(Keys.Right))
                     {
-                        vel.X = speed * elapsed;
+                        vel.X = speed;
                     }
                     else if (keyboard.IsKeyDown(Keys.Left))
                     {
-                        vel.X = -speed * elapsed;
+                        vel.X = -speed;
                     }
 
                     if (isOnGround)

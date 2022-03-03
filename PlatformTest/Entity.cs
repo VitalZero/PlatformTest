@@ -101,7 +101,7 @@ namespace PlatformTest
 
             //vel.Y = MathHelper.Clamp(vel.Y, (-256 * elapsed), (256 * elapsed));
 
-            Physics();
+            Physics(elapsed);
         }
 
         protected Point GetContactTile()
@@ -114,12 +114,12 @@ namespace PlatformTest
             vel.Y += gravity * elapsed;
         }
 
-        private void Physics()
+        private void Physics(float elapsed)
         {
-            pos.X += vel.X;
+            pos.X += vel.X * elapsed;
             HandlecollisionHorizontal();
 
-            pos.Y += vel.Y;
+            pos.Y += vel.Y * elapsed;
             HandlecollisionVertical();
         }
 
