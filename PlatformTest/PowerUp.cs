@@ -42,10 +42,8 @@ namespace PlatformTest
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteArea.Height = (int)startY;
-
             spriteBatch.Draw(texture, 
-                new Vector2((int)pos.X -(int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset - yOffset),
+                new Vector2((int)pos.X -(int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
                 spriteArea, Color.White);
         }
     }

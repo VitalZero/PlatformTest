@@ -63,6 +63,8 @@ namespace PlatformTest
 
         public override void Update(GameTime gameTime)
         {
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             switch (currState)
             {
                 case States.wandering:

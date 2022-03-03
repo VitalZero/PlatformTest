@@ -26,7 +26,8 @@ namespace PlatformTest
         public Vector2 Vel { get { return vel; } }
 
         private Vector2 origin;
-        protected float jumpSpeed;
+
+
         private const float jumpHoldTime = 0.1f;
         private float jumpTimer = 0;
         private KeyboardState keyboard;
@@ -39,8 +40,13 @@ namespace PlatformTest
         private const float moveXAccel = 5f;
         private const float stopAccel = 6f;
         public Vector2 PrevPos { get; private set; }
+        bool bounce;
 
-        private Effect colorSwap;
+        protected float jumpSpeed;
+        protected float bounceSpeed;
+        readonly float timeToJumpPeak = 0.5f;
+        readonly int jumpHeight = (int)(4.2 * 16);
+        readonly int bounceHeight = (int)(2 * 16);
 
         //for debug purposes
         List<string> playerStates = new List<string>();
@@ -53,13 +59,21 @@ namespace PlatformTest
             size = new Vector2(16, 31);
             vel = Vector2.Zero;
             dir = 0f;
-            jumpSpeed = -240f;
-            gravity = 24f;
+            //jumpSpeed = -240f;
+            //gravity = 24f;
+            gravity = 2 * jumpHeight / (float)Math.Pow(timeToJumpPeak, 2);
+            jumpSpeed = (float)Math.Sqrt(2 * gravity * jumpHeight);
+            bounceSpeed = (float)Math.Sqrt(2 * gravity * bounceHeight);
+
+            gravity *= 0.0167f; // if I dont do this, doesnt jump
+
             speed = maxWalkSpeed;
             aabb = new Rectangle(2, 4, 12, 27);
             origin = new Vector2(size.X / 2, size.Y);
             animPlayer = new AnimationPlayer();
             Pause = false;
+
+            bounce = false;
 
             instance = this;
 
@@ -76,7 +90,6 @@ namespace PlatformTest
         public override void Init()
         {
             texture = ResourceManager.Player;
-            colorSwap = ResourceManager.ColorSwap;
 
             animPlayer.Add("idle", new Animation(texture, 1f, true, 16, 32, 1, 0, 0));
             animPlayer.Add("running", new Animation(texture, .04f, true, 16, 32, 3, 16, 0));
@@ -88,7 +101,7 @@ namespace PlatformTest
 
         public void Bounce()
         {
-            vel.Y = jumpSpeed * elapsed;
+            bounce = true;
             currState = States.jump;
             jumpTimer = jumpHoldTime;
         }
@@ -102,6 +115,8 @@ namespace PlatformTest
 
         public override void Update(GameTime gameTime)
         {
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             PrevPos = pos;
 
             KeyboardState oldState = keyboard;
@@ -128,20 +143,7 @@ namespace PlatformTest
                             speed = maxWalkSpeed;
                         }
 
-                        if (vel.X < 0)
-                        {
-                            vel.X += stopAccel * elapsed;
-                            if (vel.X >= 0)
-                                vel.X = (int)0f;
-                        }
-                        else if (vel.X > 0)
-                        {
-                            vel.X += -stopAccel * elapsed;
-                            if (vel.X <= 0)
-                                vel.X = (int)0f;
-                        }
-
-                        //vel.X = 0;
+                        vel.X = 0;
 
                         if (!isOnGround)
                         {
@@ -157,7 +159,12 @@ namespace PlatformTest
                         else if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
                             currState = States.jump;
-                            //vel.Y = jumpSpeed * elapsed;
+                            vel.Y = -jumpSpeed * elapsed;  // before
+                            // blink blinkk
+                            // blink blinkk
+                            // blink blinkk
+                            // blink blinkk
+                            //vel.Y = -gravity * timeToJumpPeak; // your code
                             jumpTimer = jumpHoldTime;
                             isOnGround = false;
                             break;
@@ -185,15 +192,13 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X += moveXAccel * elapsed;
-                            //vel.X = speed * elapsed;
+                            vel.X = speed * elapsed;
 
                             flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X += -moveXAccel * elapsed;
-                            //vel.X = -speed * elapsed;
+                            vel.X = -speed * elapsed;
 
                             flip = SpriteEffects.FlipHorizontally;
                         }
@@ -201,11 +206,11 @@ namespace PlatformTest
                         if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
                             currState = States.jump;
-                            vel.Y = jumpSpeed * elapsed;
-                            if (Math.Abs(vel.X / .0167f) >= 160f )
-                                jumpTimer = .15f;
-                            else
-                                jumpTimer = jumpHoldTime; 
+                            vel.Y = -jumpSpeed * elapsed;
+                            //if (Math.Abs(vel.X / .0167f) >= 160f )
+                            //    jumpTimer = .15f;
+                            //else
+                            //    jumpTimer = jumpHoldTime; 
                             isOnGround = false;
                             break;
                         }
@@ -221,55 +226,46 @@ namespace PlatformTest
                     {
                         animPlayer.PlayAnimation("jumping");
 
+                        if(bounce)
+                        {
+                            bounce = false;
+                            vel.Y = -bounceSpeed * elapsed;   
+                        }
+
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
-                            if (vel.X < 0)
-                            {
-                                vel.X += stopAccel * elapsed;
-                                if (vel.X >= 0)
-                                    vel.X = (int)0f;
-                            }
-                            else if (vel.X > 0)
-                            {
-                                vel.X += -stopAccel * elapsed;
-                                if (vel.X <= 0)
-                                    vel.X = (int)0f;
-                            }
-
-                            //vel.X = 0;
+                            vel.X = 0;
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X += moveXAccel * elapsed;
-                            //vel.X = speed * elapsed;
+                            vel.X = speed * elapsed;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X += -moveXAccel * elapsed;
-                            //vel.X = -speed * elapsed;
+                            vel.X = -speed * elapsed;
                         }
-                        if (keyboard.IsKeyDown(Keys.S))
-                        {
-                            gravity = 9.8f;
+                        //if (keyboard.IsKeyDown(Keys.S))
+                        //{
+                        //    //gravity = 9.8f;
 
-                            if (jumpTimer > 0)
-                                vel.Y = jumpSpeed * elapsed;
-                            else
-                                jumpTimer = 0;
+                        //    //if (jumpTimer > 0)
+                        //    //    vel.Y = -jumpSpeed * elapsed;
+                        //    //else
+                        //    //    jumpTimer = 0;
 
-                            if (CeilingHit)
-                            {
-                                jumpTimer = 0;
-                                vel.Y = (int)0;
-                            }
-                        }
-                        else if(!keyboard.IsKeyDown(Keys.S))
-                        {
-                            gravity = 24f;
-                            jumpTimer = 0;
-                        }
+                        //    //if (CeilingHit)
+                        //    //{
+                        //    //    jumpTimer = 0;
+                        //    //    vel.Y = (int)0;
+                        //    //}
+                        //}
+                        //else if(!keyboard.IsKeyDown(Keys.S))
+                        //{
+                        //    //gravity = 24f;
+                        //    jumpTimer = 0;
+                        //}
 
-                        jumpTimer -= elapsed;
+                        //jumpTimer -= elapsed;
 
                         if (isOnGround)
                         {
@@ -277,13 +273,13 @@ namespace PlatformTest
                             {
                                 currState = States.stand;
                                 //vel = Vector2.Zero;
-                                vel.Y = (int)0f;
+                                //vel.Y = (int)0f;
                                 break;
                             }
                             else
                             {
                                 currState = States.run;
-                                vel.Y = (int)0f;
+                                //vel.Y = (int)0f;
                                 break;
                             }
                         }
@@ -298,34 +294,19 @@ namespace PlatformTest
 
                 case States.fall:
                     animPlayer.Freeze();
-                    gravity = 24f;
+                    //gravity = 24f;
                     //animPlayer.PlayAnimation(fall);
                     if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                     {
-                        if (vel.X < 0)
-                        {
-                            vel.X += stopAccel * elapsed;
-                            if (vel.X >= 0)
-                                vel.X = (int)0f;
-                        }
-                        else if (vel.X > 0)
-                        {
-                            vel.X += -stopAccel * elapsed;
-                            if (vel.X <= 0)
-                                vel.X = (int)0f;
-                        }
-
-                        //vel.X = 0;
+                        vel.X = 0;
                     }
                     else if (keyboard.IsKeyDown(Keys.Right))
                     {
-                        vel.X += moveXAccel * elapsed;
-                        //vel.X = speed * elapsed;
+                        vel.X = speed * elapsed;
                     }
                     else if (keyboard.IsKeyDown(Keys.Left))
                     {
-                        vel.X += -moveXAccel * elapsed;
-                        //vel.X = -speed * elapsed;
+                        vel.X = -speed * elapsed;
                     }
 
                     if (isOnGround)
@@ -334,12 +315,12 @@ namespace PlatformTest
                         {
                             currState = States.stand;
                             //vel = Vector2.Zero;
-                            vel.Y = (int)0f;
+                            //vel.Y = (int)0f;
                         }
                         else
                         {
                             currState = States.run;
-                            vel.Y = (int)0f;
+                            //vel.Y = (int)0f;
                         }
                     }
 
@@ -349,7 +330,7 @@ namespace PlatformTest
             if (RightWallHit || LeftWallHit)
                 speed = maxWalkSpeed;
 
-            vel.X = Math.Clamp(vel.X, -speed * elapsed, speed * elapsed);
+            //vel.X = Math.Clamp(vel.X, -speed * elapsed, speed * elapsed);
 
             animPlayer.Update(gameTime);
 

@@ -46,7 +46,7 @@ namespace PlatformTest
 
         public override void Update(GameTime gameTime)
         {
-            //ApplyGravity();
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             switch (currState)
             {

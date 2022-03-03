@@ -16,16 +16,15 @@ namespace PlatformTest
 
         public override void Update(GameTime gameTime)
         {
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             if (riseStart <= riseTime)
             {
-                float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-                riseStart += dt;
-                startY += 16.0f * dt;
-                yOffset = (int)startY;
+                riseStart += elapsed;
+                pos.Y += -16.0f * elapsed;
             }
             else
             {
-                yOffset = 0;
                 vel.X = speed * elapsed * dir;
                 CanCollide = true;
 

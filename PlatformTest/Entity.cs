@@ -13,7 +13,6 @@ namespace PlatformTest
         protected float speed;
         protected float gravity = 30f;
         protected bool isOnGround;
-        protected float elapsed;
         protected bool RightWallHit;
         protected bool LeftWallHit;
         protected bool FloorHit;
@@ -30,7 +29,6 @@ namespace PlatformTest
         public Entity()
         {
             isOnGround = false;
-            elapsed = 0;
             tileHit = Point.Zero;
             Active = true;
             CanCollide = true;
@@ -89,7 +87,7 @@ namespace PlatformTest
 
         protected void LateUpdate(GameTime gameTime)
         {
-            elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // deactivate flags
             RightWallHit = false;
@@ -97,7 +95,12 @@ namespace PlatformTest
             FloorHit = false;
             CeilingHit = false;
             tileHit = Point.Zero;
-            
+
+            if (!isOnGround)
+                ApplyGravity(elapsed);
+
+            //vel.Y = MathHelper.Clamp(vel.Y, (-256 * elapsed), (256 * elapsed));
+
             Physics();
         }
 
@@ -106,18 +109,13 @@ namespace PlatformTest
             return tileHit;
         }
 
-        protected void ApplyGravity()
+        protected void ApplyGravity(float elapsed)
         {
             vel.Y += gravity * elapsed;
         }
 
         private void Physics()
         {
-            if (!isOnGround)
-                ApplyGravity();
-
-            vel.Y = MathHelper.Clamp(vel.Y, (-240f * elapsed), (240f * elapsed));
-
             pos.X += vel.X;
             HandlecollisionHorizontal();
 
