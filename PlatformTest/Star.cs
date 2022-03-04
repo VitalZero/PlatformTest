@@ -7,7 +7,7 @@ namespace PlatformTest
 {
     public class Star : PowerUp
     {
-        public float bounceSpeed = -256f;
+        public float bounceSpeed = -300f;
         public Star(Vector2 pos)
             : base(PowerupType.star, pos)
         {

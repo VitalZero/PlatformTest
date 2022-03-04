@@ -35,8 +35,8 @@ namespace PlatformTest
         private AnimationPlayer animPlayer;
         private States currState;
         public bool Pause { get; set; }
-        private const float maxWalkSpeed = 90f;
-        private const float maxRunSpeed = 164f;
+        private const float maxWalkSpeed = 80f;
+        private const float maxRunSpeed = 170f;
         private const float moveXAccel = 5f;
         private const float stopAccel = 6f;
         public Vector2 PrevPos { get; private set; }
@@ -69,6 +69,7 @@ namespace PlatformTest
             normalGravity = 2 * jumpHeight / (float)Math.Pow(timeToJumpPeak, 2); // this is the normal one
             minGravity = 2 * minJumpHeight / (float)Math.Pow(timeToJumpPeak * .4, 2);
             jumpSpeed = normalGravity * timeToJumpPeak;
+            bounceSpeed = minGravity * timeToJumpPeak * .4f;
             gravity = normalGravity;
 
             //gravity *= 0.0167f; // if I dont do this, doesnt jump
@@ -109,7 +110,8 @@ namespace PlatformTest
         {
             bounce = true;
             currState = States.jump;
-            jumpTimer = jumpHoldTime;
+            vel.Y = -jumpSpeed;
+            //gravity = minGravity;
         }
 
         public override void Hit()
@@ -166,11 +168,7 @@ namespace PlatformTest
                         {
                             currState = States.jump;
 
-                            vel.Y = -jumpSpeed;  // before
-                            // blink blinkk
-                            // blink blinkk
-                            // blink blinkk
-                            // blink blinkk
+                            vel.Y = -jumpSpeed;  
                             jumpTimer = jumpHoldTime;
                             isOnGround = false;
                             break;
@@ -213,10 +211,10 @@ namespace PlatformTest
                         {
                             currState = States.jump;
                             vel.Y = -jumpSpeed;
-                            gravity = maxGravity;
-                            //if (Math.Abs(vel.X / .0167f) >= 160f )
-                            //    jumpTimer = .15f;
-                            //else
+                            
+                            if(speed == maxRunSpeed)
+                                gravity = maxGravity;
+
                             jumpTimer = jumpHoldTime; 
                             isOnGround = false;
                             break;
@@ -233,11 +231,6 @@ namespace PlatformTest
                     {
                         animPlayer.PlayAnimation("jumping");
 
-                        if(bounce)
-                        {
-                            bounce = false;
-                            vel.Y = -jumpSpeed;   
-                        }
 
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
@@ -257,49 +250,15 @@ namespace PlatformTest
                                 gravity = maxGravity;
                             else
                                 gravity = normalGravity;
-                            ////gravity = 9.8f;
-
-                            //if (jumpTimer > 0)
-                            //    vel.Y = -jumpSpeed;
-                            ////else
-                            ////    jumpTimer = 0;
-
-                            //if (CeilingHit)
-                            //{
-                            //    jumpTimer = 0;
-                            //    vel.Y = (int)0;
-                            //}
                         }
                         else if (keyboard.IsKeyUp(Keys.S))
                         {
                             gravity = minGravity;
                         }
-                        //else if(!keyboard.IsKeyDown(Keys.S))
-                        //{
-                        //    //gravity = 24f;
-                        //    jumpTimer = 0;
-                        //}
 
                         jumpTimer -= elapsed;
 
-                        if (isOnGround)
-                        {
-                            if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
-                            {
-                                currState = States.stand;
-                                //vel = Vector2.Zero;
-                                //vel.Y = (int)0f;
-                                break;
-                            }
-                            else
-                            {
-                                currState = States.run;
-                                //vel.Y = (int)0f;
-                                break;
-                            }
-                        }
-
-                        if(vel.Y > 0)
+                        if (vel.Y > 0)
                         {
                             currState = States.fall;
                             break;
@@ -308,7 +267,6 @@ namespace PlatformTest
                     break;
 
                 case States.fall:
-
                     gravity = normalGravity;
                     animPlayer.Freeze();
 
@@ -330,13 +288,10 @@ namespace PlatformTest
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
                             currState = States.stand;
-                            //vel = Vector2.Zero;
-                            //vel.Y = (int)0f;
                         }
                         else
                         {
                             currState = States.run;
-                            //vel.Y = (int)0f;
                         }
                     }
 
@@ -348,7 +303,7 @@ namespace PlatformTest
 
             //vel.X = Math.Clamp(vel.X, -speed * elapsed, speed * elapsed);
 
-            animPlayer.Update(gameTime);
+            animPlayer.Update(MapValue(maxRunSpeed, speed, elapsed));
 
             LateUpdate(gameTime);
 
@@ -387,6 +342,11 @@ namespace PlatformTest
                 return endValue;
 
             return startValue + amount;
+        }
+
+        private float MapValue(float maxValue, float minValue, float knowMaxValue)
+        {
+            return (minValue * knowMaxValue) / maxValue;
         }
     }
 }

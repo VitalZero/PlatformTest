@@ -16,7 +16,6 @@ namespace PlatformTest
             : base(PowerupType.coin, pos)
         {
             speed = 250f;
-            gravity = 20f;
             dir = 0f;
             CanCollide = false;
             this.pos.Y -= 16f;
@@ -43,12 +42,12 @@ namespace PlatformTest
 
             if(rising)
             {
-                vel.Y = -speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                vel.Y = -speed;
                 rising = false;
             }
 
             vel.Y += gravity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            pos.Y += vel.Y;
+            pos.Y += vel.Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if(pos.Y >= yOrigin - 16f)
             {
@@ -56,7 +55,7 @@ namespace PlatformTest
             }
 
 
-            animPlayer.Update(gameTime);
+            animPlayer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             //LateUpdate(gameTime);
         }

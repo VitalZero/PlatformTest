@@ -11,7 +11,7 @@ namespace PlatformTest
             :base(PowerupType.mushroom, pos)
         {
             dir = 1f;
-            speed = 30f;
+            speed = 40f;
         }
 
         public override void Update(GameTime gameTime)

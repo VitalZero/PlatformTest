@@ -44,6 +44,11 @@ namespace PlatformTest
             }
         }
 
+        public void Step(float delta)
+        {
+
+        }
+
         public void Add(string animationName, Animation animation)
         {
             if(!animations.ContainsKey(animationName))
@@ -65,14 +70,14 @@ namespace PlatformTest
             }
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(float dt)
         {
             if (animations.Count == 0)
                 throw new NotSupportedException("The player doesnt contain any animation!");
 
             if (!freeze)
             {
-                time += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                time += dt;
 
                 while (time > animations[currentAnimation].FrameTime)
                 {

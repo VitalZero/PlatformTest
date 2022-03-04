@@ -21,7 +21,7 @@ namespace PlatformTest
             this.pos = pos;
             aabb = new Rectangle(2, 3, 12, 13);
             animPlayer = new AnimationPlayer();
-            speed = 15f;
+            speed = 30f;
             deadTime = 0.5f;
             deadTimeAcc = 0;
             currState = States.wandering;
@@ -53,7 +53,7 @@ namespace PlatformTest
                 case States.wandering:
                     {
                         animPlayer.PlayAnimation("walking");
-                        vel.X = speed * elapsed * dir;
+                        vel.X = speed * dir;
 
                         if (RightWallHit)
                         {
@@ -81,7 +81,7 @@ namespace PlatformTest
                     break;
             }
 
-            animPlayer.Update(gameTime);
+            animPlayer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             LateUpdate(gameTime);
         }

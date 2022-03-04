@@ -21,7 +21,7 @@ namespace PlatformTest
             this.pos = pos;
             aabb = new Rectangle(1,11, 13, 13);
             animPlayer = new AnimationPlayer();
-            speed = 15f;
+            speed = 30f;
             awakeTime = 3f;
             awakeTimeAcc = 0;
             currState = States.wandering;
@@ -71,7 +71,7 @@ namespace PlatformTest
                     {
                         animPlayer.PlayAnimation("walking");
 
-                        vel.X = speed * elapsed * dir;
+                        vel.X = speed * dir;
 
                         if(vel.X > 0)
                             flip = SpriteEffects.None;
@@ -112,7 +112,7 @@ namespace PlatformTest
                     {
                         animPlayer.PlayAnimation("stomped");
 
-                        vel.X = (speed * 20f * elapsed) *  dir;
+                        vel.X = (speed * 10f) *  dir;
 
                         if (RightWallHit)
                         {
@@ -126,7 +126,7 @@ namespace PlatformTest
                     break;
             }
 
-            animPlayer.Update(gameTime);
+            animPlayer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             LateUpdate(gameTime);
         }
