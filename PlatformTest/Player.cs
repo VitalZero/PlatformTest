@@ -28,7 +28,7 @@ namespace PlatformTest
         private Vector2 origin;
 
 
-        private const float jumpHoldTime = 0.1f;
+        private const float jumpHoldTime = 0.25f;
         private float jumpTimer = 0;
         private KeyboardState keyboard;
         private SpriteEffects flip;
@@ -43,10 +43,14 @@ namespace PlatformTest
         bool bounce;
 
         protected float jumpSpeed;
+        protected float minGravity;
+        protected float normalGravity;
+        protected float maxGravity;
         protected float bounceSpeed;
-        readonly float timeToJumpPeak = 0.5f;
-        readonly int jumpHeight = (int)(4.2 * 16);
-        readonly int bounceHeight = (int)(2 * 16);
+        readonly float timeToJumpPeak = 0.4f;
+        readonly int jumpHeight = (int)(4.25 * 16);
+        readonly int minJumpHeight = (int)(2 * 16);
+        readonly int maxJumpHeight = (int)(5.2 * 16);
 
         //for debug purposes
         List<string> playerStates = new List<string>();
@@ -61,9 +65,11 @@ namespace PlatformTest
             dir = 0f;
             //jumpSpeed = -240f;
             //gravity = 24f;
-            gravity = 2 * jumpHeight / (float)Math.Pow(timeToJumpPeak, 2);
-            jumpSpeed = (float)Math.Sqrt(2 * gravity * jumpHeight);
-            bounceSpeed = (float)Math.Sqrt(2 * gravity * bounceHeight);
+            maxGravity = 2 * maxJumpHeight / (float)Math.Pow(timeToJumpPeak * 1.2, 2);
+            normalGravity = 2 * jumpHeight / (float)Math.Pow(timeToJumpPeak, 2); // this is the normal one
+            minGravity = 2 * minJumpHeight / (float)Math.Pow(timeToJumpPeak * .4, 2);
+            jumpSpeed = normalGravity * timeToJumpPeak;
+            gravity = normalGravity;
 
             //gravity *= 0.0167f; // if I dont do this, doesnt jump
 
@@ -159,12 +165,12 @@ namespace PlatformTest
                         else if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
                             currState = States.jump;
-                            //vel.Y = -jumpSpeed;  // before
+
+                            vel.Y = -jumpSpeed;  // before
                             // blink blinkk
                             // blink blinkk
                             // blink blinkk
                             // blink blinkk
-                            vel.Y = -gravity * timeToJumpPeak; // your code
                             jumpTimer = jumpHoldTime;
                             isOnGround = false;
                             break;
@@ -207,10 +213,11 @@ namespace PlatformTest
                         {
                             currState = States.jump;
                             vel.Y = -jumpSpeed;
+                            gravity = maxGravity;
                             //if (Math.Abs(vel.X / .0167f) >= 160f )
                             //    jumpTimer = .15f;
                             //else
-                            //    jumpTimer = jumpHoldTime; 
+                            jumpTimer = jumpHoldTime; 
                             isOnGround = false;
                             break;
                         }
@@ -229,7 +236,7 @@ namespace PlatformTest
                         if(bounce)
                         {
                             bounce = false;
-                            vel.Y = -bounceSpeed;   
+                            vel.Y = -jumpSpeed;   
                         }
 
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
@@ -244,28 +251,36 @@ namespace PlatformTest
                         {
                             vel.X = -speed;
                         }
-                        //if (keyboard.IsKeyDown(Keys.S))
-                        //{
-                        //    //gravity = 9.8f;
+                        if (keyboard.IsKeyDown(Keys.S))// || jumpTimer < ((jumpHoldTime / 3)))
+                        {
+                            if ((int)gravity == (int)maxGravity)
+                                gravity = maxGravity;
+                            else
+                                gravity = normalGravity;
+                            ////gravity = 9.8f;
 
-                        //    //if (jumpTimer > 0)
-                        //    //    vel.Y = -jumpSpeed * elapsed;
-                        //    //else
-                        //    //    jumpTimer = 0;
+                            //if (jumpTimer > 0)
+                            //    vel.Y = -jumpSpeed;
+                            ////else
+                            ////    jumpTimer = 0;
 
-                        //    //if (CeilingHit)
-                        //    //{
-                        //    //    jumpTimer = 0;
-                        //    //    vel.Y = (int)0;
-                        //    //}
-                        //}
+                            //if (CeilingHit)
+                            //{
+                            //    jumpTimer = 0;
+                            //    vel.Y = (int)0;
+                            //}
+                        }
+                        else if (keyboard.IsKeyUp(Keys.S))
+                        {
+                            gravity = minGravity;
+                        }
                         //else if(!keyboard.IsKeyDown(Keys.S))
                         //{
                         //    //gravity = 24f;
                         //    jumpTimer = 0;
                         //}
 
-                        //jumpTimer -= elapsed;
+                        jumpTimer -= elapsed;
 
                         if (isOnGround)
                         {
@@ -293,6 +308,8 @@ namespace PlatformTest
                     break;
 
                 case States.fall:
+
+                    gravity = normalGravity;
                     animPlayer.Freeze();
 
                     if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
