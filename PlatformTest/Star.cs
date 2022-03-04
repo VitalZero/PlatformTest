@@ -7,13 +7,12 @@ namespace PlatformTest
 {
     public class Star : PowerUp
     {
-        public float bounceSpeed = -400f;
+        public float bounceSpeed = -256f;
         public Star(Vector2 pos)
             : base(PowerupType.star, pos)
         {
             dir = 1f;
-            speed = 80f;
-            gravity = 16f;
+            speed = 50f;
         }
 
         public override void Update(GameTime gameTime)
@@ -27,11 +26,11 @@ namespace PlatformTest
             }
             else
             {
-                vel.X = speed * elapsed * dir;
+                vel.X = speed * dir;
 
                 if(isOnGround)
                 {
-                    vel.Y = bounceSpeed * elapsed;
+                    vel.Y = bounceSpeed;
                     isOnGround = false;
                 }
 

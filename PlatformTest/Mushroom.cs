@@ -25,7 +25,7 @@ namespace PlatformTest
             }
             else
             {
-                vel.X = speed * elapsed * dir;
+                vel.X = speed * dir;
                 CanCollide = true;
 
                 if (RightWallHit)
