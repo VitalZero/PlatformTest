@@ -70,7 +70,7 @@ namespace PlatformTest
             normalGravity = 2 * jumpHeight / (float)Math.Pow(timeToJumpPeak, 2); // this is the normal one
             minGravity = 2 * minJumpHeight / (float)Math.Pow(timeToJumpPeak * .4, 2);
             jumpSpeed = normalGravity * timeToJumpPeak;
-            bounceSpeed = minGravity * timeToJumpPeak * .4f;
+            bounceSpeed = maxGravity * timeToJumpPeak * .4f;
             gravity = normalGravity;
 
             //gravity *= 0.0167f; // if I dont do this, doesnt jump
@@ -111,7 +111,7 @@ namespace PlatformTest
         {
             bounce = true;
             currState = States.jump;
-            vel.Y = -jumpSpeed;
+            vel.Y = -bounceSpeed;
             //gravity = minGravity;
         }
 
@@ -245,16 +245,23 @@ namespace PlatformTest
                         {
                             vel.X = -speed;
                         }
-                        if (keyboard.IsKeyDown(Keys.S))// || jumpTimer < ((jumpHoldTime / 3)))
+                        if (!bounce)
                         {
-                            if ((int)gravity == (int)maxGravity)
-                                gravity = maxGravity;
-                            else
-                                gravity = normalGravity;
+                            if (keyboard.IsKeyDown(Keys.S))// || jumpTimer < ((jumpHoldTime / 3)))
+                            {
+                                if ((int)gravity == (int)maxGravity)
+                                    gravity = maxGravity;
+                                else
+                                    gravity = normalGravity;
+                            }
+                            else if (keyboard.IsKeyUp(Keys.S))
+                            {
+                                gravity = minGravity;
+                            }
                         }
-                        else if (keyboard.IsKeyUp(Keys.S))
+                        else
                         {
-                            gravity = minGravity;
+                            gravity = maxGravity;
                         }
 
                         jumpTimer -= elapsed;
@@ -262,6 +269,7 @@ namespace PlatformTest
                         if (vel.Y > 0)
                         {
                             currState = States.fall;
+                            bounce = false;
                             break;
                         }
                     }
