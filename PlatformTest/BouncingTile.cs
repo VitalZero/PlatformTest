@@ -14,8 +14,8 @@ namespace PlatformTest
         public float X { get; private set; }
         public float Y { get; private set; }
         public int TextureID { get; set; }
-        private const float gravity = 30f;
-        private const float upSpeed = -200f;
+        private const float gravity = 850f;
+        private const float upSpeed = -100f;
         private float yVel;
         private float yOrigin;
         private Tile backUpTile;
@@ -45,12 +45,12 @@ namespace PlatformTest
             {
                 if (bouncing)
                 {
-                    yVel = upSpeed * dt;
+                    yVel = upSpeed;
                     bouncing = false;
                 }
 
                 yVel += gravity * dt;
-                Y += yVel;
+                Y += yVel * dt;
 
                 if (Y >= yOrigin)
                 {
