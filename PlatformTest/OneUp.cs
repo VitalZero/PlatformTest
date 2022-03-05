@@ -12,6 +12,7 @@ namespace PlatformTest
         {
             dir = 1f;
             speed = 40f;
+            DrawBehind = true;
         }
 
         public override void Update(GameTime gameTime)
@@ -21,12 +22,17 @@ namespace PlatformTest
             if (riseStart <= riseTime)
             {
                 riseStart += elapsed;
-                pos.Y += -16.0f * elapsed;
+                pos.Y += -15.0f * elapsed;
+                
+                if (riseStart > riseTime)
+                {
+                    CanCollide = true;
+                    DrawBehind = false;
+                }
             }
             else
             {
                 vel.X = speed * dir;
-                CanCollide = true;
 
                 if (RightWallHit)
                 {

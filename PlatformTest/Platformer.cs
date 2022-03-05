@@ -93,6 +93,7 @@ namespace PlatformTest
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null,
                  globalTransformation);
+            EntityManager.DrawBehind(spriteBatch);
             world.Draw(spriteBatch);
             EntityManager.Draw(spriteBatch);
 

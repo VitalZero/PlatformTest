@@ -59,6 +59,7 @@ namespace PlatformTest
 
         public Player()
         {
+            drawPriority = 1;
             pos = new Vector2(50f, 50f);
             size = new Vector2(16, 31);
             vel = Vector2.Zero;

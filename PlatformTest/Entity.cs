@@ -21,6 +21,8 @@ namespace PlatformTest
         public bool CanCollide { get; set; }
         public bool Destroyed { get; set; }
         protected float dir;
+        public bool DrawBehind { get; set; }
+        public short drawPriority;
 
         private Point tileHit;
 
@@ -33,6 +35,8 @@ namespace PlatformTest
             Active = true;
             CanCollide = true;
             Destroyed = false;
+            DrawBehind = false;
+            drawPriority = 0;
         }
 
         public void Move(float x, float y)

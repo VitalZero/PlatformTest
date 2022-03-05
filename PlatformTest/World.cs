@@ -152,11 +152,11 @@ namespace PlatformTest
                 {
                     map[tileIndexRestore].id = 8;
                     map[tileIndexRestore].collision = TileCollision.solid;
+
                     if (powerUps.ContainsKey(tileIndexRestore))
                         EntityManager.Add(powerUps[tileIndexRestore]);
                     //EntityManager.Add(new Mushroom(new Vector2(bouncingTile.X, bouncingTile.Y)));
                     bouncingTile = null;
-
                 }
             }
         }
@@ -217,6 +217,7 @@ namespace PlatformTest
             tileIndexRestore = x + mapWidth * y;
             bouncingTile = new BouncingTile(t);
             DestroyTile(x, y);
+
             //map[x + mapWidth * y].id = 8;
             //map[x + mapWidth * y].collision = TileCollision.solid;
         }

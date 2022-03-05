@@ -12,7 +12,8 @@ namespace PlatformTest
             : base(PowerupType.star, pos)
         {
             dir = 1f;
-            speed = 50f;
+            speed = 70f;
+            DrawBehind = true;
         }
 
         public override void Update(GameTime gameTime)
@@ -22,7 +23,13 @@ namespace PlatformTest
             if (riseStart <= riseTime)
             {
                 riseStart += elapsed;
-                pos.Y += -16.0f * elapsed;
+                pos.Y += -15.0f * elapsed;
+
+                if (riseStart > riseTime)
+                {
+                    CanCollide = true;
+                    DrawBehind = false;
+                }
             }
             else
             {
@@ -33,8 +40,6 @@ namespace PlatformTest
                     vel.Y = bounceSpeed;
                     isOnGround = false;
                 }
-
-                CanCollide = true;
 
                 if (RightWallHit)
                 {

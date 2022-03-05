@@ -15,7 +15,7 @@ namespace PlatformTest
         public CoinBox(Vector2 pos)
             : base(PowerupType.coin, pos)
         {
-            speed = 250f;
+            speed = 200;
             dir = 0f;
             CanCollide = false;
             this.pos.Y -= 16f;
@@ -31,12 +31,12 @@ namespace PlatformTest
             animPlayer = new AnimationPlayer();
             animPlayer.Add("idle", new Animation(texture, 0.04f, true, 8, 16, 4, 0, 16));
             spriteArea = new Rectangle(0, 0, 16, 16);
+
+            animPlayer.PlayAnimation("idle");
         }
 
         public override void Update(GameTime gameTime)
         {
-            animPlayer.PlayAnimation("idle");
-
             startY = 16f;
             yOffset = 0;
 

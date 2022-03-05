@@ -12,6 +12,7 @@ namespace PlatformTest
         {
             dir = 0f;
             speed = 0f;
+            DrawBehind = true;
         }
 
         public override void Update(GameTime gameTime)
@@ -20,12 +21,16 @@ namespace PlatformTest
             if (riseStart <= riseTime)
             {
                 riseStart += elapsed;
-                pos.Y += -16.0f * elapsed;
+                pos.Y += -15.0f * elapsed;
+
+                if (riseStart > riseTime)
+                {
+                    CanCollide = true;
+                    DrawBehind = false;
+                }
             }
             else
             {
-                CanCollide = true;
-
                 LateUpdate(gameTime);
             }
         }

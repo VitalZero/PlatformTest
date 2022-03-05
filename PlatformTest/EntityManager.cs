@@ -13,6 +13,9 @@ namespace PlatformTest
         static List<PowerUp> powerUps = new List<PowerUp>();
         static List<Entity> entities = new List<Entity>();
         static List<Entity> addedEntities = new List<Entity>();
+        static List<Entity> drawBehind = new List<Entity>();
+        static List<Entity> drawNormal = new List<Entity>();
+
         static bool isUpdating;
 
         public static int Count { get { return entities.Count; } }
@@ -80,13 +83,25 @@ namespace PlatformTest
 
             addedEntities.Clear();
 
+            drawBehind = entities.Where(e => e.DrawBehind).ToList();
+            drawNormal = entities.Where(e => !e.DrawBehind).ToList();
+            drawNormal.Sort((e1, e2) => (e1.drawPriority.CompareTo(e2.drawPriority)));
+
             // clean up after update, remove entities that are not active
 
         }
 
+        public static void DrawBehind(SpriteBatch spriteBatch)
+        {
+            foreach (var entity in drawBehind)
+            {
+                entity.Draw(spriteBatch);
+            }
+        }
+
         public static void Draw(SpriteBatch spriteBatch)
         {
-            foreach (var entity in entities)
+            foreach (var entity in drawNormal)
             {
                 entity.Draw(spriteBatch);
             }
