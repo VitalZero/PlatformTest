@@ -63,7 +63,7 @@ namespace VZTMXMapLoader
         [XmlElement("layer")]
         public Layer layer { get; set; }
         [XmlElement("objectgroup")]
-        public ObjectGroup objectgroup { get; set; }
+        public List<ObjectGroup> objectGroups { get; set; }
     }
 
     public class TileSet
@@ -116,7 +116,6 @@ namespace VZTMXMapLoader
         public float x { get; set; }
         [XmlAttribute("y")]
         public float y { get; set; }
-        //[XmlElement(ElementName = "point")]
-        //public string point { get; set; }
+        public bool ToDelete { get; set; }
     }
 }

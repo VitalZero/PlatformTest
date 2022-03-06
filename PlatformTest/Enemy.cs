@@ -8,5 +8,6 @@ namespace PlatformTest
     {
         public bool CanKill { get; set; }
         public bool CanBeKilled { get; set; }
+        public int Index { get; set; }
     }
 }

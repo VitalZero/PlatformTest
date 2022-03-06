@@ -16,17 +16,19 @@ namespace PlatformTest
         private float deadTimeAcc;
         private States currState;
 
-        public Goomba(Vector2 pos)
+        public Goomba(Vector2 pos, int index)
         {
+            Index = index;
             this.pos = pos;
             aabb = new Rectangle(2, 3, 12, 13);
             animPlayer = new AnimationPlayer();
-            speed = 30f;
+            speed = 20f;
             deadTime = 0.5f;
             deadTimeAcc = 0;
             currState = States.wandering;
             CanKill = true;
             dir = -1f;
+            Active = false;
         }
 
         public override void Init()
@@ -35,6 +37,7 @@ namespace PlatformTest
 
             animPlayer.Add("walking", new Animation(texture, 0.2f, true, 16, 16, 2, 0, 0));
             animPlayer.Add("stomped", new Animation(texture, 1f, false, 16, 16, 1, 32, 0));
+            animPlayer.PlayAnimation("walking");
         }
 
         public override void Hit()

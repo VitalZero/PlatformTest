@@ -16,17 +16,19 @@ namespace PlatformTest
         private States currState;
         private SpriteEffects flip;
 
-        public KoopaTrooper(Vector2 pos)
+        public KoopaTrooper(Vector2 pos, int index)
         {
+            Index = index;
             this.pos = pos;
             aabb = new Rectangle(1,11, 13, 13);
             animPlayer = new AnimationPlayer();
-            speed = 30f;
+            speed = 20f;
             awakeTime = 3f;
             awakeTimeAcc = 0;
             currState = States.wandering;
             CanKill = true;
             dir = -1f;
+            Active = false;
         }
 
         public override void Init()
@@ -38,6 +40,7 @@ namespace PlatformTest
             animPlayer.Add("awaking", new Animation(texture, 0.25f, true, 16, 24, 2, 32, 0));
             flip = SpriteEffects.None;
             CanKill = true;
+            animPlayer.PlayAnimation("walking");
         }
 
 
@@ -112,7 +115,7 @@ namespace PlatformTest
                     {
                         animPlayer.PlayAnimation("stomped");
 
-                        vel.X = (speed * 10f) *  dir;
+                        vel.X = (speed * 15f) *  dir;
 
                         if (RightWallHit)
                         {

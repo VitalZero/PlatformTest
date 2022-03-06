@@ -58,13 +58,23 @@ namespace PlatformTest
             powerUps = powerUps.Where(e => !e.Destroyed).ToList();
         }
 
+        public static void CheckForEnemiesAndActivate(int index)
+        {
+            foreach (var enemy in enemies)
+            {
+                if (enemy.Index == index)
+                    enemy.Active = true;
+            }
+        }
+
         public static void Update(GameTime gameTime)
         {
             isUpdating = true;
 
             foreach(var entity in entities)
             {
-                entity.Update(gameTime);
+                if(entity.Active)
+                    entity.Update(gameTime);
             }
 
             //HandleCollisions();

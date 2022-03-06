@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using VZTMXMapLoader;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PlatformTest
 {
@@ -20,6 +21,9 @@ namespace PlatformTest
         BouncingTile bouncingTile;
         private int tileIndexRestore = -1;
         private Dictionary<int, PowerUp> powerUps;
+        TiledMap tiledMap;
+        int xStart;
+        int xEnd;
 
         private static World instance = null;
         public static World Instance
@@ -39,7 +43,6 @@ namespace PlatformTest
         public void Initialize(string directory)
         {
             int[] indexMap;
-            TiledMap tiledMap;
             {
                 TMXMapLoader loader = new TMXMapLoader(directory + "\\stage1.tmx");
 
@@ -50,7 +53,7 @@ namespace PlatformTest
             mapHeight = tiledMap.height;
             tileSize = tiledMap.tilewidth;
 
-            foreach(var p in tiledMap.objectgroup.objects)
+            foreach(var p in tiledMap.objectGroups[0].objects)
             {
                 int xTile = (int)(p.x / 16);
                 int yTile = (int)(p.y / 16);
@@ -141,10 +144,41 @@ namespace PlatformTest
         public void Load()
         {
             texture = ResourceManager.Level;
+
+            foreach (var enemyType in tiledMap.objectGroups[1].objects)
+            {
+                int xSpawn = (int)enemyType.x / 16;
+                int ySpawn = (int)enemyType.y / 16;
+                int enemyIndex = xSpawn + mapWidth * ySpawn;
+
+                if (enemyType.type == 1)
+                {
+                    EntityManager.Add(new Goomba(new Vector2(xSpawn * 16, ySpawn * 16), enemyIndex));
+                    enemyType.ToDelete = true;
+                }
+                else if (enemyType.type == 2)
+                {
+                    EntityManager.Add(new KoopaTrooper(new Vector2(xSpawn * 16, ySpawn * 16), enemyIndex));
+                    enemyType.ToDelete = true;
+                }
+            }
         }
 
         public void Update(GameTime gameTime)
         {
+            xStart = (int)Math.Max(0, ((int)Camera.Instance.XOffset) / tileSize);
+            xEnd = (int)Math.Min(mapWidth, ((int)(Camera.Instance.XOffset + 320) / tileSize) + 1);
+
+
+            for (int y = 0; y < mapHeight; ++y)
+            {
+                for (int x = xStart; x < xEnd + 2; ++x)
+                {
+                    int enemyIndex = x + mapWidth * y;
+                    EntityManager.CheckForEnemiesAndActivate(enemyIndex);
+                }
+            }
+
             if (bouncingTile != null)
             {
                 bouncingTile.Update(gameTime);
@@ -163,10 +197,6 @@ namespace PlatformTest
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            
-            int xStart = (int)Math.Max(0, ((int)Camera.Instance.XOffset) / tileSize);
-            int xEnd = (int)Math.Min(mapWidth, ((int)Camera.Instance.XOffset + (480) / tileSize) + 1);
-
             for (int y = 0; y < mapHeight; ++y)
             {
                 for(int x = xStart; x < xEnd; ++x)
