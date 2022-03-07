@@ -52,6 +52,11 @@ namespace PlatformTest
         readonly int minJumpHeight = (int)(2 * 16);
         readonly int maxJumpHeight = (int)(5.2 * 16);
 
+        Effect paleteSwap;
+        Texture2D sourcePal;
+        Texture2D pal1;
+        Texture2D pal2;
+
         //for debug purposes
         List<string> playerStates = new List<string>();
         SpriteFont font;
@@ -98,6 +103,14 @@ namespace PlatformTest
         public override void Init()
         {
             texture = ResourceManager.Player;
+            paleteSwap = ResourceManager.ColorSwap;
+            sourcePal = ResourceManager.SourcePal;
+            pal1 = ResourceManager.Pal1;
+            pal2 = ResourceManager.Pal2;
+
+            paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
+            paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
+            paleteSwap.CurrentTechnique.Passes[0].Apply();
 
             animPlayer.Add("idle", new Animation(texture, 1f, true, 16, 32, 1, 0, 0));
             animPlayer.Add("running", new Animation(texture, .04f, true, 16, 32, 3, 16, 0));
@@ -121,6 +134,22 @@ namespace PlatformTest
             Active = false;
             Destroyed = true;
         }
+
+        public void Burn()
+        {
+            paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
+            paleteSwap.Parameters["xTargetPal"].SetValue(pal2);
+            paleteSwap.CurrentTechnique.Passes[0].Apply();
+        }
+
+        public void Grow()
+        {
+            paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
+            paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
+            paleteSwap.CurrentTechnique.Passes[0].Apply();
+        }
+
+        
 
         public override void Update(GameTime gameTime)
         {
@@ -335,10 +364,16 @@ namespace PlatformTest
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            spriteBatch.End();
+
+            spriteBatch.Begin(effect: paleteSwap);
+
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
                 flip);
 
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred);
 
             base.Draw(spriteBatch);
         }

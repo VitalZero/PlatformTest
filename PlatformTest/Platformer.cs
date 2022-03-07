@@ -20,6 +20,7 @@ namespace PlatformTest
         private float fps;
         SpriteFont font;
         public GraphicsDevice gfx { get { return GraphicsDevice; } }
+        private RenderTarget2D renderTarget;
 
         public Platformer()
         {
@@ -42,6 +43,8 @@ namespace PlatformTest
             world.Initialize(Content.RootDirectory);
 
             globalTransformation = Matrix.CreateScale((float)pixels);
+
+            renderTarget = new RenderTarget2D(GraphicsDevice, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
 
             base.Initialize();
         }
@@ -90,14 +93,24 @@ namespace PlatformTest
 
         protected override void Draw(GameTime gameTime)
         {
+            GraphicsDevice.SetRenderTarget(renderTarget);
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null,
-                 globalTransformation);
+
+            spriteBatch.Begin();
+
             EntityManager.DrawBehind(spriteBatch);
             world.Draw(spriteBatch);
             EntityManager.Draw(spriteBatch);
 
             spriteBatch.End();
+            GraphicsDevice.SetRenderTarget(null);
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null,
+                 globalTransformation);
+            spriteBatch.Draw(renderTarget, new Vector2(0, 0), Color.White);
+            spriteBatch.End();
+
 
             spriteBatch.Begin();
             spriteBatch.DrawString(ResourceManager.Arial, "FPS:" + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);

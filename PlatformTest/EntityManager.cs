@@ -194,6 +194,15 @@ namespace PlatformTest
 
                 if (penetration != Rectangle.Empty)
                 {
+                    if(p is Mushroom)
+                    {
+                        Player.Instance.Grow();
+                    }
+                    if (p is Flower)
+                    {
+                        Player.Instance.Burn();
+                    }
+
                     p.Collected();
                 }
             }
