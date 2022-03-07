@@ -11,6 +11,7 @@ namespace PlatformTest
     {
         static List<Enemy> enemies = new List<Enemy>();
         static List<PowerUp> powerUps = new List<PowerUp>();
+        public static BouncingTile BouncingTile { get; set; }
         static List<Entity> entities = new List<Entity>();
         static List<Entity> addedEntities = new List<Entity>();
         static List<Entity> drawBehind = new List<Entity>();
@@ -133,12 +134,32 @@ namespace PlatformTest
                 if (Player.Instance.Equals(e))
                     continue;
 
-                if (e.CanCollide && Player.Instance.CanCollide)
+                // collision if a tile under the enemy was hit
+                if (BouncingTile != null)
+                {
+                    Rectangle bAABB;
+                    Rectangle penetration;
+                    Rectangle eAABB = e.GetAABB();
+
+                    if (eAABB.X == 176)
+                    { float a = 0; }
+
+                    bAABB = BouncingTile.GetAABB();
+                    Rectangle.Intersect(ref bAABB, ref eAABB, out penetration);
+
+                    if (penetration != Rectangle.Empty)
+                    {
+                        e.Kill();
+                    }
+                }
+
+                // enemy vs player collision
+                if (e.CanCollide && Player.Instance.CanCollide && e.Active)
                 {
                     Rectangle penetration;
                     Rectangle pAABB = Player.Instance.GetAABB();
                     Rectangle tAABB = e.GetAABB();
-
+                    
                     Rectangle.Intersect(ref pAABB, ref tAABB, out penetration);
 
                     if (penetration != Rectangle.Empty)
@@ -207,93 +228,5 @@ namespace PlatformTest
                 }
             }
         }
-
-        //private static void HandleCollisions()
-        //{
-        //    for(int i = 0; i < goombas.Count; ++i)
-        //    {
-        //        if (goombas[i].CanCollide && Player.Instance.CanCollide)
-        //        {
-        //            Rectangle penetration;
-        //            Rectangle pAABB = Player.Instance.GetAABB();
-        //            Rectangle gAABB = goombas[i].GetAABB();
-
-        //            Rectangle.Intersect(ref pAABB, ref gAABB, out penetration);
-
-        //            if (penetration != Rectangle.Empty)
-        //            {
-        //                // if can kill, generate a hit only if player lands on top of the goomba, adjust player position and make it bounce
-        //                // otherwise, kill the player
-        //                if (pAABB.Bottom <= gAABB.Center.Y)
-        //                {
-        //                    goombas[i].Hit();
-        //                    Player.Instance.Move(0, -penetration.Width);
-        //                    Player.Instance.Bounce();
-        //                    //return;
-        //                }
-        //                else
-        //                {
-        //                    if(goombas[i].CanKill)
-        //                        Player.Instance.Hit();
-
-        //                    return;
-        //                }
-        //            }
-        //        }
-
-        //    }
-
-        //    for (int i = 0; i < koopaTroopers.Count; ++i)
-        //    {
-        //        if (koopaTroopers[i].CanCollide && Player.Instance.CanCollide)
-        //        {
-        //            Rectangle penetration;
-        //            Rectangle pAABB = Player.Instance.GetAABB();
-        //            Rectangle tAABB = koopaTroopers[i].GetAABB();
-
-        //            Rectangle.Intersect(ref pAABB, ref tAABB, out penetration);
-
-        //            if (penetration != Rectangle.Empty)
-        //            {
-        //                // if cant kill (ie stomped), generate a hit as soon as player touches the koopatropper
-        //                // adjust koopatrooper position and velocity based on penetration, player position
-        //                if (!koopaTroopers[i].CanKill)
-        //                {
-        //                    if (pAABB.Left > tAABB.Left)
-        //                    {
-        //                        koopaTroopers[i].Move(-penetration.Width, 0);
-        //                        koopaTroopers[i].SetDir(-1);
-        //                    }
-        //                    else if (pAABB.Right < tAABB.Right)
-        //                    {
-        //                        koopaTroopers[i].Move(penetration.Width, 0);
-        //                        koopaTroopers[i].SetDir(1);
-        //                    }
-
-        //                    koopaTroopers[i].Hit();
-        //                }
-        //                else
-        //                {
-        //                    // if can kill, generate a hit only if player lands on top of the koopatrooper
-        //                    // adjust player position and make it bounce
-        //                    // otherwise, kill the player (including when the shell is rebounding)
-        //                    if (pAABB.Bottom <= tAABB.Center.Y)
-        //                    {
-        //                        koopaTroopers[i].Hit();
-        //                        Player.Instance.Move(0, -penetration.Height);
-        //                        Player.Instance.Bounce();
-        //                        //return;
-        //                    }
-        //                    else
-        //                    {
-        //                        Player.Instance.Hit();
-        //                        return;
-        //                    }
-        //                }
-        //            }
-        //        }
-
-        //    }
-        //}
     }
 }

@@ -9,12 +9,13 @@ namespace PlatformTest
 {
     public class Goomba : Enemy
     {
-        private enum States { wandering, stomped }
+        private enum States { wandering, stomped, instantKill }
 
         private AnimationPlayer animPlayer;
         private float deadTime;
         private float deadTimeAcc;
         private States currState;
+        private SpriteEffects vFlip;
 
         public Goomba(Vector2 pos, int index)
         {
@@ -29,6 +30,7 @@ namespace PlatformTest
             CanKill = true;
             dir = -1f;
             Active = false;
+            vFlip = SpriteEffects.None;
         }
 
         public override void Init()
@@ -45,6 +47,17 @@ namespace PlatformTest
             currState = States.stomped;
             CanKill = false;
             CanCollide = false;
+        }
+
+        public override void Kill()
+        {
+            currState = States.instantKill;
+            vel.Y = -250f;
+            CanKill = false;
+            CanCollide = false;
+            speed = 30f;
+            vFlip = SpriteEffects.FlipVertically;
+            isOnGround = false;
         }
 
         public override void Update(GameTime gameTime)
@@ -82,6 +95,20 @@ namespace PlatformTest
                         }
                     }
                     break;
+                case States.instantKill:
+                    {
+                        animPlayer.Freeze();
+                        deadTimeAcc += elapsed;
+
+                        vel.X = speed * dir;
+
+                        if (deadTimeAcc >= 1f)
+                        {
+                            Active = false;
+                            Destroyed = true;
+                        }
+                    }
+                    break;
             }
 
             animPlayer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
@@ -93,7 +120,7 @@ namespace PlatformTest
         {
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
-                SpriteEffects.None);
+                vFlip);
 
             base.Draw(spriteBatch);
         }

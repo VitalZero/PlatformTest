@@ -74,7 +74,7 @@
   </object>
  </objectgroup>
  <objectgroup id="5" name="enemies">
-  <object id="24" type="1" x="229.5" y="195.5">
+  <object id="24" type="1" x="246.5" y="134">
    <point/>
   </object>
   <object id="25" type="1" x="565.5" y="193.5">

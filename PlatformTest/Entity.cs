@@ -79,14 +79,17 @@ namespace PlatformTest
         public virtual void Hit()
         {}
 
-        public override void Update(GameTime gameTime)
-        {
-        }
-
-        public void Kill()
+        public void Destroy()
         {
             Active = false;
             Destroyed = true;
+        }
+
+        public virtual void Kill()
+        {}
+
+        public override void Update(GameTime gameTime)
+        {
         }
 
         protected void LateUpdate(GameTime gameTime)
@@ -121,10 +124,13 @@ namespace PlatformTest
         private void Physics(float elapsed)
         {
             pos.X += vel.X * elapsed;
-            HandlecollisionHorizontal();
+
+            if(CanCollide)
+                HandlecollisionHorizontal();
 
             pos.Y += vel.Y * elapsed;
-            HandlecollisionVertical();
+            if (CanCollide)
+                HandlecollisionVertical();
         }
 
         private void HandlecollisionHorizontal()

@@ -6,30 +6,31 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public class BouncingTile
+    public class BouncingTile : Entity
     {
-        public bool Active { get; set; }
+        //public bool Active { get; set; }
         public bool Done { get; set; }
         private bool bouncing;
-        public float X { get; private set; }
-        public float Y { get; private set; }
         public int TextureID { get; set; }
-        private const float gravity = 850f;
+        //private const float gravity = 850f;
         private const float upSpeed = -100f;
         private float yVel;
-        private float yOrigin;
-        private Tile backUpTile;
+        private readonly float yOrigin;
+        private readonly Tile backUpTile;
 
         public BouncingTile(Tile backUpTile)
         {
             this.backUpTile = backUpTile;
             TextureID = backUpTile.id;
-            X = backUpTile.X * backUpTile.size;
-            Y = backUpTile.Y * backUpTile.size;
-            yOrigin = Y;
+            pos.X = backUpTile.X * backUpTile.size;
+            pos.Y = backUpTile.Y * backUpTile.size;
+            size = new Vector2(backUpTile.size, backUpTile.size);
+            aabb = new Rectangle(0, 0, (int)size.X, (int)size.Y);
+            yOrigin = pos.Y;
             Active = true;
             Done = false;
             bouncing = true;
+            gravity = 850f;
         }
 
         public Tile Restore()
@@ -37,7 +38,7 @@ namespace PlatformTest
             return backUpTile;
         }
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -50,11 +51,11 @@ namespace PlatformTest
                 }
 
                 yVel += gravity * dt;
-                Y += yVel * dt;
+                pos.Y += yVel * dt;
 
-                if (Y >= yOrigin)
+                if (pos.Y >= yOrigin)
                 {
-                    Y = yOrigin;
+                    pos.Y = yOrigin;
                     Active = false;
                     Done = true;
                 }

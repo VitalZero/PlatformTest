@@ -60,17 +60,7 @@ namespace PlatformTest
             // TODO: use this.Content to load your game content here
 
             EntityManager.Add(Player.Instance);
-            //EntityManager.Add(new Goomba(new Vector2(13 * 16, 12 * 16)));
-            //EntityManager.Add(new KoopaTrooper(new Vector2(31 * 16, 11 * 16)));
-            //EntityManager.Add(new Goomba(new Vector2(42 * 16, 12 * 16)));
-            //EntityManager.Add(new Goomba(new Vector2(43 * 16 + 8, 12 * 16)));
-            //EntityManager.Add(new Goomba(new Vector2(75 * 16, 3 * 16)));
-            //EntityManager.Add(new Goomba(new Vector2(77 * 16, 3 * 16)));
-            //EntityManager.Add(new Goomba(new Vector2(89 * 16, 12 * 16)));
-            //EntityManager.Add(new Goomba(new Vector2(90 * 16 + 8, 12 * 16)));
-            //EntityManager.Add(new KoopaTrooper(new Vector2(98 * 16, 11 * 16)));
-
-            //EntityManager.Init();
+            EntityManager.Add(new Goomba(new Vector2(11 * 16, 8 * 16), 11 + World.Instance.mapWidth * 8));
         }
 
         protected override void Update(GameTime gameTime)
@@ -93,6 +83,7 @@ namespace PlatformTest
 
         protected override void Draw(GameTime gameTime)
         {
+            // draw to a texture
             GraphicsDevice.SetRenderTarget(renderTarget);
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -104,6 +95,9 @@ namespace PlatformTest
             EntityManager.Draw(spriteBatch);
 
             spriteBatch.End();
+
+            // then draw to the screen 
+            // so we can apply the scale to size of the window (globalTransformation) without errors
             GraphicsDevice.SetRenderTarget(null);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null,
@@ -111,7 +105,7 @@ namespace PlatformTest
             spriteBatch.Draw(renderTarget, new Vector2(0, 0), Color.White);
             spriteBatch.End();
 
-
+            // draw info stuff
             spriteBatch.Begin();
             spriteBatch.DrawString(ResourceManager.Arial, "FPS:" + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);
             spriteBatch.DrawString(ResourceManager.Arial, "vel X:" + Player.Instance.Vel.X.ToString("00.0000"), new Vector2(20, 40), Color.Red);

@@ -18,7 +18,6 @@ namespace PlatformTest
         private int textureColumns;
         private Texture2D texture;
         private string textureName;
-        BouncingTile bouncingTile;
         private int tileIndexRestore = -1;
         private Dictionary<int, PowerUp> powerUps;
         TiledMap tiledMap;
@@ -169,28 +168,32 @@ namespace PlatformTest
             xStart = (int)Math.Max(0, ((int)Camera.Instance.XOffset) / tileSize);
             xEnd = (int)Math.Min(mapWidth, ((int)(Camera.Instance.XOffset + 320) / tileSize) + 1);
 
-
-            for (int y = 0; y < mapHeight; ++y)
+            if (EntityManager.BouncingTile != null)
             {
-                for (int x = xStart; x < xEnd + 2; ++x)
+                EntityManager.BouncingTile.Update(gameTime);
+                if (EntityManager.BouncingTile.Done)
                 {
-                    int enemyIndex = x + mapWidth * y;
-                    EntityManager.CheckForEnemiesAndActivate(enemyIndex);
-                }
-            }
-
-            if (bouncingTile != null)
-            {
-                bouncingTile.Update(gameTime);
-                if (bouncingTile.Done)
-                {
-                    map[tileIndexRestore].id = 8;
-                    map[tileIndexRestore].collision = TileCollision.solid;
+                    if (EntityManager.BouncingTile.TextureID >= 0)
+                    {
+                        map[tileIndexRestore].id = 8;
+                        map[tileIndexRestore].collision = TileCollision.solid;
+                    }
 
                     if (powerUps.ContainsKey(tileIndexRestore))
                         EntityManager.Add(powerUps[tileIndexRestore]);
-                    //EntityManager.Add(new Mushroom(new Vector2(bouncingTile.X, bouncingTile.Y)));
-                    bouncingTile = null;
+                    
+                    EntityManager.BouncingTile = null;
+                }
+            }
+
+            for (int y = 0; y < mapHeight; ++y)
+            {
+                for (int x = xStart; x < xEnd; ++x)
+                {
+                    int index = x + mapWidth * y;
+                    EntityManager.CheckForEnemiesAndActivate(index);
+                    if (map[index].Destroyed)
+                        DestroyTile(x, y);
                 }
             }
         }
@@ -203,7 +206,7 @@ namespace PlatformTest
                 {
                     int tileTexture = map[x + mapWidth * y].id;
 
-                    if (tileTexture >= 0)
+                    if (tileTexture >= 0 && map[x + mapWidth * y].Visible && !map[x + mapWidth * y].Destroyed)
                     {
                         int dx = (tileTexture % textureColumns) * tileSize;
                         int dy = (tileTexture / textureColumns) * tileSize;
@@ -218,13 +221,13 @@ namespace PlatformTest
                 }
             }
 
-            if (bouncingTile != null && bouncingTile.Active)
+            if (EntityManager.BouncingTile != null && EntityManager.BouncingTile.Active && EntityManager.BouncingTile.TextureID >= 0)
             {
-                int tx = (bouncingTile.TextureID % textureColumns) * tileSize;
-                int ty = (bouncingTile.TextureID / textureColumns) * tileSize;
+                int tx = (EntityManager.BouncingTile.TextureID % textureColumns) * tileSize;
+                int ty = (EntityManager.BouncingTile.TextureID / textureColumns) * tileSize;
 
                 spriteBatch.Draw(texture,
-                    new Vector2((int)bouncingTile.X - (int)Camera.Instance.XOffset, (int)bouncingTile.Y - (int)Camera.Instance.YOffset),
+                    new Vector2((int)EntityManager.BouncingTile.Pos.X - (int)Camera.Instance.XOffset, (int)EntityManager.BouncingTile.Pos.Y - (int)Camera.Instance.YOffset),
                     new Rectangle(tx, ty, tileSize, tileSize),
                     Color.White);
             }
@@ -245,11 +248,8 @@ namespace PlatformTest
         {
             Tile t = GetTile(x, y);
             tileIndexRestore = x + mapWidth * y;
-            bouncingTile = new BouncingTile(t);
+            EntityManager.BouncingTile = new BouncingTile(t);
             DestroyTile(x, y);
-
-            //map[x + mapWidth * y].id = 8;
-            //map[x + mapWidth * y].collision = TileCollision.solid;
         }
 
         private void DestroyTile(int x, int y)
@@ -262,18 +262,24 @@ namespace PlatformTest
         public void RemoveTile(int x, int y)
         {
             int tmpIndex = x + mapWidth * y;
+            tileIndexRestore = tmpIndex;
 
-            if(powerUps.ContainsKey(tmpIndex))
+            if (powerUps.ContainsKey(tmpIndex))
             {
                 Tile t = GetTile(x, y);
-                tileIndexRestore = tmpIndex;
-                bouncingTile = new BouncingTile(t);
-                DestroyTile(x, y);
+                
+                EntityManager.BouncingTile = new BouncingTile(t);
             }
             else
             {
-                DestroyTile(x, y);
+                Tile t = new Tile();
+                t.id = -1;
+                t.X = x;
+                t.Y = y;
+                EntityManager.BouncingTile = new BouncingTile(t);
             }
+
+            map[tmpIndex].Destroyed = true;
         }
 
         public Rectangle GetBounds(int x, int y)

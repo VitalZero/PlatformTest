@@ -351,12 +351,12 @@ namespace PlatformTest
                 Point tilePos = GetContactTile();
                 Tile t = World.Instance.GetTile(tilePos.X, tilePos.Y);
 
-                if (t.collision == TileCollision.breakable)
+                if (t.collision == TileCollision.breakable || t.collision == TileCollision.item)
                     World.Instance.RemoveTile(tilePos.X, tilePos.Y);
-                else if (t.collision == TileCollision.item)
-                {
-                    World.Instance.usedTileItem(tilePos.X, tilePos.Y);
-                }
+                //else if (t.collision == TileCollision.item)
+                //{
+                //    World.Instance.RemoveTile(tilePos.X, tilePos.Y);
+                //}
             }
 
             dir = 0f;
