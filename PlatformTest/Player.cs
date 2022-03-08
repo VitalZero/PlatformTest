@@ -21,7 +21,7 @@ namespace PlatformTest
                 return instance;
             }
         }
-        private enum States { stand, run, jump, fall }
+        private enum States { stand, run, jump, fall, crouch }
 
         public Vector2 Vel { get { return vel; } }
 
@@ -35,9 +35,9 @@ namespace PlatformTest
         private AnimationPlayer animPlayer;
         private States currState;
         public bool Pause { get; set; }
-        private const float maxWalkSpeed = 80f;
+        private const float maxWalkSpeed = 60f;
         private const float maxRunSpeed = 170f;
-        private const float moveXAccel = 5f;
+        private const float moveXAccel = 4f;
         private const float stopAccel = 6f;
         public Vector2 PrevPos { get; private set; }
         bool bounce;
@@ -102,6 +102,8 @@ namespace PlatformTest
 
         public override void Init()
         {
+            dir = 1f;
+
             texture = ResourceManager.Player;
             paleteSwap = ResourceManager.ColorSwap;
             sourcePal = ResourceManager.SourcePal;
@@ -116,6 +118,7 @@ namespace PlatformTest
             animPlayer.Add("running", new Animation(texture, .04f, true, 16, 32, 3, 16, 0));
             animPlayer.Add("jumping", new Animation(texture, .1f, true, 16, 32, 1, 16 * 6, 0));
             animPlayer.Add("falling", new Animation(texture, 1f, true, 16, 32, 1, 16 * 5, 0));
+            animPlayer.Add("crouching", new Animation(texture, 1f, true, 16, 32, 1, 16 * 7, 0));
             animPlayer.PlayAnimation("idle");
             font = ResourceManager.Arial;
         }
@@ -148,8 +151,6 @@ namespace PlatformTest
             paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
         }
-
-        
 
         public override void Update(GameTime gameTime)
         {
@@ -203,6 +204,18 @@ namespace PlatformTest
                             isOnGround = false;
                             break;
                         }
+
+                        if(keyboard.IsKeyDown(Keys.Down))
+                        {
+                            currState = States.crouch;
+                            break;
+                        }
+
+                        if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A))
+                        {
+                            if(EntityManager.FireBallCount() < 2)
+                                EntityManager.Add(new FireBall(pos, dir));
+                        }
                     }
                     break;
 
@@ -226,16 +239,20 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X = speed;
+                            dir = 1f;
+                            //vel.X = speed;
 
                             flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = -speed;
+                            dir = -1f;
+                            //vel.X = -speed;
 
                             flip = SpriteEffects.FlipHorizontally;
                         }
+
+                        vel.X = speed * dir;
 
                         if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
@@ -254,6 +271,13 @@ namespace PlatformTest
                             currState = States.fall;
                             break;
                         }
+
+                        if (keyboard.IsKeyDown(Keys.Down))
+                        {
+                            currState = States.crouch;
+                            vel.X = 0;
+                            break;
+                        }
                     }
                     break;
 
@@ -261,19 +285,25 @@ namespace PlatformTest
                     {
                         animPlayer.PlayAnimation("jumping");
 
+                        
+                        if (keyboard.IsKeyDown(Keys.Right))
+                        {
+                            dir = 1f;
+                            //vel.X = speed;
+                        }
+                        else if (keyboard.IsKeyDown(Keys.Left))
+                        {
+                            dir = -1f;
+                            //vel.X = speed;
+                        }
+
+                        vel.X = speed * dir;
 
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
                             vel.X = 0;
                         }
-                        else if (keyboard.IsKeyDown(Keys.Right))
-                        {
-                            vel.X = speed;
-                        }
-                        else if (keyboard.IsKeyDown(Keys.Left))
-                        {
-                            vel.X = -speed;
-                        }
+
                         if (!bounce)
                         {
                             if (keyboard.IsKeyDown(Keys.S))// || jumpTimer < ((jumpHoldTime / 3)))
@@ -308,17 +338,22 @@ namespace PlatformTest
                     gravity = normalGravity;
                     animPlayer.Freeze();
 
-                    if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
+                    if (keyboard.IsKeyDown(Keys.Right))
                     {
-                        vel.X = 0;
-                    }
-                    else if (keyboard.IsKeyDown(Keys.Right))
-                    {
-                        vel.X = speed;
+                        dir = 1f;
+                        //vel.X = speed;
                     }
                     else if (keyboard.IsKeyDown(Keys.Left))
                     {
-                        vel.X = -speed;
+                        dir = -1f;
+                        //vel.X = -speed;
+                    }
+
+                    vel.X = speed * dir;
+
+                    if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
+                    {
+                        vel.X = 0;
                     }
 
                     if (isOnGround)
@@ -332,7 +367,47 @@ namespace PlatformTest
                             currState = States.run;
                         }
                     }
+                    break;
 
+                case States.crouch:
+                    {
+                        animPlayer.PlayAnimation("crouching");
+
+                        if (!isOnGround)
+                        {
+                            currState = States.fall;
+                            break;
+                        }
+
+                        if(keyboard.IsKeyUp(Keys.Down))
+                        {
+                            currState = States.stand;
+                            break;
+                        }
+
+                        if (keyboard.IsKeyDown(Keys.Right))
+                        {
+                            dir = 1f;
+
+                            flip = SpriteEffects.None;
+                        }
+                        else if (keyboard.IsKeyDown(Keys.Left))
+                        {
+                            dir = -1f;
+
+                            flip = SpriteEffects.FlipHorizontally;
+                        }
+
+                        if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
+                        {
+                            currState = States.jump;
+
+                            vel.Y = -jumpSpeed;
+                            jumpTimer = jumpHoldTime;
+                            isOnGround = false;
+                            break;
+                        }
+                    }
                     break;
             }
 
@@ -341,7 +416,7 @@ namespace PlatformTest
 
             //vel.X = Math.Clamp(vel.X, -speed * elapsed, speed * elapsed);
 
-            animPlayer.Update(MapValue(maxRunSpeed, speed, elapsed));
+            animPlayer.Update(MapValue(maxRunSpeed, Math.Abs(vel.X), elapsed));
 
             LateUpdate(gameTime);
 
@@ -353,13 +428,9 @@ namespace PlatformTest
 
                 if (t.collision == TileCollision.breakable || t.collision == TileCollision.item)
                     World.Instance.RemoveTile(tilePos.X, tilePos.Y);
-                //else if (t.collision == TileCollision.item)
-                //{
-                //    World.Instance.RemoveTile(tilePos.X, tilePos.Y);
-                //}
             }
 
-            dir = 0f;
+            //dir = 0f;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -394,3 +465,4 @@ namespace PlatformTest
         }
     }
 }
+

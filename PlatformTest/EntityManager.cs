@@ -12,6 +12,7 @@ namespace PlatformTest
         static List<Enemy> enemies = new List<Enemy>();
         static List<PowerUp> powerUps = new List<PowerUp>();
         public static BouncingTile BouncingTile { get; set; }
+        static List<FireBall> fireBalls = new List<FireBall>();
         static List<Entity> entities = new List<Entity>();
         static List<Entity> addedEntities = new List<Entity>();
         static List<Entity> drawBehind = new List<Entity>();
@@ -42,6 +43,13 @@ namespace PlatformTest
                 enemies.Add(entity as Enemy);
             else if (entity is PowerUp)
                 powerUps.Add(entity as PowerUp);
+            else if (entity is FireBall)
+                fireBalls.Add(entity as FireBall);
+        }
+
+        public static int FireBallCount()
+        {
+            return fireBalls.Count;
         }
 
         public static void Init()
@@ -57,6 +65,7 @@ namespace PlatformTest
             entities = entities.Where(e => !e.Destroyed).ToList();
             enemies = enemies.Where(e => !e.Destroyed).ToList();
             powerUps = powerUps.Where(e => !e.Destroyed).ToList();
+            fireBalls = fireBalls.Where(e => !e.Destroyed).ToList();
         }
 
         public static void CheckForEnemiesAndActivate(int index)
@@ -153,8 +162,27 @@ namespace PlatformTest
                     }
                 }
 
-                // enemy vs player collision
-                if (e.CanCollide && Player.Instance.CanCollide && e.Active)
+                // enemy vs fireballs
+                if (e.CanCollide)
+                {
+                    foreach (var f in fireBalls)
+                    {
+                        Rectangle penetration;
+                        Rectangle fAABB = f.GetAABB();
+                        Rectangle eAABB = e.GetAABB();
+
+                        Rectangle.Intersect(ref fAABB, ref eAABB, out penetration);
+
+                        if (penetration != Rectangle.Empty)
+                        {
+                            e.Kill();
+                            f.Destroy();
+                        }
+                    }
+                }
+
+                    // enemy vs player collision
+                    if (e.CanCollide && Player.Instance.CanCollide && e.Active)
                 {
                     Rectangle penetration;
                     Rectangle pAABB = Player.Instance.GetAABB();
