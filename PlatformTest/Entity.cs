@@ -17,10 +17,11 @@ namespace PlatformTest
         protected bool LeftWallHit;
         protected bool FloorHit;
         protected bool CeilingHit;
+        protected float dir;
         public bool Active { get; set; }
         public bool CanCollide { get; set; }
+        public bool CanBeHit { get; set; }
         public bool Destroyed { get; set; }
-        protected float dir;
         public bool DrawBehind { get; set; }
         public short drawPriority;
 
@@ -37,6 +38,7 @@ namespace PlatformTest
             Destroyed = false;
             DrawBehind = false;
             drawPriority = 0;
+            CanBeHit = true;
         }
 
         public void Move(float x, float y)
@@ -129,6 +131,7 @@ namespace PlatformTest
                 HandlecollisionHorizontal();
 
             pos.Y += vel.Y * elapsed;
+
             if (CanCollide)
                 HandlecollisionVertical();
         }

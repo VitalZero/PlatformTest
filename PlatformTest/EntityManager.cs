@@ -150,15 +150,16 @@ namespace PlatformTest
                     Rectangle penetration;
                     Rectangle eAABB = e.GetAABB();
 
-                    if (eAABB.X == 176)
-                    { float a = 0; }
-
                     bAABB = BouncingTile.GetAABB();
-                    Rectangle.Intersect(ref bAABB, ref eAABB, out penetration);
 
-                    if (penetration != Rectangle.Empty)
+                    if (e.CanCollide && e.CanKill)
                     {
-                        e.Kill();
+                        Rectangle.Intersect(ref bAABB, ref eAABB, out penetration);
+
+                        if (penetration != Rectangle.Empty)
+                        {
+                            e.Kill();
+                        }
                     }
                 }
 

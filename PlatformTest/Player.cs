@@ -21,7 +21,7 @@ namespace PlatformTest
                 return instance;
             }
         }
-        private enum States { stand, run, jump, fall, crouch }
+        private enum States { stand, run, jump, fall, crouch, downPipe, upPipe }
 
         public Vector2 Vel { get { return vel; } }
 
@@ -214,7 +214,7 @@ namespace PlatformTest
                         if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A))
                         {
                             if(EntityManager.FireBallCount() < 2)
-                                EntityManager.Add(new FireBall(pos, dir));
+                                EntityManager.Add(new FireBall(pos, flip == 0 ? 1f : -1f));
                         }
                     }
                     break;
@@ -371,6 +371,12 @@ namespace PlatformTest
 
                 case States.crouch:
                     {
+                        if (keyboard.IsKeyDown(Keys.Down))
+                        {
+                            if (CheckForAreas())
+                                break;
+                        }
+
                         animPlayer.PlayAnimation("crouching");
 
                         if (!isOnGround)
@@ -409,6 +415,14 @@ namespace PlatformTest
                         }
                     }
                     break;
+
+                case States.downPipe:
+                    {
+                        CanCollide = false;
+                        vel.Y = 20f;
+                        DrawBehind = true;
+                    }
+                    break;
             }
 
             if (RightWallHit || LeftWallHit)
@@ -429,8 +443,33 @@ namespace PlatformTest
                 if (t.collision == TileCollision.breakable || t.collision == TileCollision.item)
                     World.Instance.RemoveTile(tilePos.X, tilePos.Y);
             }
-
             //dir = 0f;
+        }
+
+        private bool CheckForAreas()
+        {
+            foreach (var a in World.Instance.GetTriggerAreas())
+            {
+                Rectangle pAABB = GetAABB();
+                Rectangle aAABB = a.GetAABB();
+
+                if (aAABB.Intersects(pAABB) && isOnGround &&
+                    pAABB.Right <= aAABB.Right && pAABB.Left >= aAABB.Left)
+                {
+                    if(a.Type == AreaType.downPipe)
+                        GoDownPipe();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void GoDownPipe()
+        {
+            currState = States.downPipe;
+            vel = Vector2.Zero;
+
         }
 
         public override void Draw(SpriteBatch spriteBatch)

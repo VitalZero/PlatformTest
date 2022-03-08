@@ -21,6 +21,7 @@ namespace PlatformTest
         private int tileIndexRestore = -1;
         private Dictionary<int, PowerUp> powerUps;
         TiledMap tiledMap;
+        private List<Area2D> triggerAreas;
         int xStart;
         int xEnd;
 
@@ -37,6 +38,7 @@ namespace PlatformTest
         {
             instance = this;
             powerUps = new Dictionary<int, PowerUp>();
+            triggerAreas = new List<Area2D>();
         }
 
         public void Initialize(string directory)
@@ -52,7 +54,12 @@ namespace PlatformTest
             mapHeight = tiledMap.height;
             tileSize = tiledMap.tilewidth;
 
-            foreach(var p in tiledMap.objectGroups[0].objects)
+            foreach (var p in tiledMap.objectGroups[2].objects)
+            {
+                triggerAreas.Add(new Area2D(p.x, p.y, p.width, p.height, p.type));
+            }
+
+            foreach (var p in tiledMap.objectGroups[0].objects)
             {
                 int xTile = (int)(p.x / 16);
                 int yTile = (int)(p.y / 16);
@@ -163,6 +170,11 @@ namespace PlatformTest
             }
         }
 
+        public List<Area2D> GetTriggerAreas()
+        {
+            return triggerAreas;
+        }
+
         public void Update(GameTime gameTime)
         {
             xStart = (int)Math.Max(0, ((int)Camera.Instance.XOffset) / tileSize);
@@ -230,6 +242,11 @@ namespace PlatformTest
                     new Vector2((int)EntityManager.BouncingTile.Pos.X - (int)Camera.Instance.XOffset, (int)EntityManager.BouncingTile.Pos.Y - (int)Camera.Instance.YOffset),
                     new Rectangle(tx, ty, tileSize, tileSize),
                     Color.White);
+            }
+
+            foreach(var a in triggerAreas)
+            {
+                a.Draw(spriteBatch);
             }
         }
 

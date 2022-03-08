@@ -14,8 +14,8 @@ namespace PlatformTest
         float time;
         Rectangle source;
         private bool freeze;
-        public EventHandler AnimationEnded;
         private bool animationEnded;
+        public EventHandler AnimationEnded;
         private Dictionary<string, Animation> animations;
         string currentAnimation;
 

@@ -116,6 +116,10 @@ namespace VZTMXMapLoader
         public float x { get; set; }
         [XmlAttribute("y")]
         public float y { get; set; }
+        [XmlAttribute("width")]
+        public float width { get; set; }
+        [XmlAttribute("height")]
+        public float height { get; set; }
         public bool ToDelete { get; set; }
     }
 }
