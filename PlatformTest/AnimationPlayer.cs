@@ -14,8 +14,8 @@ namespace PlatformTest
         float time;
         Rectangle source;
         private bool freeze;
-        private bool animationEnded;
-        public EventHandler AnimationEnded;
+        private bool ended;
+        //public EventHandler AnimationEnded;
         private Dictionary<string, Animation> animations;
         string currentAnimation;
 
@@ -34,7 +34,7 @@ namespace PlatformTest
                 currentAnimation = animationName;
                 frameIndex = 0;
                 time = 0f;
-                animationEnded = false;
+                ended = false;
 
                 source = new Rectangle(
                     (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX,
@@ -46,7 +46,6 @@ namespace PlatformTest
 
         public void Step(float delta)
         {
-
         }
 
         public void Add(string animationName, Animation animation)
@@ -62,13 +61,26 @@ namespace PlatformTest
             freeze = true;
         }
 
-        public void OnAnimationEnded()
+        public bool AnimationEnded(string animationName)
         {
-            if(AnimationEnded != null)
-            {
-                AnimationEnded(this, EventArgs.Empty);
-            }
+            if (ended && animationName == currentAnimation)
+                return true;
+
+            return false;
         }
+
+        public string CurrentAnimation()
+        {
+            return currentAnimation;
+        }
+
+        //public void OnAnimationEnded()
+        //{
+        //    if(AnimationEnded != null)
+        //    {
+        //        AnimationEnded(this, EventArgs.Empty);
+        //    }
+        //}
 
         public void Update(float dt)
         {
@@ -89,9 +101,10 @@ namespace PlatformTest
                     }
                     else
                     {
-                        frameIndex = Math.Min(frameIndex + 1, animations[currentAnimation].FrameCount - 1);
                         if (frameIndex + 1 >= animations[currentAnimation].FrameCount)
-                            OnAnimationEnded();
+                            ended = true;
+
+                        frameIndex = Math.Min(frameIndex + 1, animations[currentAnimation].FrameCount - 1);
                     }
                 }
             }

@@ -21,7 +21,8 @@ namespace PlatformTest
                 return instance;
             }
         }
-        private enum States { stand, run, jump, fall, crouch, downPipe, upPipe }
+        private enum States { stand, run, jump, fall, crouch, firing, downPipe, upPipe }
+        private enum Power { none, big, fire }
 
         public Vector2 Vel { get { return vel; } }
 
@@ -34,13 +35,16 @@ namespace PlatformTest
         private SpriteEffects flip;
         private AnimationPlayer animPlayer;
         private States currState;
+        private States prevState;
+        private Power power;
         public bool Pause { get; set; }
         private const float maxWalkSpeed = 60f;
         private const float maxRunSpeed = 170f;
         private const float moveXAccel = 4f;
         private const float stopAccel = 6f;
         public Vector2 PrevPos { get; private set; }
-        bool bounce;
+        private bool bounce;
+        private float pipeSpeed;
 
         protected float jumpSpeed;
         protected float minGravity;
@@ -51,6 +55,9 @@ namespace PlatformTest
         readonly int jumpHeight = (int)(4.25 * 16);
         readonly int minJumpHeight = (int)(2 * 16);
         readonly int maxJumpHeight = (int)(5.2 * 16);
+        private string appended;
+        private Rectangle aabbSmall;
+        private Rectangle aabbBig;
 
         Effect paleteSwap;
         Texture2D sourcePal;
@@ -66,44 +73,37 @@ namespace PlatformTest
         {
             drawPriority = 1;
             pos = new Vector2(50f, 50f);
-            size = new Vector2(16, 31);
             vel = Vector2.Zero;
-            dir = 0f;
-            //jumpSpeed = -240f;
-            //gravity = 24f;
+            dir = 1f;
             maxGravity = 2 * maxJumpHeight / (float)Math.Pow(timeToJumpPeak * 1.2, 2);
             normalGravity = 2 * jumpHeight / (float)Math.Pow(timeToJumpPeak, 2); // this is the normal one
             minGravity = 2 * minJumpHeight / (float)Math.Pow(timeToJumpPeak * .4, 2);
             jumpSpeed = normalGravity * timeToJumpPeak;
             bounceSpeed = maxGravity * timeToJumpPeak * .4f;
             gravity = normalGravity;
-
-            //gravity *= 0.0167f; // if I dont do this, doesnt jump
+            pipeSpeed = 30f;
 
             speed = maxWalkSpeed;
-            aabb = new Rectangle(2, 4, 12, 27);
-            origin = new Vector2(size.X / 2, size.Y);
+            aabbBig = new Rectangle(2, 4, 12, 27);
+            aabbSmall = new Rectangle(2, 3, 12, 12);
             animPlayer = new AnimationPlayer();
             Pause = false;
+            power = Power.none;
+            appended = "Small";
+            aabb = aabbSmall;
 
             bounce = false;
 
             instance = this;
 
             currState = States.fall;
+            prevState = currState;
 
-            //for debug
-            playerStates.Add("STAND");
-            playerStates.Add("RUN");
-            playerStates.Add("JUMP");
-            playerStates.Add("FALL");
-            //
+            //pos -= origin;
         }
 
         public override void Init()
         {
-            dir = 1f;
-
             texture = ResourceManager.Player;
             paleteSwap = ResourceManager.ColorSwap;
             sourcePal = ResourceManager.SourcePal;
@@ -114,12 +114,21 @@ namespace PlatformTest
             paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
 
-            animPlayer.Add("idle", new Animation(texture, 1f, true, 16, 32, 1, 0, 0));
-            animPlayer.Add("running", new Animation(texture, .04f, true, 16, 32, 3, 16, 0));
-            animPlayer.Add("jumping", new Animation(texture, .1f, true, 16, 32, 1, 16 * 6, 0));
-            animPlayer.Add("falling", new Animation(texture, 1f, true, 16, 32, 1, 16 * 5, 0));
+            animPlayer.Add("idleSmall", new Animation(texture, 1f, true, 16, 16, 1, 0, 16 * 2));
+            animPlayer.Add("runningSmall", new Animation(texture, .04f, true, 16, 32, 3, 16, 16 * 2));
+            animPlayer.Add("jumpingSmall", new Animation(texture, .1f, true, 16, 32, 1, 16 * 6, 16 * 2));
+            animPlayer.Add("skidSmall", new Animation(texture, 1f, true, 16, 32, 1, 16 * 5, 16 * 2));
+            animPlayer.Add("killed", new Animation(texture, 1f, true, 16, 32, 1, 16 * 4, 16 * 2));
+
+            animPlayer.Add("idleBig", new Animation(texture, 1f, true, 16, 32, 1, 0, 0));
+            animPlayer.Add("runningBig", new Animation(texture, .04f, true, 16, 32, 3, 16, 0));
+            animPlayer.Add("jumpingBig", new Animation(texture, .1f, true, 16, 32, 1, 16 * 6, 0));
+            animPlayer.Add("skidBig", new Animation(texture, 1f, true, 16, 32, 1, 16 * 5, 0));
+
             animPlayer.Add("crouching", new Animation(texture, 1f, true, 16, 32, 1, 16 * 7, 0));
-            animPlayer.PlayAnimation("idle");
+            animPlayer.Add("firing", new Animation(texture, 0.04f, false, 16, 32, 1, 16 * 4, 0));
+
+            animPlayer.PlayAnimation("idle" + appended);
             font = ResourceManager.Arial;
         }
 
@@ -133,13 +142,35 @@ namespace PlatformTest
 
         public override void Hit()
         {
-            CanCollide = false;
-            Active = false;
-            Destroyed = true;
+            if (power > Power.none)
+            {
+                Shrink();
+            }
+            else
+            {
+                CanCollide = false;
+                //Active = false;
+                //Destroyed = true;
+            }
+        }
+
+        private void Shrink()
+        {
+            pos.Y += aabb.Bottom - aabbSmall.Bottom;
+            aabb = aabbSmall;
+            power = Power.none;
+            appended = "Small";
+            paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
+            paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
+            paleteSwap.CurrentTechnique.Passes[0].Apply();
         }
 
         public void Burn()
         {
+            pos.Y -= aabbBig.Bottom - aabb.Bottom;
+            aabb = aabbBig;
+            appended = "Big";
+            power = Power.fire;
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
             paleteSwap.Parameters["xTargetPal"].SetValue(pal2);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
@@ -147,6 +178,10 @@ namespace PlatformTest
 
         public void Grow()
         {
+            pos.Y -= aabbBig.Bottom - aabb.Bottom;
+            aabb = aabbBig;
+            appended = "Big";
+            power = Power.big;
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
             paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
@@ -167,11 +202,12 @@ namespace PlatformTest
             if (Pause)
                 return;
 
+
             switch (currState)
             {
                 case States.stand:
                     {
-                        animPlayer.PlayAnimation("idle");
+                        animPlayer.PlayAnimation("idle" + appended);
 
                         if (keyboard.IsKeyDown(Keys.A))
                         {
@@ -205,14 +241,18 @@ namespace PlatformTest
                             break;
                         }
 
-                        if(keyboard.IsKeyDown(Keys.Down))
+                        if(keyboard.IsKeyDown(Keys.Down) && power > Power.none)
                         {
+                            animPlayer.PlayAnimation("crouching");
                             currState = States.crouch;
                             break;
                         }
 
-                        if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A))
+                        if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
                         {
+                            animPlayer.PlayAnimation("firing");
+                            prevState = currState;
+                            currState = States.firing;
                             if(EntityManager.FireBallCount() < 2)
                                 EntityManager.Add(new FireBall(pos, flip == 0 ? 1f : -1f));
                         }
@@ -221,7 +261,7 @@ namespace PlatformTest
 
                 case States.run:
                     {
-                        animPlayer.PlayAnimation("running");
+                        animPlayer.PlayAnimation("running" + appended);
 
                         if(keyboard.IsKeyDown(Keys.A))
                         {
@@ -240,19 +280,17 @@ namespace PlatformTest
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
                             dir = 1f;
-                            //vel.X = speed;
+                            vel.X = speed;
 
                             flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
                             dir = -1f;
-                            //vel.X = -speed;
+                            vel.X = -speed;
 
                             flip = SpriteEffects.FlipHorizontally;
                         }
-
-                        vel.X = speed * dir;
 
                         if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
@@ -272,8 +310,9 @@ namespace PlatformTest
                             break;
                         }
 
-                        if (keyboard.IsKeyDown(Keys.Down))
+                        if (keyboard.IsKeyDown(Keys.Down) && power > Power.none)
                         {
+                            animPlayer.PlayAnimation("crouching");
                             currState = States.crouch;
                             vel.X = 0;
                             break;
@@ -283,21 +322,17 @@ namespace PlatformTest
 
                 case States.jump:
                     {
-                        animPlayer.PlayAnimation("jumping");
+                        animPlayer.PlayAnimation("jumping" + appended);
 
                         
                         if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            dir = 1f;
-                            //vel.X = speed;
+                            vel.X = speed;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            dir = -1f;
-                            //vel.X = speed;
+                            vel.X = -speed;
                         }
-
-                        vel.X = speed * dir;
 
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
@@ -340,16 +375,12 @@ namespace PlatformTest
 
                     if (keyboard.IsKeyDown(Keys.Right))
                     {
-                        dir = 1f;
-                        //vel.X = speed;
+                        vel.X = speed;
                     }
                     else if (keyboard.IsKeyDown(Keys.Left))
                     {
-                        dir = -1f;
-                        //vel.X = -speed;
+                        vel.X = -speed;
                     }
-
-                    vel.X = speed * dir;
 
                     if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                     {
@@ -369,6 +400,15 @@ namespace PlatformTest
                     }
                     break;
 
+                case States.firing:
+                    {
+                        if(animPlayer.AnimationEnded("firing"))
+                        {
+                            currState = prevState;
+                        }
+                    }
+                    break;
+
                 case States.crouch:
                     {
                         if (keyboard.IsKeyDown(Keys.Down))
@@ -376,8 +416,6 @@ namespace PlatformTest
                             if (CheckForAreas())
                                 break;
                         }
-
-                        animPlayer.PlayAnimation("crouching");
 
                         if (!isOnGround)
                         {
@@ -418,9 +456,7 @@ namespace PlatformTest
 
                 case States.downPipe:
                     {
-                        CanCollide = false;
-                        vel.Y = 20f;
-                        DrawBehind = true;
+                        vel.Y = pipeSpeed;
                     }
                     break;
             }
@@ -430,7 +466,9 @@ namespace PlatformTest
 
             //vel.X = Math.Clamp(vel.X, -speed * elapsed, speed * elapsed);
 
-            animPlayer.Update(MapValue(maxRunSpeed, Math.Abs(vel.X), elapsed));
+            float updateSpeed = (currState == States.firing) ? 60 : Math.Abs(vel.X); // to change
+
+            animPlayer.Update(MapValue(maxRunSpeed, updateSpeed, elapsed));
 
             LateUpdate(gameTime);
 
@@ -440,8 +478,16 @@ namespace PlatformTest
                 Point tilePos = GetContactTile();
                 Tile t = World.Instance.GetTile(tilePos.X, tilePos.Y);
 
-                if (t.collision == TileCollision.breakable || t.collision == TileCollision.item)
-                    World.Instance.RemoveTile(tilePos.X, tilePos.Y);
+                if (power > Power.none)
+                {
+                    if (t.collision == TileCollision.breakable || t.collision == TileCollision.item)
+                        World.Instance.RemoveTile(tilePos.X, tilePos.Y);
+                }
+                else
+                {
+                    if (t.collision == TileCollision.item)
+                        World.Instance.RemoveTile(tilePos.X, tilePos.Y);
+                }
             }
             //dir = 0f;
         }
@@ -467,6 +513,8 @@ namespace PlatformTest
 
         private void GoDownPipe()
         {
+            CanCollide = false;
+            DrawBehind = true;
             currState = States.downPipe;
             vel = Vector2.Zero;
 
@@ -484,6 +532,11 @@ namespace PlatformTest
 
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred);
+
+            spriteBatch.Draw(ResourceManager.Pixel, new Rectangle(
+                (int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset,
+                1, 1), 
+                Color.YellowGreen);
 
             base.Draw(spriteBatch);
         }

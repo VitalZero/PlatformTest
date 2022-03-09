@@ -9,6 +9,7 @@ namespace PlatformTest
         protected Vector2 pos;
         protected Vector2 size;
         protected Rectangle aabb;
+        protected Vector2 origin;
 
         public Rectangle GetAABB()
         {

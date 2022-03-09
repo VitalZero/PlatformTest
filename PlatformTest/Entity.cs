@@ -17,6 +17,7 @@ namespace PlatformTest
         protected bool LeftWallHit;
         protected bool FloorHit;
         protected bool CeilingHit;
+        protected float scale;
         protected float dir;
         public bool Active { get; set; }
         public bool CanCollide { get; set; }
@@ -39,6 +40,7 @@ namespace PlatformTest
             DrawBehind = false;
             drawPriority = 0;
             CanBeHit = true;
+            scale = 1;
         }
 
         public void Move(float x, float y)
@@ -286,8 +288,8 @@ namespace PlatformTest
                     tilesToCheck.Add(World.Instance.GetTile(i, top));
                 }
 
-                if (dir < 0f)
-                    tilesToCheck.Reverse();
+                //if (dir < 0f)
+                //    tilesToCheck.Reverse();
 
                 foreach (var t in tilesToCheck)
                 {
