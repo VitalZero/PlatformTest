@@ -55,8 +55,8 @@ namespace PlatformTest
         private string appended;
         private Rectangle aabbSmall;
         private Rectangle aabbBig;
-        private Vector2 originSmall = new Vector2(8, 15);
-        private Vector2 originBig = new Vector2(8, 31);
+        private readonly Vector2 originSmall = new Vector2(8, 15);
+        private readonly Vector2 originBig = new Vector2(8, 31);
 
         Effect paleteSwap;
         Texture2D sourcePal;
@@ -210,8 +210,11 @@ namespace PlatformTest
             KeyboardState oldState = keyboard;
             keyboard = Keyboard.GetState();
 
-            //if (keyboard.IsKeyDown(Keys.G) && oldState.IsKeyUp(Keys.G))
-            //    Grow();
+            if (keyboard.IsKeyDown(Keys.G) && oldState.IsKeyUp(Keys.G))
+            {
+                Burn();
+                power = Power.fire;
+            }
             //if (keyboard.IsKeyDown(Keys.H) && oldState.IsKeyUp(Keys.H))
             //    Shrink();
 
@@ -242,7 +245,7 @@ namespace PlatformTest
 
                         vel.X = 0;
 
-                        if (!isOnGround)
+                        if (!IsOnGround)
                         {
                             currState = States.fall;
                             break;
@@ -259,7 +262,7 @@ namespace PlatformTest
 
                             vel.Y = -jumpSpeed;  
                             jumpTimer = jumpHoldTime;
-                            isOnGround = false;
+                            IsOnGround = false;
                             break;
                         }
 
@@ -275,8 +278,8 @@ namespace PlatformTest
                             animPlayer.PlayAnimation("firing");
                             prevState = currState;
                             currState = States.firing;
-                            if(EntityManager.FireBallCount() < 2)
-                                EntityManager.Add(new FireBall(new Vector2(pos.X - 4, pos.Y -24), flip == 0 ? 1f : -1f));
+                            if(EntityManager.FireBallCount < 2)
+                                EntityManager.Add(new FireBall(new Vector2(flip == 0 ? pos.X : pos.X - 7, pos.Y - 28), flip == 0 ? 1f : -1f));
                         }
                     }
                     break;
@@ -323,10 +326,10 @@ namespace PlatformTest
                                 gravity = maxGravity;
 
                             jumpTimer = jumpHoldTime; 
-                            isOnGround = false;
+                            IsOnGround = false;
                             break;
                         }
-                        else if (!isOnGround)
+                        else if (!IsOnGround)
                         {
                             currState = States.fall;
                             break;
@@ -409,7 +412,7 @@ namespace PlatformTest
                         vel.X = 0;
                     }
 
-                    if (isOnGround)
+                    if (IsOnGround)
                     {
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
@@ -439,7 +442,7 @@ namespace PlatformTest
                                 break;
                         }
 
-                        if (!isOnGround)
+                        if (!IsOnGround)
                         {
                             currState = States.fall;
                             break;
@@ -470,7 +473,7 @@ namespace PlatformTest
 
                             vel.Y = -jumpSpeed;
                             jumpTimer = jumpHoldTime;
-                            isOnGround = false;
+                            IsOnGround = false;
                             break;
                         }
                     }
@@ -521,7 +524,7 @@ namespace PlatformTest
                 Rectangle pAABB = GetAABB();
                 Rectangle aAABB = a.GetAABB();
 
-                if (aAABB.Intersects(pAABB) && isOnGround &&
+                if (aAABB.Intersects(pAABB) && IsOnGround &&
                     pAABB.Right <= aAABB.Right && pAABB.Left >= aAABB.Left)
                 {
                     if(a.Type == AreaType.downPipe)
@@ -554,11 +557,6 @@ namespace PlatformTest
 
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred);
-
-            spriteBatch.Draw(ResourceManager.Pixel, new Rectangle(
-                (int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset,
-                1, 1), 
-                Color.YellowGreen);
 
             base.Draw(spriteBatch);
         }

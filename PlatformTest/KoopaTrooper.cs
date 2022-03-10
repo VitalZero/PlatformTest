@@ -23,7 +23,7 @@ namespace PlatformTest
         {
             Index = index;
             this.pos = pos;
-            aabb = new Rectangle(1,11, 13, 13);
+            aabb = new Rectangle(-6,-12, 12, 12);
             animPlayer = new AnimationPlayer();
             speed = 20f;
             awakeTime = 3f;
@@ -32,6 +32,7 @@ namespace PlatformTest
             CanKill = true;
             dir = -1f;
             Active = false;
+            origin = new Vector2(8, 23);
         }
 
         public override void Init()
@@ -73,13 +74,14 @@ namespace PlatformTest
         public override void Kill()
         {
             currState = States.instantKill;
+            origin.Y = 15;
             animPlayer.PlayAnimation("stomped");
             vel.Y = -250f;
             CanKill = false;
             CanCollide = false;
             speed = 30f;
             vFlip = SpriteEffects.FlipVertically;
-            isOnGround = false;
+            IsOnGround = false;
         }
 
         public override void Update(GameTime gameTime)
@@ -167,7 +169,7 @@ namespace PlatformTest
         {
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
-                flip | vFlip, new Vector2(0, 0));
+                flip | vFlip, origin);
 
             base.Draw(spriteBatch);
         }

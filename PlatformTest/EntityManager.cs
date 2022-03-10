@@ -7,7 +7,7 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public class EntityManager
+    public static class EntityManager
     {
         static List<Enemy> enemies = new List<Enemy>();
         static List<PowerUp> powerUps = new List<PowerUp>();
@@ -21,6 +21,8 @@ namespace PlatformTest
         static bool isUpdating;
 
         public static int Count { get { return entities.Count; } }
+        public static int FireBallCount { get { return fireBalls.Count; } }
+        public static int EnemiesCount { get { return enemies.Count; } }
 
         public static void Add(Entity entity)
         {
@@ -45,11 +47,6 @@ namespace PlatformTest
                 powerUps.Add(entity as PowerUp);
             else if (entity is FireBall)
                 fireBalls.Add(entity as FireBall);
-        }
-
-        public static int FireBallCount()
-        {
-            return fireBalls.Count;
         }
 
         public static void Init()
@@ -177,7 +174,20 @@ namespace PlatformTest
                         if (penetration != Rectangle.Empty)
                         {
                             e.Kill();
+                            if (fAABB.Right <= eAABB.Right)
+                            {
+                                e.SetDir(1);
+                            }
+                            else
+                            {
+                                e.SetDir(-1);
+                            }
+
                             f.Destroy();
+
+                            SpriteManager.Add(new AnimatedSprite(
+                                new Vector2((int)f.Pos.X - penetration.Width /*- destRectangle.Width / 2*/, (int)f.Pos.Y - penetration.Height),
+                                new Vector2(16, 16), new Vector2(16, 0), 0.03f, 3));
                         }
                     }
                 }

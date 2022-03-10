@@ -12,7 +12,7 @@ namespace PlatformTest
         protected Vector2 vel;
         protected float speed;
         protected float gravity = 850f;
-        protected bool isOnGround;
+        protected bool IsOnGround;
         protected bool RightWallHit;
         protected bool LeftWallHit;
         protected bool FloorHit;
@@ -24,6 +24,7 @@ namespace PlatformTest
         public bool CanBeHit { get; set; }
         public bool Destroyed { get; set; }
         public bool DrawBehind { get; set; }
+        public bool AffectedByGravity { get; set; }
         public short drawPriority; 
 
         private Point tileHit;
@@ -32,12 +33,13 @@ namespace PlatformTest
 
         public Entity()
         {
-            isOnGround = false;
+            IsOnGround = false;
             tileHit = Point.Zero;
             Active = true;
             CanCollide = true;
             Destroyed = false;
             DrawBehind = false;
+            AffectedByGravity = true;
             drawPriority = 0;
             CanBeHit = true;
             scale = 1;
@@ -79,6 +81,11 @@ namespace PlatformTest
                 (int)(aabbDebug.Center.Y),
                 1, 1),
                 new Color(Color.Yellow, 0.8f));
+
+            spriteBatch.Draw(ResourceManager.Pixel, new Rectangle(
+                            (int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset,
+                            1, 1),
+                            Color.Red);
 #endif
         }
 
@@ -112,7 +119,7 @@ namespace PlatformTest
             CeilingHit = false;
             tileHit = Point.Zero;
 
-            if (!isOnGround)
+            if (!IsOnGround && AffectedByGravity)
                 ApplyGravity(elapsed);
 
             //vel.Y = MathHelper.Clamp(vel.Y, (-256 * elapsed), (256 * elapsed));
@@ -226,21 +233,21 @@ namespace PlatformTest
             int right = bounds.Right / 16;
 
             //check if we are on the ground and the velocity is 0 (we are not falling or jumping)
-            if((int)vel.Y == 0 && isOnGround)
+            if((int)vel.Y == 0 && IsOnGround)
             {
                 // if solid tiles are found on the bottom (left and right), means we are on ground
                 // dont apply gravity and get out of the function, we dont need to check anything the floor again or the ceiling
                 if(World.Instance.GetTile(left, bottom).collision > TileCollision.none ||
                     World.Instance.GetTile(right, bottom).collision > TileCollision.none)
                 {
-                    isOnGround = true;
+                    IsOnGround = true;
                     return;
                 }
                 // if the entity doesnt find a solid tile on the feet (left and right side of the bounding box)
                 // means that is not on ground and can start to apply gravity
                 else 
                 {
-                    isOnGround = false;
+                    IsOnGround = false;
                 }
             }
 
@@ -267,7 +274,7 @@ namespace PlatformTest
 
                             pos.Y -= depth;
                             pos.Y = (int)pos.Y;
-                            isOnGround = true;
+                            IsOnGround = true;
                             FloorHit = true;
                             vel.Y = 0;
                         }
@@ -278,7 +285,7 @@ namespace PlatformTest
 
                         if (bounds.Bottom > (t.Y * 16) + 1)
                         {
-                            isOnGround = false;
+                            IsOnGround = false;
                         }
                     }
                 }

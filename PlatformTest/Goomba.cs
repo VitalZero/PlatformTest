@@ -21,7 +21,7 @@ namespace PlatformTest
         {
             Index = index;
             this.pos = pos;
-            aabb = new Rectangle(2, 3, 12, 13);
+            aabb = new Rectangle(-6, -12, 12, 12);
             animPlayer = new AnimationPlayer();
             speed = 20f;
             deadTime = 0.5f;
@@ -31,6 +31,7 @@ namespace PlatformTest
             dir = -1f;
             Active = false;
             vFlip = SpriteEffects.None;
+            origin = new Vector2(8, 15);
         }
 
         public override void Init()
@@ -58,7 +59,7 @@ namespace PlatformTest
             CanCollide = false;
             speed = 30f;
             vFlip = SpriteEffects.FlipVertically;
-            isOnGround = false;
+            IsOnGround = false;
         }
 
         public override void Update(GameTime gameTime)
@@ -118,7 +119,7 @@ namespace PlatformTest
         {
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
-                vFlip, new Vector2(0, 0));
+                vFlip, origin);
 
             base.Draw(spriteBatch);
         }

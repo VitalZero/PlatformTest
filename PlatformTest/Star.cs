@@ -35,10 +35,10 @@ namespace PlatformTest
             {
                 vel.X = speed * dir;
 
-                if(isOnGround)
+                if(IsOnGround)
                 {
                     vel.Y = bounceSpeed;
-                    isOnGround = false;
+                    IsOnGround = false;
                 }
 
                 if (RightWallHit)

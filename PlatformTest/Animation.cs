@@ -31,7 +31,15 @@ namespace PlatformTest
         int startFrameY;
         public int StartFrameY { get { return startFrameY; } }
 
-        public Animation(Texture2D texture, float frameTime, bool isLooping, int frameWidth, int frameHeight, int frameCount, int startFrameX, int startFrameY)
+        public Animation(
+            Texture2D texture, 
+            float frameTime, 
+            bool isLooping, 
+            int frameWidth, 
+            int frameHeight, 
+            int frameCount, 
+            int startFrameX, 
+            int startFrameY)
         {
             this.texture = texture;
             this.frameTime = Math.Abs(frameTime);
