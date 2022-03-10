@@ -16,11 +16,14 @@ namespace PlatformTest
         private const int windowWidth = width * pixels;
         private const int windowHeight = height * pixels;
         private World world;
+        private KeyboardState keyboard;
         private Matrix globalTransformation;
         private float fps;
         SpriteFont font;
         public GraphicsDevice gfx { get { return GraphicsDevice; } }
         private RenderTarget2D renderTarget;
+        private bool pause = false;
+        private bool advance = false;
 
         public Platformer()
         {
@@ -60,21 +63,33 @@ namespace PlatformTest
             // TODO: use this.Content to load your game content here
 
             EntityManager.Add(Player.Instance);
-            EntityManager.Add(new Goomba(new Vector2(11 * 16, 8 * 16), 11 + World.Instance.mapWidth * 8));
         }
 
         protected override void Update(GameTime gameTime)
         {
+            KeyboardState oldState = keyboard;
+            keyboard = Keyboard.GetState();
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (keyboard.IsKeyDown(Keys.W) && oldState.IsKeyUp(Keys.W))
+                pause = !pause;
+            if (keyboard.IsKeyDown(Keys.Q) && oldState.IsKeyUp(Keys.Q))
+                advance = true;
+
             fps = 1f / (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            world.Update(gameTime);
+            if (!pause || ( advance))
+            {
+                world.Update(gameTime);
 
-            EntityManager.Update(gameTime);
+                EntityManager.Update(gameTime);
 
-            Camera.Instance.CenterOnPlayer();
+                Camera.Instance.CenterOnPlayer();
+            }
+
+            advance = false;
 
             // TODO: Add your update logic here
 

@@ -64,7 +64,7 @@ namespace PlatformTest
         {
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
-                SpriteEffects.None);
+                SpriteEffects.None, new Vector2(0, 0));
         }
     }
 }

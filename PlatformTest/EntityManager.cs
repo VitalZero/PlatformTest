@@ -246,11 +246,11 @@ namespace PlatformTest
                 {
                     if(p is Mushroom)
                     {
-                        Player.Instance.Grow();
+                        Player.Instance.CollectedPowerUp();
                     }
                     if (p is Flower)
                     {
-                        Player.Instance.Burn();
+                        Player.Instance.CollectedPowerUp();
                     }
 
                     p.Collected();

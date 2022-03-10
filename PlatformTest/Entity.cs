@@ -24,7 +24,7 @@ namespace PlatformTest
         public bool CanBeHit { get; set; }
         public bool Destroyed { get; set; }
         public bool DrawBehind { get; set; }
-        public short drawPriority;
+        public short drawPriority; 
 
         private Point tileHit;
 
@@ -41,6 +41,11 @@ namespace PlatformTest
             drawPriority = 0;
             CanBeHit = true;
             scale = 1;
+        }
+
+        public Rectangle GetAABB()
+        {
+            return new Rectangle((int)Pos.X + aabb.X, (int)Pos.Y + aabb.Y, aabb.Width, aabb.Height);
         }
 
         public void Move(float x, float y)
@@ -63,11 +68,11 @@ namespace PlatformTest
             aabbDebug.Y += (int)-Camera.Instance.YOffset;
             spriteBatch.Draw(ResourceManager.Pixel, aabbDebug, new Color(Color.Blue, 0.5f));
 
-            spriteBatch.Draw(ResourceManager.Pixel, new Rectangle(
-                (int)(aabbDebug.Center.X),
-                (int)(aabbDebug.Bottom),
-                1, 1),
-                new Color(Color.White, 0.8f)) ;
+            //spriteBatch.Draw(ResourceManager.Pixel, new Rectangle(
+            //    (int)(aabbDebug.Center.X),
+            //    (int)(aabbDebug.Bottom),
+            //    1, 1),
+            //    new Color(Color.White, 0.8f)) ;
 
             spriteBatch.Draw(ResourceManager.Pixel, new Rectangle(
                 (int)(aabbDebug.Center.X),

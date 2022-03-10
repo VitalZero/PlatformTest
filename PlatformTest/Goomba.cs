@@ -45,6 +45,7 @@ namespace PlatformTest
         public override void Hit()
         {
             currState = States.stomped;
+            animPlayer.PlayAnimation("stomped");
             CanKill = false;
             CanCollide = false;
         }
@@ -68,7 +69,6 @@ namespace PlatformTest
             {
                 case States.wandering:
                     {
-                        animPlayer.PlayAnimation("walking");
                         vel.X = speed * dir;
 
                         if (RightWallHit)
@@ -85,8 +85,6 @@ namespace PlatformTest
                     {
                         deadTimeAcc += elapsed;
                         vel.X = 0f;
-
-                        animPlayer.PlayAnimation("stomped");
 
                         if (deadTimeAcc >= deadTime)
                         {
@@ -120,7 +118,7 @@ namespace PlatformTest
         {
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
-                vFlip);
+                vFlip, new Vector2(0, 0));
 
             base.Draw(spriteBatch);
         }

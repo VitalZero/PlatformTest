@@ -26,9 +26,6 @@ namespace PlatformTest
 
         public Vector2 Vel { get { return vel; } }
 
-        private Vector2 origin;
-
-
         private const float jumpHoldTime = 0.25f;
         private float jumpTimer = 0;
         private KeyboardState keyboard;
@@ -37,7 +34,6 @@ namespace PlatformTest
         private States currState;
         private States prevState;
         private Power power;
-        public bool Pause { get; set; }
         private const float maxWalkSpeed = 60f;
         private const float maxRunSpeed = 170f;
         private const float moveXAccel = 4f;
@@ -45,6 +41,7 @@ namespace PlatformTest
         public Vector2 PrevPos { get; private set; }
         private bool bounce;
         private float pipeSpeed;
+        private bool canTransform = false;
 
         protected float jumpSpeed;
         protected float minGravity;
@@ -58,6 +55,8 @@ namespace PlatformTest
         private string appended;
         private Rectangle aabbSmall;
         private Rectangle aabbBig;
+        private Vector2 originSmall = new Vector2(8, 15);
+        private Vector2 originBig = new Vector2(8, 31);
 
         Effect paleteSwap;
         Texture2D sourcePal;
@@ -84,10 +83,11 @@ namespace PlatformTest
             pipeSpeed = 30f;
 
             speed = maxWalkSpeed;
-            aabbBig = new Rectangle(2, 4, 12, 27);
-            aabbSmall = new Rectangle(2, 3, 12, 12);
+            //aabbBig = new Rectangle(2, 4, 12, 27);
+            //aabbSmall = new Rectangle(2, 3, 12, 12);
+            aabbBig = new Rectangle(-6, -27, 12, 27);
+            aabbSmall = new Rectangle(-6, -12, 12, 12);
             animPlayer = new AnimationPlayer();
-            Pause = false;
             power = Power.none;
             appended = "Small";
             aabb = aabbSmall;
@@ -104,6 +104,8 @@ namespace PlatformTest
 
         public override void Init()
         {
+            origin = originSmall;
+
             texture = ResourceManager.Player;
             paleteSwap = ResourceManager.ColorSwap;
             sourcePal = ResourceManager.SourcePal;
@@ -144,7 +146,8 @@ namespace PlatformTest
         {
             if (power > Power.none)
             {
-                Shrink();
+                power = Power.none;
+                canTransform = true;
             }
             else
             {
@@ -154,34 +157,45 @@ namespace PlatformTest
             }
         }
 
+        public void CollectedPowerUp()
+        {
+            if (power == Power.none)
+            {
+                power = Power.big;
+                canTransform = true;
+            }
+            else if (power == Power.big)
+            {
+                power = Power.fire;
+                canTransform = true;
+            }
+        }
+
         private void Shrink()
         {
-            pos.Y += aabb.Bottom - aabbSmall.Bottom;
+            origin = originSmall;
             aabb = aabbSmall;
-            power = Power.none;
             appended = "Small";
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
             paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
         }
 
-        public void Burn()
+        private void Burn()
         {
-            pos.Y -= aabbBig.Bottom - aabb.Bottom;
+            origin = originBig;
             aabb = aabbBig;
             appended = "Big";
-            power = Power.fire;
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
             paleteSwap.Parameters["xTargetPal"].SetValue(pal2);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
         }
 
-        public void Grow()
+        private void Grow()
         {
-            pos.Y -= aabbBig.Bottom - aabb.Bottom;
+            origin = originBig;
             aabb = aabbBig;
             appended = "Big";
-            power = Power.big;
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
             paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
@@ -196,12 +210,20 @@ namespace PlatformTest
             KeyboardState oldState = keyboard;
             keyboard = Keyboard.GetState();
 
-            if (keyboard.IsKeyDown(Keys.W) && oldState.IsKeyUp(Keys.W))
-                Pause = !Pause;
+            //if (keyboard.IsKeyDown(Keys.G) && oldState.IsKeyUp(Keys.G))
+            //    Grow();
+            //if (keyboard.IsKeyDown(Keys.H) && oldState.IsKeyUp(Keys.H))
+            //    Shrink();
 
-            if (Pause)
-                return;
-
+            if(canTransform)
+            {
+                if (power == Power.none)
+                    Shrink();
+                if (power == Power.big)
+                    Grow();
+                if (power == Power.fire)
+                    Burn();
+            }
 
             switch (currState)
             {
@@ -254,7 +276,7 @@ namespace PlatformTest
                             prevState = currState;
                             currState = States.firing;
                             if(EntityManager.FireBallCount() < 2)
-                                EntityManager.Add(new FireBall(pos, flip == 0 ? 1f : -1f));
+                                EntityManager.Add(new FireBall(new Vector2(pos.X - 4, pos.Y -24), flip == 0 ? 1f : -1f));
                         }
                     }
                     break;
@@ -528,7 +550,7 @@ namespace PlatformTest
 
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
-                flip);
+                flip, origin);
 
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred);

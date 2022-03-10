@@ -8,13 +8,16 @@ namespace PlatformTest
 {
     public class KoopaTrooper : Enemy
     {
-        private enum States { wandering, stomped, rebounding }
+        private enum States { wandering, stomped, rebounding, instantKill }
 
         private AnimationPlayer animPlayer;
         private float awakeTime;
         private float awakeTimeAcc;
+        private float deadTime;
+        private float deadTimeAcc;
         private States currState;
         private SpriteEffects flip;
+        private SpriteEffects vFlip;
 
         public KoopaTrooper(Vector2 pos, int index)
         {
@@ -49,19 +52,34 @@ namespace PlatformTest
             if (currState == States.wandering)
             {
                 currState = States.stomped;
+                animPlayer.PlayAnimation("stomped");
                 CanKill = false;
             }
             else if (currState == States.stomped)
             {
                 currState = States.rebounding;
+                animPlayer.PlayAnimation("stomped");
                 CanKill = true;
             }
             else if (currState == States.rebounding)
             {
                 currState = States.stomped;
+                animPlayer.PlayAnimation("stomped");
                 CanKill = false;
             }
             //CanCollide = false;
+        }
+
+        public override void Kill()
+        {
+            currState = States.instantKill;
+            animPlayer.PlayAnimation("stomped");
+            vel.Y = -250f;
+            CanKill = false;
+            CanCollide = false;
+            speed = 30f;
+            vFlip = SpriteEffects.FlipVertically;
+            isOnGround = false;
         }
 
         public override void Update(GameTime gameTime)
@@ -72,8 +90,6 @@ namespace PlatformTest
             {
                 case States.wandering:
                     {
-                        animPlayer.PlayAnimation("walking");
-
                         vel.X = speed * dir;
 
                         if(vel.X > 0)
@@ -101,6 +117,7 @@ namespace PlatformTest
                         {
                             awakeTimeAcc = 0f;
                             currState = States.wandering;
+                            animPlayer.PlayAnimation("walking");
                             CanKill = true;
                             break;
                         }
@@ -113,8 +130,6 @@ namespace PlatformTest
                     break;
                 case States.rebounding:
                     {
-                        animPlayer.PlayAnimation("stomped");
-
                         vel.X = (speed * 15f) *  dir;
 
                         if (RightWallHit)
@@ -124,6 +139,20 @@ namespace PlatformTest
                         else if (LeftWallHit)
                         {
                             dir = 1f;
+                        }
+                    }
+                    break;
+                case States.instantKill:
+                    {
+                        animPlayer.Freeze();
+                        deadTimeAcc += elapsed;
+
+                        vel.X = speed * dir;
+
+                        if (deadTimeAcc >= 1f)
+                        {
+                            Active = false;
+                            Destroyed = true;
                         }
                     }
                     break;
@@ -138,7 +167,7 @@ namespace PlatformTest
         {
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
-                flip);
+                flip | vFlip, new Vector2(0, 0));
 
             base.Draw(spriteBatch);
         }

@@ -120,10 +120,10 @@ namespace PlatformTest
                 animations[currentAnimation].FrameHeight);
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 pos, SpriteEffects effects)
+        public void Draw(SpriteBatch spriteBatch, Vector2 pos, SpriteEffects effects, Vector2 origin)
         {
             spriteBatch.Draw(animations[currentAnimation].Texture, pos, source, Color.White, 
-                0f, Vector2.Zero, 1f, effects, 0f);
+                0f, origin, 1f, effects, 0f);
         }
     }
 }

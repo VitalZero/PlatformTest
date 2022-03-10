@@ -11,11 +11,6 @@ namespace PlatformTest
         protected Rectangle aabb;
         protected Vector2 origin;
 
-        public Rectangle GetAABB()
-        {
-            return new Rectangle((int)pos.X + aabb.X, (int)pos.Y + aabb.Y, aabb.Width, aabb.Height);
-        }
-
         public abstract void Update(GameTime gameTime);
 
         public abstract void Draw(SpriteBatch spriteBatch);
