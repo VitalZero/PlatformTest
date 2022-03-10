@@ -177,8 +177,8 @@ namespace PlatformTest
 
         public void Update(GameTime gameTime)
         {
-            xStart = (int)Math.Max(0, ((int)Camera.Instance.XOffset) / tileSize);
-            xEnd = (int)Math.Min(mapWidth, ((int)(Camera.Instance.XOffset + 320) / tileSize) + 1);
+            xStart = (int)Math.Max(0, (((int)Camera.Instance.XOffset) / tileSize) -1);
+            xEnd = (int)Math.Min(mapWidth, ((int)(Camera.Instance.XOffset + 320) / tileSize) + 2);
 
             if (EntityManager.BouncingTile != null)
             {

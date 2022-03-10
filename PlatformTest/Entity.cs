@@ -120,9 +120,10 @@ namespace PlatformTest
             tileHit = Point.Zero;
 
             if (!IsOnGround && AffectedByGravity)
+            {
                 ApplyGravity(elapsed);
-
-            //vel.Y = MathHelper.Clamp(vel.Y, (-256 * elapsed), (256 * elapsed));
+                vel.Y = MathHelper.Clamp(vel.Y, -400, 400);
+            }
 
             Physics(elapsed);
         }

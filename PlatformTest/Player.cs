@@ -305,14 +305,14 @@ namespace PlatformTest
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
                             dir = 1f;
-                            vel.X = speed;
+                            vel.X = Lerp(vel.X, speed, 0.1f);
 
                             flip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
                             dir = -1f;
-                            vel.X = -speed;
+                            vel.X = Lerp(vel.X, -speed, 0.1f);
 
                             flip = SpriteEffects.FlipHorizontally;
                         }
@@ -352,11 +352,11 @@ namespace PlatformTest
                         
                         if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X = speed;
+                            vel.X = Lerp(vel.X, speed, 0.05f);
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = -speed;
+                            vel.X = Lerp(vel.X, -speed, 0.05f);
                         }
 
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
@@ -400,11 +400,11 @@ namespace PlatformTest
 
                     if (keyboard.IsKeyDown(Keys.Right))
                     {
-                        vel.X = speed;
+                        vel.X = Lerp(vel.X, speed, 0.05f);
                     }
                     else if (keyboard.IsKeyDown(Keys.Left))
                     {
-                        vel.X = -speed;
+                        vel.X = Lerp(vel.X, -speed, 0.05f);
                     }
 
                     if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
@@ -490,13 +490,13 @@ namespace PlatformTest
                 speed = maxWalkSpeed;
 
             //vel.X = Math.Clamp(vel.X, -speed * elapsed, speed * elapsed);
+            //vel.Y = Math.Clamp(vel.Y, -400f, 400f);
 
             float updateSpeed = (currState == States.firing) ? 60 : Math.Abs(vel.X); // to change
 
             animPlayer.Update(MapValue(maxRunSpeed, updateSpeed, elapsed));
 
             LateUpdate(gameTime);
-
 
             if (CeilingHit)
             {
@@ -561,14 +561,26 @@ namespace PlatformTest
             base.Draw(spriteBatch);
         }
 
-        private float Lerp(float startValue, float endValue, float amount)
-        {
-            //return (startValue * (1f - amount)) + (endValue * amount);
-            //return startValue + amount * (endValue - startValue);
-            if (startValue >= endValue)
-                return endValue;
+        //private float Lerp(float startValue, float endValue, float amount)
+        //{
+        //    //return (startValue * (1f - amount)) + (endValue * amount);
+        //    //return startValue + amount * (endValue - startValue);
+        //    if (startValue >= endValue)
+        //        return endValue;
 
-            return startValue + amount;
+        //    return startValue + amount;
+        //}
+
+        private float Lerp(float start, float end, float percent)
+        {
+            //if (percent >= 1.0f)
+            //    return end;
+            //else if (percent <= 0f)
+            //    return start;
+
+            //float amount = end * percent;
+
+            return (start * (1f - percent)) + (end * percent);
         }
 
         private float MapValue(float maxValue, float minValue, float knowMaxValue)
