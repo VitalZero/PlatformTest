@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 
 namespace PlatformTest
 {
@@ -24,6 +25,7 @@ namespace PlatformTest
         private RenderTarget2D renderTarget;
         private bool pause = false;
         private bool advance = false;
+        Song music;
 
         public Platformer()
         {
@@ -54,6 +56,7 @@ namespace PlatformTest
 
         protected override void LoadContent()
         {
+            music = Content.Load<Song>("smbsurface");
             ResourceManager.Load(Content);
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -64,6 +67,9 @@ namespace PlatformTest
 
             EntityManager.Add(Player.Instance);
             EntityManager.Add(new KoopaTrooper(new Vector2(22 * 16, 11 * 16), 20 + World.Instance.mapWidth * 11));
+
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(music);
         }
 
         protected override void Update(GameTime gameTime)

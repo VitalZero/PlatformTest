@@ -29,7 +29,7 @@ namespace PlatformTest
         {
             texture = ResourceManager.MiscSprites;
             animPlayer = new AnimationPlayer();
-            animPlayer.Add("idle", new Animation(texture, 0.04f, true, 8, 16, 4, 0, 16));
+            animPlayer.Add("idle", new Animation(texture, 0.05f, true, 8, 16, 4, 64, 0));
             spriteArea = new Rectangle(0, 0, 16, 16);
 
             animPlayer.PlayAnimation("idle");

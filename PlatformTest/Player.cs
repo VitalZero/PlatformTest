@@ -111,7 +111,7 @@ namespace PlatformTest
             pal2 = ResourceManager.Pal2;
 
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
-            paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
+            paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
 
             animPlayer.Add("idleSmall", new Animation(texture, 1f, true, 16, 16, 1, 0, 16 * 2));
@@ -176,7 +176,7 @@ namespace PlatformTest
             aabb = aabbSmall;
             appended = "Small";
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
-            paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
+            paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
         }
 
@@ -293,7 +293,7 @@ namespace PlatformTest
                         {
                             if (EntityManager.FireBallCount < 2)
                             {
-                                EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X : position.X - 7, position.Y - 28), hFlip == 0 ? 1f : -1f));
+                                EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
 
                                 animPlayer.PlayAnimation("firing");
                                 prevState = currState;
@@ -379,7 +379,7 @@ namespace PlatformTest
                         {
                             if (EntityManager.FireBallCount < 2)
                             {
-                                EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X : position.X - 7, position.Y - 28), hFlip == 0 ? 1f : -1f));
+                                EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
 
                                 animPlayer.PlayAnimation("firing");
                                 prevState = currState;
@@ -410,7 +410,7 @@ namespace PlatformTest
                         if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
                         {
                             if (EntityManager.FireBallCount < 2)
-                                EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X : position.X - 7, position.Y - 28), hFlip == 0 ? 1f : -1f));
+                                EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
                         }
 
                         if (!bounce)
@@ -464,7 +464,7 @@ namespace PlatformTest
                     if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
                     {
                         if (EntityManager.FireBallCount < 2)
-                            EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X : position.X - 7, position.Y - 28), hFlip == 0 ? 1f : -1f));
+                            EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
                     }
 
                     if (IsOnGround)

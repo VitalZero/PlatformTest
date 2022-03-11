@@ -125,6 +125,12 @@
 /processorParam:TextureFormat=Color
 /build:pixel.png
 
+#begin smbsurface.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:smbsurface.mp3
+
 #begin sourcepalete1.png
 /importer:TextureImporter
 /processor:TextureProcessor

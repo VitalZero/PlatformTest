@@ -1,4 +1,4 @@
-﻿#define DEBUG_DRAW
+﻿//#define DEBUG_DRAW
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
