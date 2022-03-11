@@ -111,7 +111,7 @@ namespace PlatformTest
             pal2 = ResourceManager.Pal2;
 
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
-            paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
+            paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
 
             animPlayer.Add("idleSmall", new Animation(texture, 1f, true, 16, 16, 1, 0, 16 * 2));
@@ -176,7 +176,7 @@ namespace PlatformTest
             aabb = aabbSmall;
             appended = "Small";
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
-            paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
+            paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
         }
 
