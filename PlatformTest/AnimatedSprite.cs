@@ -20,14 +20,13 @@ namespace PlatformTest
             bool looping = false,
             float lifeTime = 0f)
         {
-            this.pos = pos;
-            vel = Vector2.Zero;
-            destroyed = false;
+            this.position = pos;
+            velocity = Vector2.Zero;
             animPlayer = new AnimationPlayer();
             timeCounter = 0;
             this.lifeTime = lifeTime;
             this.looping = looping;
-            destroyed = false;
+            IsDestroyed = false;
             origin = Vector2.Zero;
 
             texture = ResourceManager.MiscSprites;
@@ -42,12 +41,12 @@ namespace PlatformTest
 
         public void SetVelocity(Vector2 velocity)
         {
-            vel = velocity;
+            base.velocity = velocity;
         }
 
         public void Destroy()
         {
-            destroyed = true;
+            IsDestroyed = true;
         }
 
         public override void Init()
@@ -56,13 +55,13 @@ namespace PlatformTest
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            animPlayer.Draw(spriteBatch, new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
+            animPlayer.Draw(spriteBatch, new Vector2((int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - (int)Camera.Instance.YOffset),
                 SpriteEffects.None, origin);
         }
 
         public override void Update(GameTime gameTime)
         {
-            pos += vel;
+            position += velocity;
 
             animPlayer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
@@ -70,14 +69,14 @@ namespace PlatformTest
             {
                 if(timeCounter >= lifeTime)
                 {
-                    destroyed = true;
+                    IsDestroyed = true;
                 }
             }
             else
             {
                 if(animPlayer.AnimationEnded("single"))
                 {
-                    destroyed = true;
+                    IsDestroyed = true;
                 }
             }
         }

@@ -239,7 +239,7 @@ namespace PlatformTest
                 int ty = (EntityManager.BouncingTile.TextureID / textureColumns) * tileSize;
 
                 spriteBatch.Draw(texture,
-                    new Vector2((int)EntityManager.BouncingTile.Pos.X - (int)Camera.Instance.XOffset, (int)EntityManager.BouncingTile.Pos.Y - (int)Camera.Instance.YOffset),
+                    new Vector2((int)EntityManager.BouncingTile.Position.X - (int)Camera.Instance.XOffset, (int)EntityManager.BouncingTile.Position.Y - (int)Camera.Instance.YOffset),
                     new Rectangle(tx, ty, tileSize, tileSize),
                     Color.White);
             }

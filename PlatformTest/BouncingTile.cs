@@ -22,11 +22,11 @@ namespace PlatformTest
         {
             this.backUpTile = backUpTile;
             TextureID = backUpTile.id;
-            pos.X = backUpTile.X * backUpTile.size;
-            pos.Y = backUpTile.Y * backUpTile.size;
+            position.X = backUpTile.X * backUpTile.size;
+            position.Y = backUpTile.Y * backUpTile.size;
             size = new Vector2(backUpTile.size, backUpTile.size);
             aabb = new Rectangle(0, 0, (int)size.X, (int)size.Y);
-            yOrigin = pos.Y;
+            yOrigin = position.Y;
             Active = true;
             Done = false;
             bouncing = true;
@@ -51,11 +51,11 @@ namespace PlatformTest
                 }
 
                 yVel += gravity * dt;
-                pos.Y += yVel * dt;
+                position.Y += yVel * dt;
 
-                if (pos.Y >= yOrigin)
+                if (position.Y >= yOrigin)
                 {
-                    pos.Y = yOrigin;
+                    position.Y = yOrigin;
                     Active = false;
                     Done = true;
                 }

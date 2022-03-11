@@ -59,10 +59,10 @@ namespace PlatformTest
 
         public static void RemoveInactiveEntities()
         {
-            entities = entities.Where(e => !e.Destroyed).ToList();
-            enemies = enemies.Where(e => !e.Destroyed).ToList();
-            powerUps = powerUps.Where(e => !e.Destroyed).ToList();
-            fireBalls = fireBalls.Where(e => !e.Destroyed).ToList();
+            entities = entities.Where(e => !e.IsDestroyed).ToList();
+            enemies = enemies.Where(e => !e.IsDestroyed).ToList();
+            powerUps = powerUps.Where(e => !e.IsDestroyed).ToList();
+            fireBalls = fireBalls.Where(e => !e.IsDestroyed).ToList();
         }
 
         public static void CheckForEnemiesAndActivate(int index)
@@ -96,15 +96,15 @@ namespace PlatformTest
 
             isUpdating = false;
 
+            // clean up after update, remove entities that are not active
             RemoveInactiveEntities();
 
             addedEntities.Clear();
 
+            // separate and sort entities to be drawn in "z order" and behind or in front of world tiles
             drawBehind = entities.Where(e => e.DrawBehind).ToList();
             drawNormal = entities.Where(e => !e.DrawBehind).ToList();
             drawNormal.Sort((e1, e2) => (e1.drawPriority.CompareTo(e2.drawPriority)));
-
-            // clean up after update, remove entities that are not active
 
         }
 
@@ -186,7 +186,7 @@ namespace PlatformTest
                             f.Destroy();
 
                             SpriteManager.Add(new AnimatedSprite(
-                                new Vector2((int)f.Pos.X - penetration.Width /*- destRectangle.Width / 2*/, (int)f.Pos.Y - penetration.Height),
+                                new Vector2((int)f.Position.X - penetration.Width, (int)f.Position.Y - penetration.Height),
                                 new Vector2(16, 16), new Vector2(16, 0), 0.03f, 3));
                         }
                     }
@@ -226,7 +226,7 @@ namespace PlatformTest
                             // adjust player position and make it bounce
                             // otherwise, kill the player (including when the shell is rebounding)
                             if (pAABB.Bottom <= tAABB.Center.Y ||
-                                (int)Player.Instance.PrevPos.Y < (int)Player.Instance.Pos.Y)
+                                (int)Player.Instance.PrevPos.Y < (int)Player.Instance.Position.Y)
                             {
                                 e.Hit();
                                 Player.Instance.Move(0, -penetration.Height);

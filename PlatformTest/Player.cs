@@ -21,15 +21,16 @@ namespace PlatformTest
                 return instance;
             }
         }
+
         private enum States { stand, run, jump, fall, crouch, firing, downPipe, upPipe }
         private enum Power { none, big, fire }
 
-        public Vector2 Vel { get { return vel; } }
+        public Vector2 Vel { get { return velocity; } }
 
         private const float jumpHoldTime = 0.25f;
         private float jumpTimer = 0;
         private KeyboardState keyboard;
-        private SpriteEffects flip;
+        private SpriteEffects hFlip;
         private AnimationPlayer animPlayer;
         private States currState;
         private States prevState;
@@ -66,13 +67,12 @@ namespace PlatformTest
         //for debug purposes
         List<string> playerStates = new List<string>();
         SpriteFont font;
-        //
 
         public Player()
         {
             drawPriority = 1;
-            pos = new Vector2(50f, 50f);
-            vel = Vector2.Zero;
+            position = new Vector2(50f, 50f);
+            velocity = Vector2.Zero;
             dir = 1f;
             maxGravity = 2 * maxJumpHeight / (float)Math.Pow(timeToJumpPeak * 1.2, 2);
             normalGravity = 2 * jumpHeight / (float)Math.Pow(timeToJumpPeak, 2); // this is the normal one
@@ -80,12 +80,12 @@ namespace PlatformTest
             jumpSpeed = normalGravity * timeToJumpPeak;
             bounceSpeed = maxGravity * timeToJumpPeak * .4f;
             gravity = normalGravity;
-            pipeSpeed = 30f;
+            pipeSpeed = 40f;
 
             speed = maxWalkSpeed;
-            //aabbBig = new Rectangle(2, 4, 12, 27);
-            //aabbSmall = new Rectangle(2, 3, 12, 12);
-            aabbBig = new Rectangle(-6, -27, 12, 27);
+            // rectangle coordinates for big mario, from the origin point (no texture origin)
+            aabbBig = new Rectangle(-6, -24, 12, 24);
+            // rectangle coordinates for small mario, from the origin point (no texture origin)
             aabbSmall = new Rectangle(-6, -12, 12, 12);
             animPlayer = new AnimationPlayer();
             power = Power.none;
@@ -98,8 +98,6 @@ namespace PlatformTest
 
             currState = States.fall;
             prevState = currState;
-
-            //pos -= origin;
         }
 
         public override void Init()
@@ -138,8 +136,7 @@ namespace PlatformTest
         {
             bounce = true;
             currState = States.jump;
-            vel.Y = -bounceSpeed;
-            //gravity = minGravity;
+            velocity.Y = -bounceSpeed;
         }
 
         public override void Hit()
@@ -171,6 +168,8 @@ namespace PlatformTest
             }
         }
 
+        // when mario changes sizes from small to big and viceversa
+        // we also switch it's bounding box and pallete if applies
         private void Shrink()
         {
             origin = originSmall;
@@ -205,11 +204,12 @@ namespace PlatformTest
         {
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            PrevPos = pos;
+            PrevPos = position;
 
             KeyboardState oldState = keyboard;
             keyboard = Keyboard.GetState();
 
+            // for debug purposes (switch to a transform)
             if (keyboard.IsKeyDown(Keys.G) && oldState.IsKeyUp(Keys.G))
             {
                 Burn();
@@ -218,6 +218,8 @@ namespace PlatformTest
             //if (keyboard.IsKeyDown(Keys.H) && oldState.IsKeyUp(Keys.H))
             //    Shrink();
 
+            // delay the transform switching as changing the bounding box takes
+            // effect inmediately and it looks weird (draw position and real position is not the same)
             if(canTransform)
             {
                 if (power == Power.none)
@@ -232,7 +234,10 @@ namespace PlatformTest
             {
                 case States.stand:
                     {
-                        animPlayer.PlayAnimation("idle" + appended);
+                        if((int)velocity.X >= 1 || (int)velocity.X <= -1)
+                            animPlayer.PlayAnimation("running" + appended);
+                        else
+                            animPlayer.PlayAnimation("idle" + appended);
 
                         if (keyboard.IsKeyDown(Keys.A))
                         {
@@ -243,7 +248,7 @@ namespace PlatformTest
                             speed = maxWalkSpeed;
                         }
 
-                        vel.X = 0;
+                        velocity.X = Lerp(velocity.X, 0, 0.15f);
 
                         if (!IsOnGround)
                         {
@@ -258,28 +263,44 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
+                            animPlayer.PlayAnimation("jumping" + appended);
                             currState = States.jump;
 
-                            vel.Y = -jumpSpeed;  
+                            velocity.Y = -jumpSpeed;  
                             jumpTimer = jumpHoldTime;
                             IsOnGround = false;
                             break;
                         }
 
-                        if(keyboard.IsKeyDown(Keys.Down) && power > Power.none)
+                        if(keyboard.IsKeyDown(Keys.Down))
                         {
-                            animPlayer.PlayAnimation("crouching");
-                            currState = States.crouch;
-                            break;
+                            if (CheckForAreas() == AreaType.downPipe)
+                            {
+                                GoDownPipe();
+                                break;
+                            }
+
+                            if (power > Power.none)
+                            {
+                                animPlayer.PlayAnimation("crouching");
+                                currState = States.crouch;
+
+                                break;
+                            }
                         }
 
                         if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
                         {
-                            animPlayer.PlayAnimation("firing");
-                            prevState = currState;
-                            currState = States.firing;
-                            if(EntityManager.FireBallCount < 2)
-                                EntityManager.Add(new FireBall(new Vector2(flip == 0 ? pos.X : pos.X - 7, pos.Y - 28), flip == 0 ? 1f : -1f));
+                            if (EntityManager.FireBallCount < 2)
+                            {
+                                EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X : position.X - 7, position.Y - 28), hFlip == 0 ? 1f : -1f));
+
+                                animPlayer.PlayAnimation("firing");
+                                prevState = currState;
+                                currState = States.firing;
+                            }
+
+                            break;
                         }
                     }
                     break;
@@ -305,22 +326,23 @@ namespace PlatformTest
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
                             dir = 1f;
-                            vel.X = Lerp(vel.X, speed, 0.1f);
+                            velocity.X = Lerp(velocity.X, speed, 0.05f);
 
-                            flip = SpriteEffects.None;
+                            hFlip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
                             dir = -1f;
-                            vel.X = Lerp(vel.X, -speed, 0.1f);
+                            velocity.X = Lerp(velocity.X, -speed, 0.05f);
 
-                            flip = SpriteEffects.FlipHorizontally;
+                            hFlip = SpriteEffects.FlipHorizontally;
                         }
 
                         if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
+                            animPlayer.PlayAnimation("jumping" + appended);
                             currState = States.jump;
-                            vel.Y = -jumpSpeed;
+                            velocity.Y = -jumpSpeed;
                             
                             if(speed == maxRunSpeed)
                                 gravity = maxGravity;
@@ -329,44 +351,71 @@ namespace PlatformTest
                             IsOnGround = false;
                             break;
                         }
+
                         else if (!IsOnGround)
                         {
                             currState = States.fall;
                             break;
                         }
 
-                        if (keyboard.IsKeyDown(Keys.Down) && power > Power.none)
+                        if (keyboard.IsKeyDown(Keys.Down))
                         {
-                            animPlayer.PlayAnimation("crouching");
-                            currState = States.crouch;
-                            vel.X = 0;
-                            break;
+                            if (CheckForAreas() == AreaType.downPipe)
+                            {
+                                GoDownPipe();
+                                break;
+                            }
+
+                            if (power > Power.none)
+                            {
+                                animPlayer.PlayAnimation("crouching");
+                                currState = States.crouch;
+
+                                break;
+                            }
+                        }
+
+                        if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
+                        {
+                            if (EntityManager.FireBallCount < 2)
+                            {
+                                EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X : position.X - 7, position.Y - 28), hFlip == 0 ? 1f : -1f));
+
+                                animPlayer.PlayAnimation("firing");
+                                prevState = currState;
+                                currState = States.firing;
+                            }
+
+                                break;
                         }
                     }
                     break;
 
                 case States.jump:
-                    {
-                        animPlayer.PlayAnimation("jumping" + appended);
-
-                        
+                    {                        
                         if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            vel.X = Lerp(vel.X, speed, 0.05f);
+                            velocity.X = Lerp(velocity.X, speed, 0.05f);
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = Lerp(vel.X, -speed, 0.05f);
+                            velocity.X = Lerp(velocity.X, -speed, 0.05f);
                         }
 
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
-                            vel.X = 0;
+                            velocity.X = Lerp(velocity.X, 0, 0.1f);
+                        }
+
+                        if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
+                        {
+                            if (EntityManager.FireBallCount < 2)
+                                EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X : position.X - 7, position.Y - 28), hFlip == 0 ? 1f : -1f));
                         }
 
                         if (!bounce)
                         {
-                            if (keyboard.IsKeyDown(Keys.S))// || jumpTimer < ((jumpHoldTime / 3)))
+                            if (keyboard.IsKeyDown(Keys.S))
                             {
                                 if ((int)gravity == (int)maxGravity)
                                     gravity = maxGravity;
@@ -385,7 +434,7 @@ namespace PlatformTest
 
                         jumpTimer -= elapsed;
 
-                        if (vel.Y > 0)
+                        if (velocity.Y > 0)
                         {
                             currState = States.fall;
                             bounce = false;
@@ -400,20 +449,29 @@ namespace PlatformTest
 
                     if (keyboard.IsKeyDown(Keys.Right))
                     {
-                        vel.X = Lerp(vel.X, speed, 0.05f);
+                        velocity.X = Lerp(velocity.X, speed, 0.05f);
                     }
                     else if (keyboard.IsKeyDown(Keys.Left))
                     {
-                        vel.X = Lerp(vel.X, -speed, 0.05f);
+                        velocity.X = Lerp(velocity.X, -speed, 0.05f);
                     }
 
                     if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                     {
-                        vel.X = 0;
+                        velocity.X = Lerp(velocity.X, 0, 0.1f);
+                    }
+
+                    if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
+                    {
+                        if (EntityManager.FireBallCount < 2)
+                            EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X : position.X - 7, position.Y - 28), hFlip == 0 ? 1f : -1f));
                     }
 
                     if (IsOnGround)
                     {
+                        if (animPlayer.CurrentAnimation() == "crouching")
+                            aabb = aabbBig;
+
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                         {
                             currState = States.stand;
@@ -436,20 +494,22 @@ namespace PlatformTest
 
                 case States.crouch:
                     {
-                        if (keyboard.IsKeyDown(Keys.Down))
-                        {
-                            if (CheckForAreas())
-                                break;
-                        }
+                        aabb = aabbSmall;
+
+                        velocity.X = Lerp(velocity.X, 0, 0.15f);
 
                         if (!IsOnGround)
                         {
+                            aabb = aabbBig;
+
                             currState = States.fall;
                             break;
                         }
 
                         if(keyboard.IsKeyUp(Keys.Down))
                         {
+                            aabb = aabbBig;
+
                             currState = States.stand;
                             break;
                         }
@@ -458,20 +518,20 @@ namespace PlatformTest
                         {
                             dir = 1f;
 
-                            flip = SpriteEffects.None;
+                            hFlip = SpriteEffects.None;
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
                             dir = -1f;
 
-                            flip = SpriteEffects.FlipHorizontally;
+                            hFlip = SpriteEffects.FlipHorizontally;
                         }
 
                         if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
                             currState = States.jump;
 
-                            vel.Y = -jumpSpeed;
+                            velocity.Y = -jumpSpeed;
                             jumpTimer = jumpHoldTime;
                             IsOnGround = false;
                             break;
@@ -481,7 +541,7 @@ namespace PlatformTest
 
                 case States.downPipe:
                     {
-                        vel.Y = pipeSpeed;
+                        velocity.Y = pipeSpeed;
                     }
                     break;
             }
@@ -490,9 +550,9 @@ namespace PlatformTest
                 speed = maxWalkSpeed;
 
             //vel.X = Math.Clamp(vel.X, -speed * elapsed, speed * elapsed);
-            //vel.Y = Math.Clamp(vel.Y, -400f, 400f);
 
-            float updateSpeed = (currState == States.firing) ? 60 : Math.Abs(vel.X); // to change
+            float updateSpeed = (currState == States.firing) ? 60 : Math.Max(50, Math.Abs(velocity.X)); // to change
+
 
             animPlayer.Update(MapValue(maxRunSpeed, updateSpeed, elapsed));
 
@@ -517,7 +577,7 @@ namespace PlatformTest
             //dir = 0f;
         }
 
-        private bool CheckForAreas()
+        private AreaType CheckForAreas()
         {
             foreach (var a in World.Instance.GetTriggerAreas())
             {
@@ -527,13 +587,11 @@ namespace PlatformTest
                 if (aAABB.Intersects(pAABB) && IsOnGround &&
                     pAABB.Right <= aAABB.Right && pAABB.Left >= aAABB.Left)
                 {
-                    if(a.Type == AreaType.downPipe)
-                        GoDownPipe();
-                    return true;
+                    return a.Type;
                 }
             }
 
-            return false;
+            return AreaType.none;
         }
 
         private void GoDownPipe()
@@ -541,8 +599,7 @@ namespace PlatformTest
             CanCollide = false;
             DrawBehind = true;
             currState = States.downPipe;
-            vel = Vector2.Zero;
-
+            velocity = Vector2.Zero;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -552,8 +609,8 @@ namespace PlatformTest
             spriteBatch.Begin(effect: paleteSwap);
 
             animPlayer.Draw(spriteBatch,
-                new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
-                flip, origin);
+                new Vector2((int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - (int)Camera.Instance.YOffset),
+                hFlip, origin);
 
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred);
@@ -561,25 +618,9 @@ namespace PlatformTest
             base.Draw(spriteBatch);
         }
 
-        //private float Lerp(float startValue, float endValue, float amount)
-        //{
-        //    //return (startValue * (1f - amount)) + (endValue * amount);
-        //    //return startValue + amount * (endValue - startValue);
-        //    if (startValue >= endValue)
-        //        return endValue;
-
-        //    return startValue + amount;
-        //}
-
+        // pretty basic "lerp"
         private float Lerp(float start, float end, float percent)
         {
-            //if (percent >= 1.0f)
-            //    return end;
-            //else if (percent <= 0f)
-            //    return start;
-
-            //float amount = end * percent;
-
             return (start * (1f - percent)) + (end * percent);
         }
 

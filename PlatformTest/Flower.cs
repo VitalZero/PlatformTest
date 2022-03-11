@@ -21,7 +21,7 @@ namespace PlatformTest
             if (riseStart <= riseTime)
             {
                 riseStart += elapsed;
-                pos.Y += -15.0f * elapsed;
+                position.Y += -15.0f * elapsed;
 
                 if (riseStart > riseTime)
                 {

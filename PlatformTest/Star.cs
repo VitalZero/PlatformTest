@@ -23,7 +23,7 @@ namespace PlatformTest
             if (riseStart <= riseTime)
             {
                 riseStart += elapsed;
-                pos.Y += -15.0f * elapsed;
+                position.Y += -15.0f * elapsed;
 
                 if (riseStart > riseTime)
                 {
@@ -33,11 +33,11 @@ namespace PlatformTest
             }
             else
             {
-                vel.X = speed * dir;
+                velocity.X = speed * dir;
 
                 if(IsOnGround)
                 {
-                    vel.Y = bounceSpeed;
+                    velocity.Y = bounceSpeed;
                     IsOnGround = false;
                 }
 
@@ -51,6 +51,10 @@ namespace PlatformTest
                 }
 
                 LateUpdate(gameTime);
+                if (position.Y > ((World.Instance.mapHeight + 3) * 16))
+                {
+                    IsDestroyed = true;
+                }
             }
         }
     }

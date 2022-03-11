@@ -20,7 +20,7 @@ namespace PlatformTest
         public Goomba(Vector2 pos, int index)
         {
             Index = index;
-            this.pos = pos;
+            this.position = pos;
             aabb = new Rectangle(-6, -12, 12, 12);
             animPlayer = new AnimationPlayer();
             speed = 20f;
@@ -54,7 +54,7 @@ namespace PlatformTest
         public override void Kill()
         {
             currState = States.instantKill;
-            vel.Y = -250f;
+            velocity.Y = -250f;
             CanKill = false;
             CanCollide = false;
             speed = 30f;
@@ -70,7 +70,7 @@ namespace PlatformTest
             {
                 case States.wandering:
                     {
-                        vel.X = speed * dir;
+                        velocity.X = speed * dir;
 
                         if (RightWallHit)
                         {
@@ -85,12 +85,12 @@ namespace PlatformTest
                 case States.stomped:
                     {
                         deadTimeAcc += elapsed;
-                        vel.X = 0f;
+                        velocity.X = 0f;
 
                         if (deadTimeAcc >= deadTime)
                         {
                             Active = false;
-                            Destroyed = true;
+                            IsDestroyed = true;
                         }
                     }
                     break;
@@ -99,12 +99,12 @@ namespace PlatformTest
                         animPlayer.Freeze();
                         deadTimeAcc += elapsed;
 
-                        vel.X = speed * dir;
+                        velocity.X = speed * dir;
 
                         if (deadTimeAcc >= 1f)
                         {
                             Active = false;
-                            Destroyed = true;
+                            IsDestroyed = true;
                         }
                     }
                     break;
@@ -113,12 +113,17 @@ namespace PlatformTest
             animPlayer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             LateUpdate(gameTime);
+            
+            if (position.Y > ((World.Instance.mapHeight + 3) * 16))
+            {
+                IsDestroyed = true;
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             animPlayer.Draw(spriteBatch,
-                new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
+                new Vector2((int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - (int)Camera.Instance.YOffset),
                 vFlip, origin);
 
             base.Draw(spriteBatch);

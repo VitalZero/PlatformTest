@@ -38,8 +38,8 @@ namespace PlatformTest
 
         public void CenterOnPlayer()
         {
-            XOffset = Player.Instance.Pos.X - game.Width / 2;
-            YOffset = Player.Instance.Pos.Y - game.Height / 2;
+            XOffset = Player.Instance.Position.X - game.Width / 2;
+            YOffset = Player.Instance.Position.Y - game.Height / 2;
 
             XOffset = Math.Clamp(XOffset, 0, (200*16) - game.Width); // clamp to map area
             YOffset = 0; // should not move on y

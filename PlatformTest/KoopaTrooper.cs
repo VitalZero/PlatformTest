@@ -22,7 +22,7 @@ namespace PlatformTest
         public KoopaTrooper(Vector2 pos, int index)
         {
             Index = index;
-            this.pos = pos;
+            this.position = pos;
             aabb = new Rectangle(-6,-12, 12, 12);
             animPlayer = new AnimationPlayer();
             speed = 20f;
@@ -76,7 +76,7 @@ namespace PlatformTest
             currState = States.instantKill;
             origin.Y = 15;
             animPlayer.PlayAnimation("stomped");
-            vel.Y = -250f;
+            velocity.Y = -250f;
             CanKill = false;
             CanCollide = false;
             speed = 30f;
@@ -92,11 +92,11 @@ namespace PlatformTest
             {
                 case States.wandering:
                     {
-                        vel.X = speed * dir;
+                        velocity.X = speed * dir;
 
-                        if(vel.X > 0)
+                        if(velocity.X > 0)
                             flip = SpriteEffects.None;
-                        else if(vel.X < 0)
+                        else if(velocity.X < 0)
                             flip = SpriteEffects.FlipHorizontally;
 
                         if (RightWallHit)
@@ -111,7 +111,7 @@ namespace PlatformTest
                     break;
                 case States.stomped:
                     {
-                        vel.X = 0;
+                        velocity.X = 0;
 
                         awakeTimeAcc += elapsed;
 
@@ -132,7 +132,7 @@ namespace PlatformTest
                     break;
                 case States.rebounding:
                     {
-                        vel.X = (speed * 15f) *  dir;
+                        velocity.X = (speed * 15f) *  dir;
 
                         if (RightWallHit)
                         {
@@ -149,12 +149,12 @@ namespace PlatformTest
                         animPlayer.Freeze();
                         deadTimeAcc += elapsed;
 
-                        vel.X = speed * dir;
+                        velocity.X = speed * dir;
 
                         if (deadTimeAcc >= 1f)
                         {
                             Active = false;
-                            Destroyed = true;
+                            IsDestroyed = true;
                         }
                     }
                     break;
@@ -163,12 +163,16 @@ namespace PlatformTest
             animPlayer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             LateUpdate(gameTime);
+            if (position.Y > ((World.Instance.mapHeight + 3) * 16))
+            {
+                IsDestroyed = true;
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             animPlayer.Draw(spriteBatch,
-                new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
+                new Vector2((int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - (int)Camera.Instance.YOffset),
                 flip | vFlip, origin);
 
             base.Draw(spriteBatch);

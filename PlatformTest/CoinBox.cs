@@ -18,8 +18,8 @@ namespace PlatformTest
             speed = 200;
             dir = 0f;
             CanCollide = false;
-            this.pos.Y -= 16f;
-            this.pos.X += 4f;
+            this.position.Y -= 16f;
+            this.position.X += 4f;
             rising = true;
 
             yOrigin = pos.Y;
@@ -42,16 +42,16 @@ namespace PlatformTest
 
             if(rising)
             {
-                vel.Y = -speed;
+                velocity.Y = -speed;
                 rising = false;
             }
 
-            vel.Y += gravity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            pos.Y += vel.Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            velocity.Y += gravity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            position.Y += velocity.Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if(pos.Y >= yOrigin - 16f)
+            if(position.Y >= yOrigin - 16f)
             {
-                Destroyed = true;
+                IsDestroyed = true;
             }
 
 
@@ -63,7 +63,7 @@ namespace PlatformTest
         public override void Draw(SpriteBatch spriteBatch)
         {
             animPlayer.Draw(spriteBatch,
-                new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
+                new Vector2((int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - (int)Camera.Instance.YOffset),
                 SpriteEffects.None, new Vector2(0, 0));
         }
     }

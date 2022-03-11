@@ -1,4 +1,4 @@
-﻿//#define DEBUG_DRAW
+﻿#define DEBUG_DRAW
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,7 +9,7 @@ namespace PlatformTest
 {
     public class Entity : GameObject
     {
-        protected Vector2 vel;
+        protected Vector2 velocity;
         protected float speed;
         protected float gravity = 850f;
         protected bool IsOnGround;
@@ -22,14 +22,13 @@ namespace PlatformTest
         public bool Active { get; set; }
         public bool CanCollide { get; set; }
         public bool CanBeHit { get; set; }
-        public bool Destroyed { get; set; }
         public bool DrawBehind { get; set; }
         public bool AffectedByGravity { get; set; }
         public short drawPriority; 
 
         private Point tileHit;
 
-        public Vector2 Pos { get { return pos; } }
+        public Vector2 Position { get { return position; } }
 
         public Entity()
         {
@@ -37,7 +36,7 @@ namespace PlatformTest
             tileHit = Point.Zero;
             Active = true;
             CanCollide = true;
-            Destroyed = false;
+            IsDestroyed = false;
             DrawBehind = false;
             AffectedByGravity = true;
             drawPriority = 0;
@@ -47,13 +46,13 @@ namespace PlatformTest
 
         public Rectangle GetAABB()
         {
-            return new Rectangle((int)Pos.X + aabb.X, (int)Pos.Y + aabb.Y, aabb.Width, aabb.Height);
+            return new Rectangle((int)Position.X + aabb.X, (int)Position.Y + aabb.Y, aabb.Width, aabb.Height);
         }
 
         public void Move(float x, float y)
         {
-            pos.X += x;
-            pos.Y += y;
+            position.X += x;
+            position.Y += y;
         }
 
         public void SetDir(int dir)
@@ -70,12 +69,6 @@ namespace PlatformTest
             aabbDebug.Y += (int)-Camera.Instance.YOffset;
             spriteBatch.Draw(ResourceManager.Pixel, aabbDebug, new Color(Color.Blue, 0.5f));
 
-            //spriteBatch.Draw(ResourceManager.Pixel, new Rectangle(
-            //    (int)(aabbDebug.Center.X),
-            //    (int)(aabbDebug.Bottom),
-            //    1, 1),
-            //    new Color(Color.White, 0.8f)) ;
-
             spriteBatch.Draw(ResourceManager.Pixel, new Rectangle(
                 (int)(aabbDebug.Center.X),
                 (int)(aabbDebug.Center.Y),
@@ -83,7 +76,7 @@ namespace PlatformTest
                 new Color(Color.Yellow, 0.8f));
 
             spriteBatch.Draw(ResourceManager.Pixel, new Rectangle(
-                            (int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset,
+                            (int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - (int)Camera.Instance.YOffset,
                             1, 1),
                             Color.Red);
 #endif
@@ -98,7 +91,7 @@ namespace PlatformTest
         public void Destroy()
         {
             Active = false;
-            Destroyed = true;
+            IsDestroyed = true;
         }
 
         public virtual void Kill()
@@ -122,7 +115,7 @@ namespace PlatformTest
             if (!IsOnGround && AffectedByGravity)
             {
                 ApplyGravity(elapsed);
-                vel.Y = MathHelper.Clamp(vel.Y, -400, 400);
+                velocity.Y = MathHelper.Clamp(velocity.Y, -400, 400);
             }
 
             Physics(elapsed);
@@ -135,17 +128,17 @@ namespace PlatformTest
 
         protected void ApplyGravity(float elapsed)
         {
-            vel.Y += gravity * elapsed;
+            velocity.Y += gravity * elapsed;
         }
 
         private void Physics(float elapsed)
         {
-            pos.X += vel.X * elapsed;
+            position.X += velocity.X * elapsed;
 
             if(CanCollide)
                 HandlecollisionHorizontal();
 
-            pos.Y += vel.Y * elapsed;
+            position.Y += velocity.Y * elapsed;
 
             if (CanCollide)
                 HandlecollisionVertical();
@@ -161,7 +154,7 @@ namespace PlatformTest
             int right = bounds.Right / 16;
 
             // if we're going right, check all the tiles to the right, from top to bottom
-            if (vel.X > 0)
+            if (velocity.X > 0)
             {
                 List<Tile> tilesToCheck = new List<Tile>();
 
@@ -181,8 +174,8 @@ namespace PlatformTest
                         {
                             int depth = bounds.Right - tileBounds.Left;
 
-                            pos.X -= depth;
-                            pos.X = (int)pos.X;
+                            position.X -= depth;
+                            position.X = (int)position.X;
                             RightWallHit = true;
                             break;
                         }
@@ -194,7 +187,7 @@ namespace PlatformTest
                 }
             }
             // if we're going left, check all the tiles to the left, from top to bottom
-            else if (vel.X < 0)
+            else if (velocity.X < 0)
             {
                 List<Tile> tilesToCheck = new List<Tile>();
 
@@ -214,8 +207,8 @@ namespace PlatformTest
                         {
                             int depth = bounds.Left - tileBounds.Right;
 
-                            pos.X -= depth;
-                            pos.X = (int)pos.X;
+                            position.X -= depth;
+                            position.X = (int)position.X;
                             LeftWallHit = true;
                             break;
                         }
@@ -234,7 +227,7 @@ namespace PlatformTest
             int right = bounds.Right / 16;
 
             //check if we are on the ground and the velocity is 0 (we are not falling or jumping)
-            if((int)vel.Y == 0 && IsOnGround)
+            if((int)velocity.Y == 0 && IsOnGround)
             {
                 // if solid tiles are found on the bottom (left and right), means we are on ground
                 // dont apply gravity and get out of the function, we dont need to check anything the floor again or the ceiling
@@ -253,7 +246,7 @@ namespace PlatformTest
             }
 
             // if we're going down, check the bottom tiles from left to right
-            if (vel.Y > 0)
+            if (velocity.Y > 0)
             {
                 List<Tile> tilesToCheck = new List<Tile>();
 
@@ -273,11 +266,11 @@ namespace PlatformTest
                         {
                             int depth = bounds.Bottom - tileBounds.Top;
 
-                            pos.Y -= depth;
-                            pos.Y = (int)pos.Y;
+                            position.Y -= depth;
+                            position.Y = (int)position.Y;
                             IsOnGround = true;
                             FloorHit = true;
-                            vel.Y = 0;
+                            velocity.Y = 0;
                         }
                     }
                     else
@@ -292,7 +285,7 @@ namespace PlatformTest
                 }
             }
             // if we're going up, check the top tiles from left to right
-            else if (vel.Y < 0)
+            else if (velocity.Y < 0)
             {
                 List<Tile> tilesToCheck = new List<Tile>();
 
@@ -314,17 +307,12 @@ namespace PlatformTest
                         if (bounds.Intersects(tileBounds))
                         {
                             int depth = bounds.Top - tileBounds.Bottom;
-
-                            //if (t.collision == TileCollision.breakable)
-                            //    map.RemoveTile(t.X, t.Y);
-                            //else if (t.collision == TileCollision.item)
-                            //    map.usedTileItem(t.X, t.Y);
                             tileHit = new Point(t.X, t.Y);
 
-                            pos.Y -= depth;
-                            pos.Y = (int)pos.Y;
+                            position.Y -= depth;
+                            position.Y = (int)position.Y;
                             CeilingHit = true;
-                            vel.Y = 0;
+                            velocity.Y = 0;
                             break;
                         }
                     }
