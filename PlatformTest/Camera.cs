@@ -36,6 +36,14 @@ namespace PlatformTest
             YOffset += yAmount;
         }
 
+        public static Vector2 WorldToScreen(Vector2 pos)
+        {
+            pos.X -= instance.XOffset;
+            pos.Y -= instance.YOffset;
+
+            return pos;
+        }
+
         public void CenterOnPlayer()
         {
             XOffset = Player.Instance.Position.X - game.Width / 2;

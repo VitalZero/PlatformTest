@@ -14,6 +14,9 @@ namespace PlatformTest
         public static SoundEffect FireBall { get; set; }
         public static SoundEffect PowerUp { get; set; }
         public static SoundEffect Grow { get; set; }
+        public static SoundEffect InstantKill { get; set; }
+        public static SoundEffect Thump { get; set; }
+        public static SoundEffect ShrinkPipe { get; set; }
         public static Song SurfaceStage { get; set; }
 
         public static void Load(ContentManager content)
@@ -23,7 +26,10 @@ namespace PlatformTest
             SurfaceStage = content.Load<Song>("Sounds/smbsurface");
             FireBall = content.Load<SoundEffect>("Sounds/fireball");
             PowerUp = content.Load<SoundEffect>("Sounds/powerup");
-            Grow = content.Load<SoundEffect>("Sounds/grow");
+            Grow = content.Load<SoundEffect>("Sounds/grow"); 
+            InstantKill= content.Load<SoundEffect>("Sounds/instantkill");
+            Thump = content.Load<SoundEffect>("Sounds/thump");
+            ShrinkPipe = content.Load<SoundEffect>("Sounds/shrink-pipe");
         }
     }
 }

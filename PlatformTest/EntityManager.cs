@@ -174,6 +174,7 @@ namespace PlatformTest
 
                         if (penetration != Rectangle.Empty)
                         {
+                            SoundManager.InstantKill.Play();
                             e.Kill();
                             if (fAABB.Right <= eAABB.Right)
                             {
@@ -236,7 +237,9 @@ namespace PlatformTest
                             }
                             else
                             {
-                                Player.Instance.Hit();
+                                if(!Player.Instance.IsInvencible)
+                                    Player.Instance.Hit();
+
                                 return;
                             }
                         }

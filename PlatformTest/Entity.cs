@@ -1,4 +1,4 @@
-﻿//#define DEBUG_DRAW
+﻿#define DEBUG_DRAW
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -67,15 +67,15 @@ namespace PlatformTest
             Rectangle aabbDebug = GetAABB();
             aabbDebug.X += (int)-Camera.Instance.XOffset;
             aabbDebug.Y += (int)-Camera.Instance.YOffset;
-            spriteBatch.Draw(ResourceManager.Pixel, aabbDebug, new Color(Color.Blue, 0.5f));
+            spriteBatch.Draw(TextureManager.Pixel, aabbDebug, new Color(Color.Blue, 0.5f));
 
-            spriteBatch.Draw(ResourceManager.Pixel, new Rectangle(
+            spriteBatch.Draw(TextureManager.Pixel, new Rectangle(
                 (int)(aabbDebug.Center.X),
                 (int)(aabbDebug.Center.Y),
                 1, 1),
                 new Color(Color.Yellow, 0.8f));
 
-            spriteBatch.Draw(ResourceManager.Pixel, new Rectangle(
+            spriteBatch.Draw(TextureManager.Pixel, new Rectangle(
                             (int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - (int)Camera.Instance.YOffset,
                             1, 1),
                             Color.Red);

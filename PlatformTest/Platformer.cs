@@ -133,6 +133,8 @@ namespace PlatformTest
             spriteBatch.End();
 
             // draw info stuff
+
+            Vector2 playerScreenPos = Camera.WorldToScreen(Player.Instance.Position);
             spriteBatch.Begin();
             spriteBatch.DrawString(TextureManager.Arial, "FPS: " + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);
             spriteBatch.DrawString(TextureManager.Arial, "vel X: " + Player.Instance.Vel.X.ToString("00.0000"), new Vector2(20, 35), Color.Red);
@@ -140,6 +142,8 @@ namespace PlatformTest
             spriteBatch.DrawString(TextureManager.Arial, "Sprites: " + SpriteManager.Count, new Vector2(20, 65), Color.Red);
             spriteBatch.DrawString(TextureManager.Arial, "Entities total: " + EntityManager.Count, new Vector2(20, 80), Color.Red);
             spriteBatch.DrawString(TextureManager.Arial, "Enemies total: " + EntityManager.EnemiesCount, new Vector2(20, 95), Color.Red);
+            spriteBatch.DrawString(TextureManager.Arial, "ScreenX: " + playerScreenPos.X.ToString("00.00"), new Vector2(20, 110), Color.Red);
+            spriteBatch.DrawString(TextureManager.Arial, "ScreenY: " + playerScreenPos.Y.ToString("00.00"), new Vector2(20, 125), Color.Red);
             spriteBatch.End();
 
 

@@ -283,6 +283,12 @@ namespace PlatformTest
 
             if (powerUps.ContainsKey(tmpIndex))
             {
+                if(powerUps[tmpIndex] is Mushroom 
+                    || powerUps[tmpIndex] is Flower 
+                    || powerUps[tmpIndex] is Star 
+                    || powerUps[tmpIndex] is OneUp)
+                    SoundManager.PowerUp.Play();
+
                 Tile t = GetTile(x, y);
                 
                 EntityManager.BouncingTile = new BouncingTile(t);

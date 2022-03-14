@@ -173,6 +173,12 @@
 /processorParam:Quality=Best
 /build:Sounds/smbsurface.mp3
 
+#begin Sounds/thump.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/thump.wav
+
 #begin sourcepalete1.png
 /importer:TextureImporter
 /processor:TextureProcessor

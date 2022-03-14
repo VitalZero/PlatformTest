@@ -25,10 +25,13 @@ namespace PlatformTest
         private enum States { stand, run, jump, fall, crouch, firing, downPipe, upPipe, goal }
         private enum Power { none, big, fire }
 
+        public Vector2 PrevPos { get; private set; }
+        public bool IsInvencible { get; set; }
         public Vector2 Vel { get { return velocity; } }
 
+        private float invencibleTimer;
+        private const float invencibleTotalTime = 2f;
         private const float jumpHoldTime = 0.25f;
-        private float jumpTimer = 0;
         private KeyboardState keyboard;
         private SpriteEffects hFlip;
         private AnimationPlayer animPlayer;
@@ -37,9 +40,6 @@ namespace PlatformTest
         private Power power;
         private const float maxWalkSpeed = 60f;
         private const float maxRunSpeed = 170f;
-        private const float moveXAccel = 4f;
-        private const float stopAccel = 6f;
-        public Vector2 PrevPos { get; private set; }
         private bool bounce;
         private float pipeSpeed;
         private bool canTransform = false;
@@ -81,6 +81,8 @@ namespace PlatformTest
             bounceSpeed = maxGravity * timeToJumpPeak * .4f;
             gravity = normalGravity;
             pipeSpeed = 40f;
+            IsInvencible = false;
+            invencibleTimer = 0f;
 
             speed = maxWalkSpeed;
             // rectangle coordinates for big mario, from the origin point (no texture origin)
@@ -144,14 +146,16 @@ namespace PlatformTest
         {
             if (power > Power.none)
             {
+                SoundManager.ShrinkPipe.Play();
                 power = Power.none;
+                IsInvencible = true;
                 canTransform = true;
             }
             else
             {
                 CanCollide = false;
                 //Active = false;
-                //Destroyed = true;
+                IsDestroyed = true;
             }
         }
 
@@ -179,6 +183,9 @@ namespace PlatformTest
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
             paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
+
+            if (currState == States.fall)
+                animPlayer.PlayAnimation("jumping" + appended);
         }
 
         private void Burn()
@@ -190,6 +197,9 @@ namespace PlatformTest
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
             paleteSwap.Parameters["xTargetPal"].SetValue(pal2);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
+
+            if (currState == States.fall)
+                animPlayer.PlayAnimation("jumping" + appended);
         }
 
         private void Grow()
@@ -201,6 +211,9 @@ namespace PlatformTest
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
             paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
+
+            if (currState == States.fall)
+                animPlayer.PlayAnimation("jumping" + appended);
         }
 
         public override void Update(GameTime gameTime)
@@ -212,6 +225,15 @@ namespace PlatformTest
             KeyboardState oldState = keyboard;
             keyboard = Keyboard.GetState();
 
+            if(IsInvencible)
+            {
+                invencibleTimer += elapsed;
+                if(invencibleTimer >= invencibleTotalTime)
+                {
+                    invencibleTimer = 0f;
+                    IsInvencible = false;
+                }
+            }
             // for debug purposes (switch to a transform)
             if (keyboard.IsKeyDown(Keys.G) && oldState.IsKeyUp(Keys.G))
             {
@@ -275,7 +297,6 @@ namespace PlatformTest
                             currState = States.jump;
 
                             velocity.Y = -jumpSpeed;  
-                            jumpTimer = jumpHoldTime;
                             IsOnGround = false;
 
                             if (appended == "Small")
@@ -291,6 +312,7 @@ namespace PlatformTest
                             if (HitArea(AreaType.downPipe))
                             {
                                 GoDownPipe();
+                                SoundManager.ShrinkPipe.Play();
                                 break;
                             }
 
@@ -370,7 +392,6 @@ namespace PlatformTest
                             if(speed == maxRunSpeed)
                                 gravity = maxGravity;
 
-                            jumpTimer = jumpHoldTime; 
                             IsOnGround = false;
 
                             if (appended == "Small")
@@ -392,6 +413,7 @@ namespace PlatformTest
                             if (HitArea(AreaType.downPipe))
                             {
                                 GoDownPipe();
+                                SoundManager.ShrinkPipe.Play();
                                 break;
                             }
 
@@ -466,8 +488,6 @@ namespace PlatformTest
                             gravity = maxGravity;
                         }
 
-                        jumpTimer -= elapsed;
-
                         if (velocity.Y > 0)
                         {
                             currState = States.fall;
@@ -479,6 +499,7 @@ namespace PlatformTest
 
                 case States.fall:
                     gravity = normalGravity;
+
                     animPlayer.Freeze();
 
                     if (keyboard.IsKeyDown(Keys.Right))
@@ -573,7 +594,6 @@ namespace PlatformTest
                             currState = States.jump;
 
                             velocity.Y = -jumpSpeed;
-                            jumpTimer = jumpHoldTime;
                             IsOnGround = false;
                             break;
                         }
@@ -588,9 +608,12 @@ namespace PlatformTest
 
                 case States.goal:
                     {
-                        velocity = Vector2.Zero;
-                        velocity.Y = 10f;
-                        AffectedByGravity = false;
+                        if(FloorHit)
+                        {
+                            AffectedByGravity = true;
+                            animPlayer.PlayAnimation("running" + appended);
+                            velocity.X = maxWalkSpeed;
+                        }
                     }
                     break;
             }
@@ -607,9 +630,13 @@ namespace PlatformTest
 
             LateUpdate(gameTime);
 
-            if(HitArea(AreaType.goal))
+            if(HitArea(AreaType.goal) && currState != States.goal)
             {
                 currState = States.goal;
+
+                velocity = Vector2.Zero;
+                velocity.Y = 100f;
+                AffectedByGravity = false;
             }
 
             if (CeilingHit)
@@ -625,7 +652,9 @@ namespace PlatformTest
                 else
                 {
                     if (t.collision == TileCollision.item)
+                    {
                         World.Instance.RemoveTile(tilePos.X, tilePos.Y);
+                    }
                 }
             }
             //dir = 0f;

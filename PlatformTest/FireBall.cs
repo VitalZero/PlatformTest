@@ -52,6 +52,7 @@ namespace PlatformTest
 
             if(LeftWallHit || RightWallHit)
             {
+                SoundManager.Thump.Play();
                 IsDestroyed = true;
                 CanCollide = false;
                 velocity = Vector2.Zero;
@@ -70,7 +71,9 @@ namespace PlatformTest
 
             LateUpdate(gameTime);
 
-            if (position.Y > ((World.Instance.mapHeight + 3) * 16))
+            Vector2 posToScreen = Camera.WorldToScreen(position);
+
+            if (posToScreen.X > 336 || posToScreen.Y > 256 || posToScreen.X < -16 || posToScreen.Y < -16)
             {
                 IsDestroyed = true;
             }
