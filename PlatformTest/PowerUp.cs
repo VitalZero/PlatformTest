@@ -29,7 +29,7 @@ namespace PlatformTest
 
         public override void Init()
         {
-            texture = ResourceManager.Items;
+            texture = TextureManager.Items;
             spriteArea = new Rectangle((int)type * 16, 0, 16, 16);
             aabb = new Rectangle(3, 4, 10, 11);
         }

@@ -106,7 +106,7 @@
   </object>
  </objectgroup>
  <objectgroup id="6" name="areas">
-  <object id="35" type="20" x="3024.5" y="15.5" width="16" height="176"/>
+  <object id="35" type="20" x="3028" y="16" width="8" height="176"/>
   <object id="36" type="1" x="468" y="144" width="24" height="16"/>
  </objectgroup>
 </map>

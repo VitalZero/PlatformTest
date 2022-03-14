@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public static class ResourceManager
+    public static class TextureManager
     {
         public static Texture2D Player { get; private set; }
         public static Texture2D Goomba { get; private set; }

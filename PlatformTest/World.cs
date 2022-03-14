@@ -149,7 +149,7 @@ namespace PlatformTest
 
         public void Load()
         {
-            texture = ResourceManager.Level;
+            texture = TextureManager.Level;
 
             foreach (var enemyType in tiledMap.objectGroups[1].objects)
             {

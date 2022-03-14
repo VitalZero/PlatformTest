@@ -29,7 +29,7 @@ namespace PlatformTest
             IsDestroyed = false;
             origin = Vector2.Zero;
 
-            texture = ResourceManager.MiscSprites;
+            texture = TextureManager.MiscSprites;
 
             animPlayer.Add("single", new Animation(texture, frameDuration, looping, (int)frameSize.X, (int)frameSize.Y,
                 frameCount, (int)frameStart.X, (int)frameStart.Y));

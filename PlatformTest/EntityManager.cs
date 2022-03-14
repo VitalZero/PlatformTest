@@ -26,14 +26,15 @@ namespace PlatformTest
 
         public static void Add(Entity entity)
         {
-            if(!isUpdating)
-            {
-                AddEntity(entity);
-            }
-            else
-            {
-                addedEntities.Add(entity);
-            }
+            //if(!isUpdating)
+            //{
+            //    AddEntity(entity);
+            //}
+            //else
+            //{
+            //    addedEntities.Add(entity);
+            //}
+            addedEntities.Add(entity);
         }
 
         private static void AddEntity(Entity entity)
@@ -149,7 +150,7 @@ namespace PlatformTest
 
                     bAABB = BouncingTile.GetAABB();
 
-                    if (e.CanCollide && e.CanKill)
+                    if (e.CanCollide && e.CanKill && BouncingTile.CanKill)
                     {
                         Rectangle.Intersect(ref bAABB, ref eAABB, out penetration);
 

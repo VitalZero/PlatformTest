@@ -125,11 +125,53 @@
 /processorParam:TextureFormat=Color
 /build:pixel.png
 
-#begin smbsurface.mp3
+#begin Sounds/fireball.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/fireball.wav
+
+#begin Sounds/grow.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/grow.wav
+
+#begin Sounds/instantkill.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/instantkill.wav
+
+#begin Sounds/jumpbig.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/jumpbig.wav
+
+#begin Sounds/jumpsmall.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/jumpsmall.wav
+
+#begin Sounds/powerup.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/powerup.wav
+
+#begin Sounds/shrink-pipe.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/shrink-pipe.wav
+
+#begin Sounds/smbsurface.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
 /processorParam:Quality=Best
-/build:smbsurface.mp3
+/build:Sounds/smbsurface.mp3
 
 #begin sourcepalete1.png
 /importer:TextureImporter

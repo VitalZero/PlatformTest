@@ -22,7 +22,7 @@ namespace PlatformTest
             }
         }
 
-        private enum States { stand, run, jump, fall, crouch, firing, downPipe, upPipe }
+        private enum States { stand, run, jump, fall, crouch, firing, downPipe, upPipe, goal }
         private enum Power { none, big, fire }
 
         public Vector2 Vel { get { return velocity; } }
@@ -104,11 +104,11 @@ namespace PlatformTest
         {
             origin = originSmall;
 
-            texture = ResourceManager.Player;
-            paleteSwap = ResourceManager.ColorSwap;
-            sourcePal = ResourceManager.SourcePal;
-            pal1 = ResourceManager.Pal1;
-            pal2 = ResourceManager.Pal2;
+            texture = TextureManager.Player;
+            paleteSwap = TextureManager.ColorSwap;
+            sourcePal = TextureManager.SourcePal;
+            pal1 = TextureManager.Pal1;
+            pal2 = TextureManager.Pal2;
 
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
             paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
@@ -129,7 +129,7 @@ namespace PlatformTest
             animPlayer.Add("firing", new Animation(texture, 0.04f, false, 16, 32, 1, 16 * 4, 0));
 
             animPlayer.PlayAnimation("idle" + appended);
-            font = ResourceManager.Arial;
+            font = TextureManager.Arial;
         }
 
         public void Bounce()
@@ -137,6 +137,7 @@ namespace PlatformTest
             bounce = true;
             currState = States.jump;
             velocity.Y = -bounceSpeed;
+            animPlayer.PlayAnimation("jumping" + appended);
         }
 
         public override void Hit()
@@ -182,6 +183,7 @@ namespace PlatformTest
 
         private void Burn()
         {
+            SoundManager.Grow.Play();
             origin = originBig;
             aabb = aabbBig;
             appended = "Big";
@@ -192,6 +194,7 @@ namespace PlatformTest
 
         private void Grow()
         {
+            SoundManager.Grow.Play();
             origin = originBig;
             aabb = aabbBig;
             appended = "Big";
@@ -222,12 +225,16 @@ namespace PlatformTest
             // effect inmediately and it looks weird (draw position and real position is not the same)
             if(canTransform)
             {
+                animPlayer.PlayAnimation(animPlayer.CurrentAnimation());
+
                 if (power == Power.none)
                     Shrink();
                 if (power == Power.big)
                     Grow();
                 if (power == Power.fire)
                     Burn();
+
+                canTransform = false;
             }
 
             switch (currState)
@@ -248,7 +255,7 @@ namespace PlatformTest
                             speed = maxWalkSpeed;
                         }
 
-                        velocity.X = Lerp(velocity.X, 0, 0.15f);
+                        velocity.X = Lerp(velocity.X, 0, 0.1f);
 
                         if (!IsOnGround)
                         {
@@ -264,17 +271,24 @@ namespace PlatformTest
                         else if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
                             animPlayer.PlayAnimation("jumping" + appended);
+
                             currState = States.jump;
 
                             velocity.Y = -jumpSpeed;  
                             jumpTimer = jumpHoldTime;
                             IsOnGround = false;
+
+                            if (appended == "Small")
+                                SoundManager.JumpSmall.Play();
+                            else
+                                SoundManager.JumpBig.Play();
+
                             break;
                         }
 
                         if(keyboard.IsKeyDown(Keys.Down))
                         {
-                            if (CheckForAreas() == AreaType.downPipe)
+                            if (HitArea(AreaType.downPipe))
                             {
                                 GoDownPipe();
                                 break;
@@ -298,6 +312,8 @@ namespace PlatformTest
                                 animPlayer.PlayAnimation("firing");
                                 prevState = currState;
                                 currState = States.firing;
+
+                                SoundManager.FireBall.Play();
                             }
 
                             break;
@@ -325,6 +341,9 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
+                            if (velocity.X < 0f && speed == maxRunSpeed)
+                                animPlayer.PlayAnimation("skid" + appended);
+
                             dir = 1f;
                             velocity.X = Lerp(velocity.X, speed, 0.05f);
 
@@ -332,6 +351,9 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
+                            if (velocity.X > 0f && speed == maxRunSpeed)
+                                animPlayer.PlayAnimation("skid" + appended);
+
                             dir = -1f;
                             velocity.X = Lerp(velocity.X, -speed, 0.05f);
 
@@ -341,6 +363,7 @@ namespace PlatformTest
                         if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
                         {
                             animPlayer.PlayAnimation("jumping" + appended);
+
                             currState = States.jump;
                             velocity.Y = -jumpSpeed;
                             
@@ -349,6 +372,12 @@ namespace PlatformTest
 
                             jumpTimer = jumpHoldTime; 
                             IsOnGround = false;
+
+                            if (appended == "Small")
+                                SoundManager.JumpSmall.Play();
+                            else
+                                SoundManager.JumpBig.Play();
+
                             break;
                         }
 
@@ -360,7 +389,7 @@ namespace PlatformTest
 
                         if (keyboard.IsKeyDown(Keys.Down))
                         {
-                            if (CheckForAreas() == AreaType.downPipe)
+                            if (HitArea(AreaType.downPipe))
                             {
                                 GoDownPipe();
                                 break;
@@ -368,7 +397,6 @@ namespace PlatformTest
 
                             if (power > Power.none)
                             {
-                                animPlayer.PlayAnimation("crouching");
                                 currState = States.crouch;
 
                                 break;
@@ -381,9 +409,10 @@ namespace PlatformTest
                             {
                                 EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
 
-                                animPlayer.PlayAnimation("firing");
                                 prevState = currState;
                                 currState = States.firing;
+
+                                SoundManager.FireBall.Play();
                             }
 
                                 break;
@@ -392,7 +421,9 @@ namespace PlatformTest
                     break;
 
                 case States.jump:
-                    {                        
+                    {
+                        animPlayer.PlayAnimation("jumping" + appended);
+
                         if (keyboard.IsKeyDown(Keys.Right))
                         {
                             velocity.X = Lerp(velocity.X, speed, 0.05f);
@@ -410,7 +441,10 @@ namespace PlatformTest
                         if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
                         {
                             if (EntityManager.FireBallCount < 2)
+                            {
                                 EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
+                                SoundManager.FireBall.Play();
+                            }
                         }
 
                         if (!bounce)
@@ -464,7 +498,10 @@ namespace PlatformTest
                     if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
                     {
                         if (EntityManager.FireBallCount < 2)
+                        {
                             EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
+                            SoundManager.FireBall.Play();
+                        }
                     }
 
                     if (IsOnGround)
@@ -485,7 +522,9 @@ namespace PlatformTest
 
                 case States.firing:
                     {
-                        if(animPlayer.AnimationEnded("firing"))
+                        animPlayer.PlayAnimation("firing");
+
+                        if (animPlayer.AnimationEnded("firing"))
                         {
                             currState = prevState;
                         }
@@ -494,6 +533,8 @@ namespace PlatformTest
 
                 case States.crouch:
                     {
+                        animPlayer.PlayAnimation("crouching");
+
                         aabb = aabbSmall;
 
                         velocity.X = Lerp(velocity.X, 0, 0.15f);
@@ -544,6 +585,14 @@ namespace PlatformTest
                         velocity.Y = pipeSpeed;
                     }
                     break;
+
+                case States.goal:
+                    {
+                        velocity = Vector2.Zero;
+                        velocity.Y = 10f;
+                        AffectedByGravity = false;
+                    }
+                    break;
             }
 
             if (RightWallHit || LeftWallHit)
@@ -557,6 +606,11 @@ namespace PlatformTest
             animPlayer.Update(MapValue(maxRunSpeed, updateSpeed, elapsed));
 
             LateUpdate(gameTime);
+
+            if(HitArea(AreaType.goal))
+            {
+                currState = States.goal;
+            }
 
             if (CeilingHit)
             {
@@ -577,21 +631,28 @@ namespace PlatformTest
             //dir = 0f;
         }
 
-        private AreaType CheckForAreas()
+        private bool HitArea(AreaType areaType)
         {
             foreach (var a in World.Instance.GetTriggerAreas())
             {
                 Rectangle pAABB = GetAABB();
                 Rectangle aAABB = a.GetAABB();
 
-                if (aAABB.Intersects(pAABB) && IsOnGround &&
-                    pAABB.Right <= aAABB.Right && pAABB.Left >= aAABB.Left)
+                if (areaType == AreaType.goal)
                 {
-                    return a.Type;
+                    return aAABB.Intersects(pAABB);
+                }
+                else if (areaType == AreaType.downPipe)
+                {
+                    if (aAABB.Intersects(pAABB) && IsOnGround &&
+                      pAABB.Right <= aAABB.Right && pAABB.Left >= aAABB.Left)
+                    {
+                        return true;
+                    }
                 }
             }
 
-            return AreaType.none;
+            return false;
         }
 
         private void GoDownPipe()

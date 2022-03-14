@@ -36,11 +36,16 @@ namespace PlatformTest
                 time = 0f;
                 ended = false;
 
-                source = new Rectangle(
-                    (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX,
-                    animations[currentAnimation].StartFrameY, 
-                    animations[currentAnimation].FrameWidth,
-                    animations[currentAnimation].FrameHeight);
+                source.X = (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX;
+                source.Y = animations[currentAnimation].StartFrameY;
+                source.Width = animations[currentAnimation].FrameWidth;
+                source.Height = animations[currentAnimation].FrameHeight;
+
+                //source = new Rectangle(
+                //    (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX,
+                //    animations[currentAnimation].StartFrameY, 
+                //    animations[currentAnimation].FrameWidth,
+                //    animations[currentAnimation].FrameHeight);
             }
         }
 

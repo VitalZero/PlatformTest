@@ -17,6 +17,7 @@ namespace PlatformTest
         private float yVel;
         private readonly float yOrigin;
         private readonly Tile backUpTile;
+        public bool CanKill { get; set; }
 
         public BouncingTile(Tile backUpTile)
         {
@@ -31,6 +32,7 @@ namespace PlatformTest
             Done = false;
             bouncing = true;
             gravity = 850f;
+            CanKill = true;
         }
 
         public Tile Restore()
@@ -49,6 +51,9 @@ namespace PlatformTest
                     yVel = upSpeed;
                     bouncing = false;
                 }
+
+                if (yVel > 0f)
+                    CanKill = false;
 
                 yVel += gravity * dt;
                 position.Y += yVel * dt;

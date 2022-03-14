@@ -36,7 +36,7 @@ namespace PlatformTest
 
         public override void Init()
         {
-            texture = ResourceManager.Goomba;
+            texture = TextureManager.Goomba;
 
             animPlayer.Add("walking", new Animation(texture, 0.2f, true, 16, 16, 2, 0, 0));
             animPlayer.Add("stomped", new Animation(texture, 1f, false, 16, 16, 1, 32, 0));

@@ -34,7 +34,7 @@ namespace PlatformTest
 
         public override void Init()
         {
-            texture = ResourceManager.MiscSprites;
+            texture = TextureManager.MiscSprites;
             animPlayer.Add("normal", new Animation(texture, 0.06f, true, 8, 8, 4, 8, 16));
             animPlayer.PlayAnimation("normal");
         }

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public enum AreaType { none, downPipe, Goal = 20 }
+    public enum AreaType { none, downPipe, goal = 20 }
     public class Area2D
     {
         private Rectangle area;
@@ -29,10 +29,10 @@ namespace PlatformTest
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            //spriteBatch.Draw(ResourceManager.Pixel, 
-            //    new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
-            //        area, 
-            //        Color.White);
+            spriteBatch.Draw(TextureManager.Pixel,
+                new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
+                    area,
+                    new Color(Color.Red, 0.1f));
         }
     }
 

@@ -18,14 +18,15 @@ namespace PlatformTest
 
         public static void Add(Sprite sprite)
         {
-            if (!isUpdating)
-            {
-                AddSprite(sprite);
-            }
-            else
-            {
-                addedSprites.Add(sprite);
-            }
+            //if (!isUpdating)
+            //{
+            //    AddSprite(sprite);
+            //}
+            //else
+            //{
+            //    addedSprites.Add(sprite);
+            //}
+            addedSprites.Add(sprite);
         }
 
         public static void RemoveDestroyedSprites()

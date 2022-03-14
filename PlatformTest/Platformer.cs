@@ -25,7 +25,6 @@ namespace PlatformTest
         private RenderTarget2D renderTarget;
         private bool pause = false;
         private bool advance = false;
-        Song music;
 
         public Platformer()
         {
@@ -56,20 +55,20 @@ namespace PlatformTest
 
         protected override void LoadContent()
         {
-            music = Content.Load<Song>("smbsurface");
-            ResourceManager.Load(Content);
+            TextureManager.Load(Content);
+            SoundManager.Load(Content);
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             world.Load();
-            font = ResourceManager.Arial;
+            font = TextureManager.Arial;
             // TODO: use this.Content to load your game content here
 
             EntityManager.Add(Player.Instance);
             EntityManager.Add(new KoopaTrooper(new Vector2(22 * 16, 11 * 16), 20 + World.Instance.mapWidth * 11));
 
             MediaPlayer.IsRepeating = true;
-            MediaPlayer.Play(music);
+            MediaPlayer.Play(SoundManager.SurfaceStage);
         }
 
         protected override void Update(GameTime gameTime)
@@ -135,12 +134,12 @@ namespace PlatformTest
 
             // draw info stuff
             spriteBatch.Begin();
-            spriteBatch.DrawString(ResourceManager.Arial, "FPS: " + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);
-            spriteBatch.DrawString(ResourceManager.Arial, "vel X: " + Player.Instance.Vel.X.ToString("00.0000"), new Vector2(20, 35), Color.Red);
-            spriteBatch.DrawString(ResourceManager.Arial, "vel Y: " + Player.Instance.Vel.Y.ToString("00.0000"), new Vector2(20, 50), Color.Red);
-            spriteBatch.DrawString(ResourceManager.Arial, "Sprites: " + SpriteManager.Count, new Vector2(20, 65), Color.Red);
-            spriteBatch.DrawString(ResourceManager.Arial, "Entities total: " + EntityManager.Count, new Vector2(20, 80), Color.Red);
-            spriteBatch.DrawString(ResourceManager.Arial, "Enemies total: " + EntityManager.EnemiesCount, new Vector2(20, 95), Color.Red);
+            spriteBatch.DrawString(TextureManager.Arial, "FPS: " + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);
+            spriteBatch.DrawString(TextureManager.Arial, "vel X: " + Player.Instance.Vel.X.ToString("00.0000"), new Vector2(20, 35), Color.Red);
+            spriteBatch.DrawString(TextureManager.Arial, "vel Y: " + Player.Instance.Vel.Y.ToString("00.0000"), new Vector2(20, 50), Color.Red);
+            spriteBatch.DrawString(TextureManager.Arial, "Sprites: " + SpriteManager.Count, new Vector2(20, 65), Color.Red);
+            spriteBatch.DrawString(TextureManager.Arial, "Entities total: " + EntityManager.Count, new Vector2(20, 80), Color.Red);
+            spriteBatch.DrawString(TextureManager.Arial, "Enemies total: " + EntityManager.EnemiesCount, new Vector2(20, 95), Color.Red);
             spriteBatch.End();
 
 
