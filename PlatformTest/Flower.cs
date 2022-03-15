@@ -8,7 +8,7 @@ namespace PlatformTest
     public class Flower : PowerUp
     {
         public Flower(Vector2 pos)
-            : base(PowerupType.flower, pos)
+            : base(ItemType.flower, pos)
         {
             dir = 0f;
             speed = 0f;

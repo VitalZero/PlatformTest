@@ -6,25 +6,31 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public enum PowerupType { oneup, coin, mushroom, flower, star }
+    public enum ItemType { oneup, coin, mushroom, flower, star }
 
     public class PowerUp : Entity
     {
-        protected PowerupType type;
+        protected ItemType type;
         protected Rectangle spriteArea;
         protected float riseTime = 1f;
         protected float riseStart = 0;
         protected float startY;
         protected int yOffset;
 
-        public PowerUp(PowerupType type, Vector2 pos)
+        public PowerUp(ItemType type, Vector2 pos)
         {
             this.type = type;
             spriteArea = new Rectangle();
             this.position = pos;
-            pos.X = (int)pos.X;
-            pos.Y = (int)pos.Y;
+            position.X = (int)position.X;
+            position.Y = (int)position.Y;
             CanCollide = false;
+            startY = position.Y;
+        }
+
+        public ItemType GetItemType()
+        {
+            return type;
         }
 
         public override void Init()

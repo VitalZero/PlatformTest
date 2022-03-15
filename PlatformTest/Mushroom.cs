@@ -8,10 +8,10 @@ namespace PlatformTest
     public class Mushroom : PowerUp
     {
         public Mushroom(Vector2 pos)
-            :base(PowerupType.mushroom, pos)
+            :base(ItemType.mushroom, pos)
         {
             dir = 1f;
-            speed = 40f;
+            speed = 50f;
             DrawBehind = true;
         }
 
@@ -24,7 +24,7 @@ namespace PlatformTest
                 riseStart += elapsed;
                 position.Y += -15.0f * elapsed;
 
-                if(riseStart > riseTime)
+                if (riseStart > riseTime)
                 {
                     CanCollide = true;
                     DrawBehind = false;
@@ -42,8 +42,9 @@ namespace PlatformTest
                 {
                     dir = 1f;
                 }
-
+                
                 LateUpdate(gameTime);
+
                 if (position.Y > ((World.Instance.mapHeight + 3) * 16))
                 {
                     IsDestroyed = true;

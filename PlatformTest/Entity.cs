@@ -1,4 +1,4 @@
-﻿#define DEBUG_DRAW
+﻿//#define DEBUG_DRAW
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -165,7 +165,7 @@ namespace PlatformTest
 
                 foreach (var t in tilesToCheck)
                 {
-                    if (t.collision != TileCollision.none)
+                    if (t.collision != TileCollision.none && t.Visible)
                     {
                         bounds = GetAABB();
                         Rectangle tileBounds = World.Instance.GetBounds(t.X, t.Y);
@@ -198,7 +198,7 @@ namespace PlatformTest
 
                 foreach (var t in tilesToCheck)
                 {
-                    if (t.collision != TileCollision.none)
+                    if (t.collision != TileCollision.none && t.Visible)
                     {
                         bounds = GetAABB();
                         Rectangle tileBounds = World.Instance.GetBounds(t.X, t.Y);
@@ -257,7 +257,7 @@ namespace PlatformTest
 
                 foreach (var t in tilesToCheck)
                 {
-                    if (t.collision != TileCollision.none)
+                    if (t.collision != TileCollision.none && t.Visible)
                     {
                         bounds = GetAABB();
                         Rectangle tileBounds = World.Instance.GetBounds(t.X, t.Y);

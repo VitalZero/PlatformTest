@@ -25,6 +25,7 @@ namespace PlatformTest
         int xStart;
         int xEnd;
 
+
         private static World instance = null;
         public static World Instance
         {
@@ -66,23 +67,23 @@ namespace PlatformTest
 
                 int index = xTile + mapWidth * yTile;
                 
-                if(p.type == (int)PowerupType.mushroom)
+                if(p.type == (int)ItemType.mushroom)
                 {
                     powerUps.Add(index, new Mushroom(new Vector2(xTile * 16, yTile * 16)));
                 }
-                else if (p.type == (int)PowerupType.flower)
+                else if (p.type == (int)ItemType.flower)
                 {
                     powerUps.Add(index, new Flower(new Vector2(xTile * 16, yTile * 16)));
                 }
-                else if (p.type == (int)PowerupType.star)
+                else if (p.type == (int)ItemType.star)
                 {
                     powerUps.Add(index, new Star(new Vector2(xTile * 16, yTile * 16)));
                 }
-                else if (p.type == (int)PowerupType.oneup)
+                else if (p.type == (int)ItemType.oneup)
                 {
                     powerUps.Add(index, new OneUp(new Vector2(xTile * 16, yTile * 16)));
                 }
-                else if (p.type == (int)PowerupType.coin)
+                else if (p.type == (int)ItemType.coin)
                 {
                     powerUps.Add(index, new CoinBox(new Vector2(xTile * 16, yTile * 16)));
                 }
@@ -94,11 +95,7 @@ namespace PlatformTest
 
                 var mapLayers = mapInfo.RootElement.GetProperty("layers");
 
-                //mapWidth = mapLayers[0].GetProperty("width").GetInt32();
-                //mapHeight = mapLayers[0].GetProperty("height").GetInt32();
-
                 indexMap = new int[mapWidth * mapHeight];
-                //tileSize = mapInfo.RootElement.GetProperty("tilewidth").GetInt32();
 
                 for(int i = 0; i < (mapWidth * mapHeight); ++i)
                 {
@@ -124,17 +121,24 @@ namespace PlatformTest
                 {
                     for (int x = 0; x < mapWidth; ++x)
                     {
-                        //int tileId = indexMap[x + mapWidth * y] - 1;
-                        int tileId = tiledMap.layer.map[x + mapWidth * y] - 1;
+                        int tileIndex = x + mapWidth * y;
+                        int tileId = tiledMap.layer.map[tileIndex] - 1;
 
-                        map[x + mapWidth * y] = new Tile();
-                        map[x + mapWidth * y].X = x;
-                        map[x + mapWidth * y].Y = y;
+                        map[tileIndex] = new Tile();
+                        map[tileIndex].X = x;
+                        map[tileIndex].Y = y;
 
                         if (tileId >= 0)
                         {
-                            map[x + mapWidth * y].id = tileId;
-                            map[x + mapWidth * y].collision = (TileCollision)doc.RootElement.GetProperty("tiles")[tileId].GetProperty("collision").GetInt32();
+                            if (tileIndex == (55 + mapWidth * 9))
+                                map[tileIndex].Visible = false;
+
+
+                            map[tileIndex].id = tileId;
+                            if (powerUps.ContainsKey(tileIndex))
+                                map[tileIndex].collision = TileCollision.item;
+                            else
+                                map[tileIndex].collision = (TileCollision)doc.RootElement.GetProperty("tiles")[tileId].GetProperty("collision").GetInt32();
                         }
                     }
                 }
@@ -168,6 +172,12 @@ namespace PlatformTest
                     enemyType.ToDelete = true;
                 }
             }
+
+            SpriteManager.Add(new StaticSprite(
+                new Vector2(3016, 48),
+                new Vector2(16, 16),
+                new Vector2(0, 0),
+                TextureManager.MiscSprites));
         }
 
         public List<Area2D> GetTriggerAreas()
@@ -183,17 +193,31 @@ namespace PlatformTest
             if (EntityManager.BouncingTile != null)
             {
                 EntityManager.BouncingTile.Update(gameTime);
+
                 if (EntityManager.BouncingTile.Done)
                 {
-                    if (EntityManager.BouncingTile.TextureID >= 0)
+                    if (powerUps.ContainsKey(tileIndexRestore) && powerUps[tileIndexRestore].GetItemType() != ItemType.coin)
                     {
-                        map[tileIndexRestore].id = 8;
-                        map[tileIndexRestore].collision = TileCollision.solid;
+                        EntityManager.Add(powerUps[tileIndexRestore]);
                     }
 
-                    if (powerUps.ContainsKey(tileIndexRestore))
-                        EntityManager.Add(powerUps[tileIndexRestore]);
-                    
+                    Tile t = EntityManager.BouncingTile.Restore();
+
+                    if (EntityManager.BouncingTile.TextureID >= 0)
+                    {
+                        if (t.collision == TileCollision.item)
+                        {
+                            map[tileIndexRestore].id = 8;
+                            map[tileIndexRestore].Visible = true;
+                            map[tileIndexRestore].collision = TileCollision.solid;
+                        }
+                        else if(t.collision == TileCollision.breakable)
+                        {
+                            map[tileIndexRestore].Visible = true;
+                        }
+                    }
+
+
                     EntityManager.BouncingTile = null;
                 }
             }
@@ -218,7 +242,9 @@ namespace PlatformTest
                 {
                     int tileTexture = map[x + mapWidth * y].id;
 
-                    if (tileTexture >= 0 && map[x + mapWidth * y].Visible && !map[x + mapWidth * y].Destroyed)
+                    if (tileTexture >= 0 
+                        && map[x + mapWidth * y].Visible 
+                        && !map[x + mapWidth * y].Destroyed)
                     {
                         int dx = (tileTexture % textureColumns) * tileSize;
                         int dy = (tileTexture / textureColumns) * tileSize;
@@ -261,12 +287,39 @@ namespace PlatformTest
              return map[x + mapWidth * y];
         }
 
-        public void usedTileItem(int x, int y)
+        public void HitTile(int x, int y, bool canBreak)
         {
             Tile t = GetTile(x, y);
-            tileIndexRestore = x + mapWidth * y;
-            EntityManager.BouncingTile = new BouncingTile(t);
-            DestroyTile(x, y);
+
+            if(t.collision == TileCollision.breakable)
+            {
+                if(canBreak)
+                    DestroyTile(x, y);
+                else
+                {
+                    tileIndexRestore = x + mapWidth * y;
+                    map[x + mapWidth * y].Visible = false;
+                    EntityManager.BouncingTile = new BouncingTile(t);
+                }
+            }
+            else if(t.collision == TileCollision.item)
+            {
+                tileIndexRestore = x + mapWidth * y;
+                map[x + mapWidth * y].Visible = false;
+                EntityManager.BouncingTile = new BouncingTile(t);
+
+                if (powerUps.ContainsKey(tileIndexRestore))
+                {
+                    if (powerUps[tileIndexRestore].GetItemType() != ItemType.coin)
+                    {
+                        SoundManager.PowerUp.Play();
+                    }
+                    else 
+                    {
+                        EntityManager.Add(powerUps[tileIndexRestore]);
+                    }
+                }
+            }
         }
 
         private void DestroyTile(int x, int y)
@@ -274,35 +327,6 @@ namespace PlatformTest
             map[x + mapWidth * y] = new Tile();
             map[x + mapWidth * y].X = x;
             map[x + mapWidth * y].Y = y;
-        }
-
-        public void RemoveTile(int x, int y)
-        {
-            int tmpIndex = x + mapWidth * y;
-            tileIndexRestore = tmpIndex;
-
-            if (powerUps.ContainsKey(tmpIndex))
-            {
-                if(powerUps[tmpIndex] is Mushroom 
-                    || powerUps[tmpIndex] is Flower 
-                    || powerUps[tmpIndex] is Star 
-                    || powerUps[tmpIndex] is OneUp)
-                    SoundManager.PowerUp.Play();
-
-                Tile t = GetTile(x, y);
-                
-                EntityManager.BouncingTile = new BouncingTile(t);
-            }
-            else
-            {
-                Tile t = new Tile();
-                t.id = -1;
-                t.X = x;
-                t.Y = y;
-                EntityManager.BouncingTile = new BouncingTile(t);
-            }
-
-            map[tmpIndex].Destroyed = true;
         }
 
         public Rectangle GetBounds(int x, int y)

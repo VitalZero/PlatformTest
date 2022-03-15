@@ -220,6 +220,7 @@ namespace PlatformTest
                                 e.SetDir(1);
                             }
 
+                            SoundManager.InstantKill.Play();
                             e.Hit();
                         }
                         else

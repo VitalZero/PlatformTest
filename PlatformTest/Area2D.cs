@@ -29,10 +29,10 @@ namespace PlatformTest
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(TextureManager.Pixel,
-                new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
-                    area,
-                    new Color(Color.Red, 0.1f));
+            //spriteBatch.Draw(TextureManager.Pixel,
+            //    new Vector2((int)pos.X - (int)Camera.Instance.XOffset, (int)pos.Y - (int)Camera.Instance.YOffset),
+            //        area,
+            //        new Color(Color.Red, 0.1f));
         }
     }
 

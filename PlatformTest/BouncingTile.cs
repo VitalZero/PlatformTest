@@ -8,11 +8,9 @@ namespace PlatformTest
 {
     public class BouncingTile : Entity
     {
-        //public bool Active { get; set; }
         public bool Done { get; set; }
         private bool bouncing;
         public int TextureID { get; set; }
-        //private const float gravity = 850f;
         private const float upSpeed = -100f;
         private float yVel;
         private readonly float yOrigin;
@@ -31,7 +29,7 @@ namespace PlatformTest
             Active = true;
             Done = false;
             bouncing = true;
-            gravity = 850f;
+            gravity = 950f;
             CanKill = true;
         }
 

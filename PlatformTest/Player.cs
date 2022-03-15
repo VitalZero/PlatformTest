@@ -49,7 +49,7 @@ namespace PlatformTest
         protected float normalGravity;
         protected float maxGravity;
         protected float bounceSpeed;
-        readonly float timeToJumpPeak = 0.4f;
+        readonly float timeToJumpPeak = 0.44f;
         readonly int jumpHeight = (int)(4.25 * 16);
         readonly int minJumpHeight = (int)(2 * 16);
         readonly int maxJumpHeight = (int)(5.2 * 16);
@@ -117,15 +117,17 @@ namespace PlatformTest
             paleteSwap.CurrentTechnique.Passes[0].Apply();
 
             animPlayer.Add("idleSmall", new Animation(texture, 1f, true, 16, 16, 1, 0, 16 * 2));
-            animPlayer.Add("runningSmall", new Animation(texture, .04f, true, 16, 32, 3, 16, 16 * 2));
-            animPlayer.Add("jumpingSmall", new Animation(texture, .1f, true, 16, 32, 1, 16 * 6, 16 * 2));
-            animPlayer.Add("skidSmall", new Animation(texture, 1f, true, 16, 32, 1, 16 * 5, 16 * 2));
+            animPlayer.Add("runningSmall", new Animation(texture, .04f, true, 16, 16, 3, 16, 16 * 2));
+            animPlayer.Add("jumpingSmall", new Animation(texture, .1f, true, 16, 16, 1, 16 * 6, 16 * 2));
+            animPlayer.Add("skidSmall", new Animation(texture, 1f, true, 16, 16, 1, 16 * 5, 16 * 2));
+            animPlayer.Add("climbSmall", new Animation(texture, .03f, true, 16, 16, 2, 16 * 8, 16 * 2));
             animPlayer.Add("killed", new Animation(texture, 1f, true, 16, 32, 1, 16 * 4, 16 * 2));
 
             animPlayer.Add("idleBig", new Animation(texture, 1f, true, 16, 32, 1, 0, 0));
             animPlayer.Add("runningBig", new Animation(texture, .04f, true, 16, 32, 3, 16, 0));
             animPlayer.Add("jumpingBig", new Animation(texture, .1f, true, 16, 32, 1, 16 * 6, 0));
             animPlayer.Add("skidBig", new Animation(texture, 1f, true, 16, 32, 1, 16 * 5, 0));
+            animPlayer.Add("climbBig", new Animation(texture, .03f, true, 16, 32, 2, 16 * 8, 0));
 
             animPlayer.Add("crouching", new Animation(texture, 1f, true, 16, 32, 1, 16 * 7, 0));
             animPlayer.Add("firing", new Animation(texture, 0.04f, false, 16, 32, 1, 16 * 4, 0));
@@ -363,7 +365,7 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            if (velocity.X < 0f && speed == maxRunSpeed)
+                            if (velocity.X < 0f)
                                 animPlayer.PlayAnimation("skid" + appended);
 
                             dir = 1f;
@@ -373,7 +375,7 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            if (velocity.X > 0f && speed == maxRunSpeed)
+                            if (velocity.X > 0f)
                                 animPlayer.PlayAnimation("skid" + appended);
 
                             dir = -1f;
@@ -633,6 +635,7 @@ namespace PlatformTest
             if(HitArea(AreaType.goal) && currState != States.goal)
             {
                 currState = States.goal;
+                animPlayer.PlayAnimation("climb" + appended);
 
                 velocity = Vector2.Zero;
                 velocity.Y = 100f;
@@ -642,22 +645,9 @@ namespace PlatformTest
             if (CeilingHit)
             {
                 Point tilePos = GetContactTile();
-                Tile t = World.Instance.GetTile(tilePos.X, tilePos.Y);
 
-                if (power > Power.none)
-                {
-                    if (t.collision == TileCollision.breakable || t.collision == TileCollision.item)
-                        World.Instance.RemoveTile(tilePos.X, tilePos.Y);
-                }
-                else
-                {
-                    if (t.collision == TileCollision.item)
-                    {
-                        World.Instance.RemoveTile(tilePos.X, tilePos.Y);
-                    }
-                }
+                World.Instance.HitTile(tilePos.X, tilePos.Y, power > Power.none);
             }
-            //dir = 0f;
         }
 
         private bool HitArea(AreaType areaType)

@@ -20,7 +20,7 @@ namespace PlatformTest
             bool looping = false,
             float lifeTime = 0f)
         {
-            this.position = pos;
+            position = pos;
             velocity = Vector2.Zero;
             animPlayer = new AnimationPlayer();
             timeCounter = 0;
@@ -55,13 +55,16 @@ namespace PlatformTest
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            animPlayer.Draw(spriteBatch, new Vector2((int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - (int)Camera.Instance.YOffset),
+            animPlayer.Draw(spriteBatch, 
+                new Vector2((int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - (int)Camera.Instance.YOffset),
                 SpriteEffects.None, origin);
         }
 
         public override void Update(GameTime gameTime)
         {
-            position += velocity;
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            position += velocity * elapsed;
 
             animPlayer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
@@ -71,6 +74,8 @@ namespace PlatformTest
                 {
                     IsDestroyed = true;
                 }
+
+                timeCounter += elapsed;
             }
             else
             {

@@ -13,9 +13,9 @@ namespace PlatformTest
         private AnimationPlayer animPlayer;
 
         public CoinBox(Vector2 pos)
-            : base(PowerupType.coin, pos)
+            : base(ItemType.coin, pos)
         {
-            speed = 200;
+            speed = 250;
             dir = 0f;
             CanCollide = false;
             this.position.Y -= 16f;

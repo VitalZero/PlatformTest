@@ -8,7 +8,7 @@ namespace PlatformTest
     public class OneUp : PowerUp
     {
         public OneUp(Vector2 pos)
-                    : base(PowerupType.oneup, pos)
+                    : base(ItemType.oneup, pos)
         {
             dir = 1f;
             speed = 40f;
