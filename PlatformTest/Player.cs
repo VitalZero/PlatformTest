@@ -616,6 +616,19 @@ namespace PlatformTest
                             animPlayer.PlayAnimation("running" + appended);
                             velocity.X = maxWalkSpeed;
                         }
+
+                        foreach (var a in World.Instance.GetTriggerAreas())
+                        {
+                            Rectangle pAABB = GetAABB();
+                            Rectangle aAABB = a.GetAABB();
+
+                            if (aAABB.Contains(pAABB) && a.Type == AreaType.endStage)
+                            {
+                                velocity = Vector2.Zero;
+                                DrawBehind = true;
+                                animPlayer.Freeze();
+                            }
+                        }
                     }
                     break;
             }
@@ -629,6 +642,8 @@ namespace PlatformTest
 
 
             animPlayer.Update(MapValue(maxRunSpeed, updateSpeed, elapsed));
+
+            
 
             LateUpdate(gameTime);
 
@@ -661,7 +676,7 @@ namespace PlatformTest
                 {
                     return aAABB.Intersects(pAABB);
                 }
-                else if (areaType == AreaType.downPipe)
+                else if (areaType == AreaType.downPipe || areaType == AreaType.endStage)
                 {
                     if (aAABB.Intersects(pAABB) && IsOnGround &&
                       pAABB.Right <= aAABB.Right && pAABB.Left >= aAABB.Left)

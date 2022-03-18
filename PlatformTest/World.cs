@@ -55,11 +55,13 @@ namespace PlatformTest
             mapHeight = tiledMap.height;
             tileSize = tiledMap.tilewidth;
 
+            // add trigger areas
             foreach (var p in tiledMap.objectGroups[2].objects)
             {
                 triggerAreas.Add(new Area2D(p.x, p.y, p.width, p.height, p.type));
             }
 
+            // add items
             foreach (var p in tiledMap.objectGroups[0].objects)
             {
                 int xTile = (int)(p.x / 16);
@@ -188,7 +190,7 @@ namespace PlatformTest
         public void Update(GameTime gameTime)
         {
             xStart = (int)Math.Max(0, (((int)Camera.Instance.XOffset) / tileSize) -1);
-            xEnd = (int)Math.Min(mapWidth, ((int)(Camera.Instance.XOffset + 320) / tileSize) + 2);
+            xEnd = (int)Math.Min(mapWidth, ((int)(Camera.Instance.XOffset + 320) / tileSize) + 5);
 
             if (EntityManager.BouncingTile != null)
             {

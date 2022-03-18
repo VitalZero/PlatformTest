@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="2021.03.23" orientation="orthogonal" renderorder="right-down" width="200" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="37">
+<map version="1.5" tiledversion="2021.03.23" orientation="orthogonal" renderorder="right-down" width="200" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="39">
  <editorsettings>
   <export target="stage1.yy" format="yy"/>
  </editorsettings>
@@ -74,7 +74,7 @@
   </object>
  </objectgroup>
  <objectgroup id="5" name="enemies">
-  <object id="24" type="1" x="246.5" y="134">
+  <object id="24" type="1" x="266.167" y="198">
    <point/>
   </object>
   <object id="25" type="1" x="565.5" y="193.5">
@@ -89,24 +89,28 @@
   <object id="28" type="1" x="1178" y="68.75">
    <point/>
   </object>
-  <object id="29" type="1" x="1197.25" y="69.5">
+  <object id="29" type="1" x="1208.92" y="69.8333">
    <point/>
   </object>
-  <object id="30" type="2" x="1590" y="180.75">
+  <object id="30" type="2" x="1607.67" y="185.083">
    <point/>
   </object>
-  <object id="31" type="1" x="1861.25" y="195.5">
+  <object id="31" type="1" x="1892.92" y="197.833">
    <point/>
   </object>
-  <object id="32" type="1" x="1880" y="195.75">
+  <object id="32" type="1" x="1911.67" y="198.083">
    <point/>
   </object>
-  <object id="33" type="1" x="2584" y="196">
+  <object id="33" type="1" x="2617.33" y="197">
+   <point/>
+  </object>
+  <object id="37" type="1" x="2633.67" y="198.333">
    <point/>
   </object>
  </objectgroup>
  <objectgroup id="6" name="areas">
   <object id="35" type="20" x="3028" y="16" width="8" height="176"/>
   <object id="36" type="1" x="468" y="144" width="24" height="16"/>
+  <object id="38" type="21" x="3123" y="176" width="20" height="40"/>
  </objectgroup>
 </map>

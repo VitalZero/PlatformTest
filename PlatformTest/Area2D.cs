@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public enum AreaType { none, downPipe, goal = 20 }
+    public enum AreaType { none, downPipe, goal = 20, endStage }
     public class Area2D
     {
         private Rectangle area;

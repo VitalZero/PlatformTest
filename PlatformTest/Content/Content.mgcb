@@ -38,9 +38,6 @@
 /processorParam:TextureFormat=Color
 /build:goomba.png
 
-#begin map_level1.json
-/copy:map_level1.json
-
 #begin mariobasic.png
 /importer:TextureImporter
 /processor:TextureProcessor
