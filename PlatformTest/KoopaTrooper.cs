@@ -136,10 +136,14 @@ namespace PlatformTest
 
                         if (RightWallHit)
                         {
+                            position.X -= 10f;
+                            SoundManager.Thump.Play();
                             dir = -1f;
                         }
                         else if (LeftWallHit)
                         {
+                            SoundManager.Thump.Play();
+                            position.X += 10f;
                             dir = 1f;
                         }
                     }

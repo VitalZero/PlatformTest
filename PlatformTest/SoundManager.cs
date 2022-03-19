@@ -17,6 +17,9 @@ namespace PlatformTest
         public static SoundEffect InstantKill { get; set; }
         public static SoundEffect Thump { get; set; }
         public static SoundEffect ShrinkPipe { get; set; }
+        public static SoundEffect CoinBox { get; set; }
+        public static SoundEffect Coin { get; set; }
+        public static SoundEffect Stomp { get; set; }
         public static Song SurfaceStage { get; set; }
 
         public static void Load(ContentManager content)
@@ -30,6 +33,9 @@ namespace PlatformTest
             InstantKill= content.Load<SoundEffect>("Sounds/instantkill");
             Thump = content.Load<SoundEffect>("Sounds/thump");
             ShrinkPipe = content.Load<SoundEffect>("Sounds/shrink-pipe");
+            CoinBox = content.Load<SoundEffect>("Sounds/coinbox");
+            Coin = content.Load<SoundEffect>("Sounds/coin");
+            Stomp = content.Load<SoundEffect>("Sounds/stomp");
         }
     }
 }

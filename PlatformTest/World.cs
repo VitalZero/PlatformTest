@@ -295,13 +295,16 @@ namespace PlatformTest
 
             if(t.collision == TileCollision.breakable)
             {
-                if(canBreak)
+                if (canBreak)
+                {
                     DestroyTile(x, y);
+                }
                 else
                 {
                     tileIndexRestore = x + mapWidth * y;
                     map[x + mapWidth * y].Visible = false;
                     EntityManager.BouncingTile = new BouncingTile(t);
+                    SoundManager.Thump.Play();
                 }
             }
             else if(t.collision == TileCollision.item)
@@ -319,6 +322,7 @@ namespace PlatformTest
                     else 
                     {
                         EntityManager.Add(powerUps[tileIndexRestore]);
+                        SoundManager.CoinBox.Play();
                     }
                 }
             }

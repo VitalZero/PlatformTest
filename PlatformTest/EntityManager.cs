@@ -233,6 +233,7 @@ namespace PlatformTest
                             {
                                 e.Hit();
                                 Player.Instance.Move(0, -penetration.Height);
+                                SoundManager.Stomp.Play();
                                 Player.Instance.Bounce();
                                 //return;
                             }

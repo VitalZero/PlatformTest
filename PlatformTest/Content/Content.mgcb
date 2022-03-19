@@ -122,6 +122,18 @@
 /processorParam:TextureFormat=Color
 /build:pixel.png
 
+#begin Sounds/coin.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/coin.wav
+
+#begin Sounds/coinbox.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/coinbox.wav
+
 #begin Sounds/fireball.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -169,6 +181,12 @@
 /processor:SongProcessor
 /processorParam:Quality=Best
 /build:Sounds/smbsurface.mp3
+
+#begin Sounds/stomp.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/stomp.wav
 
 #begin Sounds/thump.wav
 /importer:WavImporter
