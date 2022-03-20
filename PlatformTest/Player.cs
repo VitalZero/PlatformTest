@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 
@@ -315,6 +316,7 @@ namespace PlatformTest
                             {
                                 GoDownPipe();
                                 SoundManager.ShrinkPipe.Play();
+                                MediaPlayer.Stop();
                                 break;
                             }
 
@@ -416,6 +418,7 @@ namespace PlatformTest
                             {
                                 GoDownPipe();
                                 SoundManager.ShrinkPipe.Play();
+                                MediaPlayer.Stop();
                                 break;
                             }
 
@@ -651,6 +654,7 @@ namespace PlatformTest
             {
                 currState = States.goal;
                 animPlayer.PlayAnimation("climb" + appended);
+                MediaPlayer.Stop();
 
                 velocity = Vector2.Zero;
                 velocity.Y = 100f;
