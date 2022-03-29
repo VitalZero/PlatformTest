@@ -115,6 +115,7 @@ namespace PlatformTest
 
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
             paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
+            paleteSwap.Parameters["nColors"].SetValue(7);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
 
             animPlayer.Add("idleSmall", new Animation(texture, 1f, true, 16, 16, 1, 0, 16 * 2));
@@ -185,6 +186,7 @@ namespace PlatformTest
             appended = "Small";
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
             paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
+            paleteSwap.Parameters["nColors"].SetValue(7);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
 
             if (currState == States.fall)
@@ -199,6 +201,7 @@ namespace PlatformTest
             appended = "Big";
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
             paleteSwap.Parameters["xTargetPal"].SetValue(pal2);
+            paleteSwap.Parameters["nColors"].SetValue(7);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
 
             if (currState == States.fall)
@@ -213,6 +216,7 @@ namespace PlatformTest
             appended = "Big";
             paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
             paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
+            paleteSwap.Parameters["nColors"].SetValue(7);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
 
             if (currState == States.fall)
