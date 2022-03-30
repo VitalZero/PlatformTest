@@ -375,7 +375,7 @@ namespace PlatformTest
                                 animPlayer.PlayAnimation("skid" + appended);
 
                             dir = 1f;
-                            velocity.X = Lerp(velocity.X, speed, 0.05f);
+                            velocity.X = Lerp(velocity.X, speed, 0.04f);
 
                             hFlip = SpriteEffects.None;
                         }
@@ -385,7 +385,7 @@ namespace PlatformTest
                                 animPlayer.PlayAnimation("skid" + appended);
 
                             dir = -1f;
-                            velocity.X = Lerp(velocity.X, -speed, 0.05f);
+                            velocity.X = Lerp(velocity.X, -speed, 0.04f);
 
                             hFlip = SpriteEffects.FlipHorizontally;
                         }
@@ -457,11 +457,11 @@ namespace PlatformTest
 
                         if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            velocity.X = Lerp(velocity.X, speed, 0.05f);
+                            velocity.X = Lerp(velocity.X, speed, 0.03f);
                         }
                         else if (keyboard.IsKeyDown(Keys.Left))
                         {
-                            velocity.X = Lerp(velocity.X, -speed, 0.05f);
+                            velocity.X = Lerp(velocity.X, -speed, 0.03f);
                         }
 
                         if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
@@ -513,11 +513,11 @@ namespace PlatformTest
 
                     if (keyboard.IsKeyDown(Keys.Right))
                     {
-                        velocity.X = Lerp(velocity.X, speed, 0.05f);
+                        velocity.X = Lerp(velocity.X, speed, 0.02f);
                     }
                     else if (keyboard.IsKeyDown(Keys.Left))
                     {
-                        velocity.X = Lerp(velocity.X, -speed, 0.05f);
+                        velocity.X = Lerp(velocity.X, -speed, 0.02f);
                     }
 
                     if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
@@ -567,7 +567,7 @@ namespace PlatformTest
 
                         aabb = aabbSmall;
 
-                        velocity.X = Lerp(velocity.X, 0, 0.15f);
+                        velocity.X = Lerp(velocity.X, 0, 0.1f);
 
                         if (!IsOnGround)
                         {
@@ -641,21 +641,22 @@ namespace PlatformTest
             }
 
             if (RightWallHit || LeftWallHit)
-                speed = maxWalkSpeed;
+            {
+                //speed = maxWalkSpeed;
+                velocity.X = Math.Clamp(velocity.X, -maxWalkSpeed * .2f, maxWalkSpeed * .2f);
+            }
 
             //vel.X = Math.Clamp(vel.X, -speed * elapsed, speed * elapsed);
 
             float updateSpeed = (currState == States.firing) ? 60 : Math.Max(50, Math.Abs(velocity.X)); // to change
 
-
             animPlayer.Update(MapValue(maxRunSpeed, updateSpeed, elapsed));
-
-            
 
             LateUpdate(gameTime);
 
             if(HitArea(AreaType.goal) && currState != States.goal)
             {
+                SoundManager.PoleDown.Play();
                 currState = States.goal;
                 animPlayer.PlayAnimation("climb" + appended);
                 MediaPlayer.Stop();
@@ -724,7 +725,12 @@ namespace PlatformTest
         // pretty basic "lerp"
         private float Lerp(float start, float end, float percent)
         {
-            return (start * (1f - percent)) + (end * percent);
+            float tmp = (start * (1f - percent)) + (end * percent);
+
+            //if (Math.Abs(start) - Math.Abs(end) <= percent && Math.Abs(start) - Math.Abs(end) > 0)
+            //    return end;
+
+            return tmp;
         }
 
         private float MapValue(float maxValue, float minValue, float knowMaxValue)

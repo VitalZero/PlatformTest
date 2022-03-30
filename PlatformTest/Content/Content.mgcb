@@ -122,6 +122,12 @@
 /processorParam:TextureFormat=Color
 /build:pixel.png
 
+#begin Sounds/brickbreak.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/brickbreak.wav
+
 #begin Sounds/coin.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -163,6 +169,24 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Sounds/jumpsmall.wav
+
+#begin Sounds/oneupmushroom.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/oneupmushroom.wav
+
+#begin Sounds/oneupnormal.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/oneupnormal.wav
+
+#begin Sounds/poledown.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/poledown.wav
 
 #begin Sounds/powerup.wav
 /importer:WavImporter

@@ -264,9 +264,13 @@ namespace PlatformTest
                     {
                         Player.Instance.CollectedPowerUp();
                     }
-                    if (p is Flower)
+                    else if (p is Flower)
                     {
                         Player.Instance.CollectedPowerUp();
+                    }
+                    else if(p is OneUp)
+                    {
+                        SoundManager.OneUpMushroom.Play();
                     }
 
                     p.Collected();

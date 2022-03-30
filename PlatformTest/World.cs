@@ -93,26 +93,6 @@ namespace PlatformTest
 
             try
             {
-                JsonDocument mapInfo = JsonDocument.Parse(File.ReadAllText(directory + "\\map_level1.json"));
-
-                var mapLayers = mapInfo.RootElement.GetProperty("layers");
-
-                indexMap = new int[mapWidth * mapHeight];
-
-                for(int i = 0; i < (mapWidth * mapHeight); ++i)
-                {
-                    indexMap[i] = mapLayers[0].GetProperty("data")[i].GetInt32();
-                }
-
-                mapInfo.Dispose();
-            }
-            catch(Exception e)
-            {
-                throw new ArgumentException(e.Message);
-            }
-
-            try
-            {
                 JsonDocument doc = JsonDocument.Parse(File.ReadAllText(directory + "\\tileset.json"));
 
                 textureName = doc.RootElement.GetProperty("image").GetString();
@@ -298,6 +278,7 @@ namespace PlatformTest
                 if (canBreak)
                 {
                     DestroyTile(x, y);
+                    SoundManager.BrickBreak.Play();
                 }
                 else
                 {

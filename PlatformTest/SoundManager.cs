@@ -20,6 +20,10 @@ namespace PlatformTest
         public static SoundEffect CoinBox { get; set; }
         public static SoundEffect Coin { get; set; }
         public static SoundEffect Stomp { get; set; }
+        public static SoundEffect BrickBreak { get; set; }
+        public static SoundEffect OneUpNormal { get; set; }
+        public static SoundEffect OneUpMushroom { get; set; }
+        public static SoundEffect PoleDown { get; set; }
         public static Song SurfaceStage { get; set; }
 
         public static void Load(ContentManager content)
@@ -36,6 +40,10 @@ namespace PlatformTest
             CoinBox = content.Load<SoundEffect>("Sounds/coinbox");
             Coin = content.Load<SoundEffect>("Sounds/coin");
             Stomp = content.Load<SoundEffect>("Sounds/stomp");
+            BrickBreak = content.Load<SoundEffect>("Sounds/brickbreak");
+            OneUpNormal = content.Load<SoundEffect>("Sounds/oneupnormal");
+            OneUpMushroom = content.Load<SoundEffect>("Sounds/oneupmushroom");
+            PoleDown = content.Load<SoundEffect>("Sounds/poledown");
         }
     }
 }
