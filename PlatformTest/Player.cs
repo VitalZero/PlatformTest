@@ -275,14 +275,14 @@ namespace PlatformTest
                         else
                             animPlayer.PlayAnimation("idle" + appended);
 
-                        if (keyboard.IsKeyDown(Keys.A))
-                        {
-                            speed = maxRunSpeed;
-                        }
-                        else if (keyboard.IsKeyUp(Keys.A))
-                        {
-                            speed = maxWalkSpeed;
-                        }
+                        //if (keyboard.IsKeyDown(Keys.A))
+                        //{
+                        //    speed = maxRunSpeed;
+                        //}
+                        //else if (keyboard.IsKeyUp(Keys.A))
+                        //{
+                        //    speed = maxWalkSpeed;
+                        //}
 
                         velocity.X = Lerp(velocity.X, 0, 0.1f);
 

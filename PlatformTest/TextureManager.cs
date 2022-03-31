@@ -24,17 +24,17 @@ namespace PlatformTest
 
         public static void Load(ContentManager content)
         {
-            Player = content.Load<Texture2D>("mariobasic");
-            Goomba = content.Load<Texture2D>("goomba");
-            Level = content.Load<Texture2D>("mariotilessimple");
-            Pixel = content.Load<Texture2D>("pixel");
-            Turtle = content.Load<Texture2D>("turtle");
-            Items = content.Load<Texture2D>("marioitems");
-            MiscSprites = content.Load<Texture2D>("marioeffects");
+            Player = content.Load<Texture2D>("Sprites/mariobasic");
+            Goomba = content.Load<Texture2D>("Sprites/goomba");
+            Level = content.Load<Texture2D>("Tiles/mariotilesimple");
+            Pixel = content.Load<Texture2D>("Sprites/pixel");
+            Turtle = content.Load<Texture2D>("Sprites/koopatrooper");
+            Items = content.Load<Texture2D>("Sprites/marioitems");
+            MiscSprites = content.Load<Texture2D>("Sprites/marioeffects");
             ColorSwap = content.Load<Effect>("ColorSwap");
-            SourcePal = content.Load<Texture2D>("sourcepalete1");
-            Pal1 = content.Load<Texture2D>("palete1");
-            Pal2 = content.Load<Texture2D>("palete2");
+            SourcePal = content.Load<Texture2D>("Palettes/sourcepalete1");
+            Pal1 = content.Load<Texture2D>("Palettes/palete1");
+            Pal2 = content.Load<Texture2D>("Palettes/palete2");
 
             Arial = content.Load<SpriteFont>("Arial");
         }

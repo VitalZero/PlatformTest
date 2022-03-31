@@ -65,7 +65,7 @@ namespace PlatformTest
             // TODO: use this.Content to load your game content here
 
             EntityManager.Add(Player.Instance);
-            EntityManager.Add(new KoopaTrooper(new Vector2(22 * 16, 11 * 16), 20 + World.Instance.mapWidth * 11));
+            //EntityManager.Add(new KoopaTrooper(new Vector2(22 * 16, 11 * 16), 20 + World.Instance.mapWidth * 11));
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(SoundManager.SurfaceStage);

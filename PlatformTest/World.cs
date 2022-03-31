@@ -44,9 +44,8 @@ namespace PlatformTest
 
         public void Initialize(string directory)
         {
-            int[] indexMap;
             {
-                TMXMapLoader loader = new TMXMapLoader(directory + "\\stage1.tmx");
+                TMXMapLoader loader = new TMXMapLoader(directory + "\\Levels\\stage1.tmx");
 
                 tiledMap = loader.GetObjectMap();
             }
@@ -93,7 +92,7 @@ namespace PlatformTest
 
             try
             {
-                JsonDocument doc = JsonDocument.Parse(File.ReadAllText(directory + "\\tileset.json"));
+                JsonDocument doc = JsonDocument.Parse(File.ReadAllText(directory + "\\Levels\\tileset.json"));
 
                 textureName = doc.RootElement.GetProperty("image").GetString();
                 textureColumns = doc.RootElement.GetProperty("columns").GetInt32();
@@ -112,7 +111,7 @@ namespace PlatformTest
 
                         if (tileId >= 0)
                         {
-                            if (tileIndex == (55 + mapWidth * 9))
+                            if (tileIndex == (55 + mapWidth * 8))
                                 map[tileIndex].Visible = false;
 
 
