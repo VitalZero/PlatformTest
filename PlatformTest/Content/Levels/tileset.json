@@ -18,11 +18,11 @@
     },
     {
       "id": 2,
-      "collision": 1
+      "collision": 2
     },
     {
       "id": 3,
-      "collision": 1
+      "collision": 0
     },
     {
       "id": 4,
@@ -146,27 +146,27 @@
     },
     {
       "id": 34,
-      "collision": 0
+      "collision": 1
     },
     {
       "id": 35,
-      "collision": 0
+      "collision": 1
     },
     {
       "id": 36,
-      "collision": 0
+      "collision": 1
     },
     {
       "id": 37,
-      "collision": 0
+      "collision": 1
     },
     {
       "id": 38,
-      "collision": 0
+      "collision": 1
     },
     {
       "id": 39,
-      "collision": 0
+      "collision": 1
     }
   ]
 }

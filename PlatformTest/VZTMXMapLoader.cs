@@ -4,13 +4,63 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
-namespace VZTMXMapLoader
+namespace VZTiledLoader
 {
-    public class TMXMapLoader
+    public class VZTiledTilesetLoader
+    {
+        string xmlFile;
+        private List<TileType> tileSet;
+
+        public VZTiledTilesetLoader(string xmlFile)
+        {
+            this.xmlFile = xmlFile;
+        }
+
+        public TileSet GetTileSet()
+        {
+            XmlRootAttribute xRoot = new XmlRootAttribute();
+            xRoot.ElementName = "tileset";
+
+            XmlSerializer serializer = new XmlSerializer(typeof(TileSet), xRoot);
+
+            using (Stream reader = new FileStream(xmlFile, FileMode.Open))
+            {
+                TileSet t = (TileSet)serializer.Deserialize(reader);
+
+                return t;
+            }
+        }
+    }
+
+    public class TileSet
+    {
+        [XmlAttribute("name")]
+        public string name { get; set; }
+        [XmlAttribute("tilewidth")]
+        public int tilewidth { get; set; }
+        [XmlAttribute("tileheight")]
+        public int tileheight { get; set; }
+        [XmlAttribute("tilecount")]
+        public int tilecount { get; set; }
+        [XmlAttribute("columns")]
+        public int columns { get; set; }
+        [XmlElement("tile")]
+        public List<TileType> tiles { get; set; }
+    }
+
+    public class TileType
+    {
+        [XmlAttribute("id")]
+        float id;
+        [XmlAttribute("type")]
+        float type;
+    }
+
+    public class VZTiledMapLoader
     {
         string xmlFile;
 
-        public TMXMapLoader(string xmlFile)
+        public VZTiledMapLoader(string xmlFile)
         {
             this.xmlFile = xmlFile;
         }
@@ -22,14 +72,13 @@ namespace VZTMXMapLoader
 
             XmlSerializer serializer = new XmlSerializer(typeof(TiledMap), xRoot);
 
-            using (Stream reader = new FileStream("..\\..\\..\\Content\\Levels\\stage1.tmx", FileMode.Open))
+            using (Stream reader = new FileStream(xmlFile, FileMode.Open))
             {
                 TiledMap m = (TiledMap)serializer.Deserialize(reader);
                 m.layer.CVStoList();
 
                 return m;
             }
-
         }
     }
 
@@ -58,21 +107,21 @@ namespace VZTMXMapLoader
         [XmlAttribute("nextobjectid")]
         public int nextobjectid { get; set; }
 
-        [XmlElement("tileset")]
-        public TileSet tileset { get; set; }
+        //[XmlElement("tileset")]
+        //public TileSet tileset { get; set; }
         [XmlElement("layer")]
         public Layer layer { get; set; }
         [XmlElement("objectgroup")]
         public List<ObjectGroup> objectGroups { get; set; }
     }
 
-    public class TileSet
-    {
-        [XmlAttribute("firstgid")]
-        public int firstgid { get; set; }
-        [XmlAttribute("source")]
-        public string source { get; set; }
-    }
+    //public class TileSet
+    //{
+    //    [XmlAttribute("firstgid")]
+    //    public int firstgid { get; set; }
+    //    [XmlAttribute("source")]
+    //    public string source { get; set; }
+    //}
 
     public class Layer
     {

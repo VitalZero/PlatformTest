@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Text.Json;
 using System;
 using System.IO;
-using VZTMXMapLoader;
+using VZTiledLoader;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,13 +20,15 @@ namespace PlatformTest
         private string textureName;
         private int tileIndexRestore = -1;
         private Dictionary<int, PowerUp> powerUps;
+        private Dictionary<string, List<ObjType>> worldObjects;
         TiledMap tiledMap;
+        TileSet tiledSet;
         private List<Area2D> triggerAreas;
         int xStart;
         int xEnd;
 
-
         private static World instance = null;
+
         public static World Instance
         {
             get
@@ -40,58 +42,77 @@ namespace PlatformTest
             instance = this;
             powerUps = new Dictionary<int, PowerUp>();
             triggerAreas = new List<Area2D>();
+            worldObjects = new Dictionary<string, List<ObjType>>();
         }
 
         public void Initialize(string directory)
         {
             {
-                TMXMapLoader loader = new TMXMapLoader(directory + "\\Levels\\stage1.tmx");
+                VZTiledMapLoader loader = new VZTiledMapLoader(directory + "\\Levels\\stage1.tmx");
 
                 tiledMap = loader.GetObjectMap();
+            }
+
+            // get all world objects (items, enemies, areas)
+            foreach(var p in tiledMap.objectGroups)
+            {
+                worldObjects.Add(p.name, p.objects);
             }
 
             mapWidth = tiledMap.width;
             mapHeight = tiledMap.height;
             tileSize = tiledMap.tilewidth;
 
-            // add trigger areas
-            foreach (var p in tiledMap.objectGroups[2].objects)
+            //add trigger areas
+            if (worldObjects.ContainsKey("areas"))
             {
-                triggerAreas.Add(new Area2D(p.x, p.y, p.width, p.height, p.type));
+                foreach (var p in worldObjects["areas"])//tiledMap.objectGroups[2].objects)
+                {
+                    triggerAreas.Add(new Area2D(p.x, p.y, p.width, p.height, p.type));
+                }
             }
 
-            // add items
-            foreach (var p in tiledMap.objectGroups[0].objects)
-            {
-                int xTile = (int)(p.x / 16);
-                int yTile = (int)(p.y / 16);
 
-                int index = xTile + mapWidth * yTile;
-                
-                if(p.type == (int)ItemType.mushroom)
+            // add items
+            if (worldObjects.ContainsKey("items"))
+            {
+                foreach (var p in worldObjects["items"]) //tiledMap.objectGroups[0].objects)
                 {
-                    powerUps.Add(index, new Mushroom(new Vector2(xTile * 16, yTile * 16)));
-                }
-                else if (p.type == (int)ItemType.flower)
-                {
-                    powerUps.Add(index, new Flower(new Vector2(xTile * 16, yTile * 16)));
-                }
-                else if (p.type == (int)ItemType.star)
-                {
-                    powerUps.Add(index, new Star(new Vector2(xTile * 16, yTile * 16)));
-                }
-                else if (p.type == (int)ItemType.oneup)
-                {
-                    powerUps.Add(index, new OneUp(new Vector2(xTile * 16, yTile * 16)));
-                }
-                else if (p.type == (int)ItemType.coin)
-                {
-                    powerUps.Add(index, new CoinBox(new Vector2(xTile * 16, yTile * 16)));
+                    int xTile = (int)(p.x / 16);
+                    int yTile = (int)(p.y / 16);
+
+                    int index = xTile + mapWidth * yTile;
+
+                    if (p.type == (int)ItemType.mushroom)
+                    {
+                        powerUps.Add(index, new Mushroom(new Vector2(xTile * 16, yTile * 16)));
+                    }
+                    else if (p.type == (int)ItemType.flower)
+                    {
+                        powerUps.Add(index, new Flower(new Vector2(xTile * 16, yTile * 16)));
+                    }
+                    else if (p.type == (int)ItemType.star)
+                    {
+                        powerUps.Add(index, new Star(new Vector2(xTile * 16, yTile * 16)));
+                    }
+                    else if (p.type == (int)ItemType.oneup)
+                    {
+                        powerUps.Add(index, new OneUp(new Vector2(xTile * 16, yTile * 16)));
+                    }
+                    else if (p.type == (int)ItemType.coin)
+                    {
+                        powerUps.Add(index, new CoinBox(new Vector2(xTile * 16, yTile * 16)));
+                    }
                 }
             }
 
             try
             {
+                {
+                    VZTiledTilesetLoader loader = new VZTiledTilesetLoader(directory + "\\Levels\\tileset_stage1.tsx");
+                    tiledSet = loader.GetTileSet();
+                }
+
                 JsonDocument doc = JsonDocument.Parse(File.ReadAllText(directory + "\\Levels\\tileset.json"));
 
                 textureName = doc.RootElement.GetProperty("image").GetString();
@@ -116,6 +137,7 @@ namespace PlatformTest
 
 
                             map[tileIndex].id = tileId;
+
                             if (powerUps.ContainsKey(tileIndex))
                                 map[tileIndex].collision = TileCollision.item;
                             else
@@ -136,21 +158,24 @@ namespace PlatformTest
         {
             texture = TextureManager.Level;
 
-            foreach (var enemyType in tiledMap.objectGroups[1].objects)
+            if (tiledMap.objectGroups.Count >= 3)
             {
-                int xSpawn = (int)enemyType.x / 16;
-                int ySpawn = (int)enemyType.y / 16;
-                int enemyIndex = xSpawn + mapWidth * ySpawn;
+                foreach (var enemyType in tiledMap.objectGroups[1].objects)
+                {
+                    int xSpawn = (int)enemyType.x / 16;
+                    int ySpawn = (int)enemyType.y / 16;
+                    int enemyIndex = xSpawn + mapWidth * ySpawn;
 
-                if (enemyType.type == 1)
-                {
-                    EntityManager.Add(new Goomba(new Vector2(xSpawn * 16, ySpawn * 16), enemyIndex));
-                    enemyType.ToDelete = true;
-                }
-                else if (enemyType.type == 2)
-                {
-                    EntityManager.Add(new KoopaTrooper(new Vector2(xSpawn * 16, ySpawn * 16), enemyIndex));
-                    enemyType.ToDelete = true;
+                    if (enemyType.type == 1)
+                    {
+                        EntityManager.Add(new Goomba(new Vector2(xSpawn * 16, ySpawn * 16), enemyIndex));
+                        enemyType.ToDelete = true;
+                    }
+                    else if (enemyType.type == 2)
+                    {
+                        EntityManager.Add(new KoopaTrooper(new Vector2(xSpawn * 16, ySpawn * 16), enemyIndex));
+                        enemyType.ToDelete = true;
+                    }
                 }
             }
 
