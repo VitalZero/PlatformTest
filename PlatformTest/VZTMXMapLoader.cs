@@ -9,7 +9,6 @@ namespace VZTiledLoader
     public class VZTiledTilesetLoader
     {
         string xmlFile;
-        private List<TileType> tileSet;
 
         public VZTiledTilesetLoader(string xmlFile)
         {
@@ -44,16 +43,16 @@ namespace VZTiledLoader
         public int tilecount { get; set; }
         [XmlAttribute("columns")]
         public int columns { get; set; }
-        [XmlElement("tile")]
+        [XmlElement(ElementName ="tile")]
         public List<TileType> tiles { get; set; }
     }
 
     public class TileType
     {
         [XmlAttribute("id")]
-        float id;
+        public int id { get; set; }
         [XmlAttribute("type")]
-        float type;
+        public int type { get; set; }
     }
 
     public class VZTiledMapLoader
