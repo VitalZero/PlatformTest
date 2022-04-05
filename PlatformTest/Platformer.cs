@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using VZShapes;
 
 namespace PlatformTest
 {
@@ -25,6 +26,7 @@ namespace PlatformTest
         private RenderTarget2D renderTarget;
         private bool pause = false;
         private bool advance = false;
+        public Shapes shapes;
 
         public Platformer()
         {
@@ -49,6 +51,8 @@ namespace PlatformTest
             globalTransformation = Matrix.CreateScale((float)pixels);
 
             renderTarget = new RenderTarget2D(GraphicsDevice, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+
+            shapes = new Shapes(this);
 
             base.Initialize();
         }
@@ -121,6 +125,12 @@ namespace PlatformTest
 
             SpriteManager.Draw(spriteBatch);
 
+            Rectangle paabb = Player.Instance.GetAABB();
+
+            shapes.Begin();
+            shapes.DrawRectangle(paabb.X - Camera.Instance.XOffset, paabb.Y - Camera.Instance.YOffset, paabb.Width, paabb.Height, 1, new Color(Color.Indigo, 0.5f));
+            shapes.End();
+
             spriteBatch.End();
 
             // then draw to the screen 
@@ -145,6 +155,7 @@ namespace PlatformTest
             spriteBatch.DrawString(TextureManager.Arial, "ScreenX: " + playerScreenPos.X.ToString("00.00"), new Vector2(20, 110), Color.Red);
             spriteBatch.DrawString(TextureManager.Arial, "ScreenY: " + playerScreenPos.Y.ToString("00.00"), new Vector2(20, 125), Color.Red);
             spriteBatch.End();
+
 
 
             // TODO: Add your drawing code here
