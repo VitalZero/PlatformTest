@@ -25,6 +25,8 @@ namespace PlatformTest
 
             if (pX < (bounds.Width / 2))
                 pX = bounds.Width / 2;
+            else if (pX > (World.Instance.mapWidth * 16) - (bounds.Width / 2))
+                pX = (World.Instance.mapWidth * 16) - (bounds.Width / 2);
 
             Matrix position = Matrix.CreateTranslation(
                 -pX,

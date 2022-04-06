@@ -100,7 +100,7 @@ namespace PlatformTest
 
                 EntityManager.Update(gameTime);
                 //Camera.Instance.CenterOnPlayer();
-                cam.Follow(Player.Instance);
+                Camera2D.Instance.Follow(Player.Instance);
             }
 
             advance = false;
@@ -118,14 +118,11 @@ namespace PlatformTest
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera2D.Instance.Transform);
+            spriteBatch.Begin(sortMode: SpriteSortMode.BackToFront, samplerState: SamplerState.PointClamp, transformMatrix: Camera2D.Instance.Transform);
 
             EntityManager.DrawBehind(spriteBatch);
-
             world.Draw(spriteBatch);
-
             SpriteManager.Draw(spriteBatch);
-
             EntityManager.Draw(spriteBatch);
 
             spriteBatch.End();
