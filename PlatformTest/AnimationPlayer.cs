@@ -128,7 +128,7 @@ namespace PlatformTest
         public void Draw(SpriteBatch spriteBatch, Vector2 pos, SpriteEffects effects, Vector2 origin)
         {
             spriteBatch.Draw(animations[currentAnimation].Texture, pos, source, Color.White, 
-                0f, new Vector2((int)origin.X, (int)origin.Y), 1f, effects, 0f);
+                0f, origin, 1f, effects, 1f);
         }
     }
 }

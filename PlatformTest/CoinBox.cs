@@ -63,7 +63,7 @@ namespace PlatformTest
         public override void Draw(SpriteBatch spriteBatch)
         {
             animPlayer.Draw(spriteBatch,
-                new Vector2((int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - (int)Camera.Instance.YOffset),
+                new Vector2((int)position.X, (int)position.Y),
                 SpriteEffects.None, new Vector2(0, 0));
         }
     }

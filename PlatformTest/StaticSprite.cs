@@ -63,7 +63,7 @@ namespace PlatformTest
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture,
-                new Vector2((int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - (int)Camera.Instance.YOffset),
+                new Vector2((int)position.X, (int)position.Y),
                 new Rectangle((int)frameStart.X, (int)frameStart.Y, (int)frameSize.X, (int)frameSize.Y),
                 Color.White, 0f, origin, 1f, hFlip, 0f);
         }

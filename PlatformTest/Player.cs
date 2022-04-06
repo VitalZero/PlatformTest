@@ -632,7 +632,7 @@ namespace PlatformTest
                             if (aAABB.Contains(pAABB) && a.Type == AreaType.endStage)
                             {
                                 velocity = Vector2.Zero;
-                                DrawBehind = true;
+                                //DrawBehind = true;
                                 animPlayer.Freeze();
                             }
                         }
@@ -701,7 +701,7 @@ namespace PlatformTest
         private void GoDownPipe()
         {
             CanCollide = false;
-            DrawBehind = true;
+            //DrawBehind = true;
             currState = States.downPipe;
             velocity = Vector2.Zero;
         }
@@ -710,14 +710,14 @@ namespace PlatformTest
         {
             spriteBatch.End();
 
-            spriteBatch.Begin(effect: paleteSwap);
+            spriteBatch.Begin(effect: paleteSwap, transformMatrix: Camera2D.Instance.Transform);
 
             animPlayer.Draw(spriteBatch,
-                new Vector2((int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - (int)Camera.Instance.YOffset),
+                new Vector2((int)position.X, (int)position.Y),
                 hFlip, origin);
 
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred);
+            spriteBatch.Begin();
 
             base.Draw(spriteBatch);
         }

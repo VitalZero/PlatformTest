@@ -27,6 +27,7 @@ namespace PlatformTest
         private bool pause = false;
         private bool advance = false;
         public Shapes shapes;
+        Camera2D cam;
 
         public Platformer()
         {
@@ -34,6 +35,7 @@ namespace PlatformTest
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             world = new World();
+            cam = new Camera2D(new Rectangle(0, 0,width, height));
         }
 
         protected override void Initialize()
@@ -50,7 +52,7 @@ namespace PlatformTest
 
             globalTransformation = Matrix.CreateScale((float)pixels);
 
-            renderTarget = new RenderTarget2D(GraphicsDevice, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+            renderTarget = new RenderTarget2D(GraphicsDevice, width, height);
 
             shapes = new Shapes(this);
 
@@ -94,15 +96,15 @@ namespace PlatformTest
             {
                 world.Update(gameTime);
 
-                EntityManager.Update(gameTime);
-
                 SpriteManager.Update(gameTime);
 
-                Camera.Instance.CenterOnPlayer();
+                EntityManager.Update(gameTime);
+                //Camera.Instance.CenterOnPlayer();
+                cam.Follow(Player.Instance);
             }
 
             advance = false;
-
+            
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -110,36 +112,34 @@ namespace PlatformTest
 
         protected override void Draw(GameTime gameTime)
         {
+            Rectangle paabb = Player.Instance.GetAABB();
             // draw to a texture
             GraphicsDevice.SetRenderTarget(renderTarget);
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera2D.Instance.Transform);
 
             EntityManager.DrawBehind(spriteBatch);
-            
+
             world.Draw(spriteBatch);
-            
-            EntityManager.Draw(spriteBatch);
 
             SpriteManager.Draw(spriteBatch);
 
-            Rectangle paabb = Player.Instance.GetAABB();
-
-            shapes.Begin();
-            shapes.DrawRectangle(paabb.X - Camera.Instance.XOffset, paabb.Y - Camera.Instance.YOffset, paabb.Width, paabb.Height, 1, new Color(Color.Indigo, 0.5f));
-            shapes.End();
+            EntityManager.Draw(spriteBatch);
 
             spriteBatch.End();
+
+            shapes.Begin();
+            shapes.DrawRectangle(paabb.X+Camera2D.Instance.Transform.Translation.X, paabb.Y, paabb.Width, paabb.Height, 1, new Color(Color.Indigo, 0.5f));
+            shapes.End();
 
             // then draw to the screen 
             // so we can apply the scale to size of the window (globalTransformation) without errors
             GraphicsDevice.SetRenderTarget(null);
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null,
-                 globalTransformation);
-            spriteBatch.Draw(renderTarget, new Vector2(0, 0), Color.White);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            spriteBatch.Draw(renderTarget, new Rectangle(0, 0, windowWidth, windowHeight), Color.White);
             spriteBatch.End();
 
             // draw info stuff

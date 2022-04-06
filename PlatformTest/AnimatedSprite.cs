@@ -41,7 +41,7 @@ namespace PlatformTest
 
         public void SetVelocity(Vector2 velocity)
         {
-            base.velocity = velocity;
+            this.velocity = velocity;
         }
 
         public void Destroy()
@@ -56,7 +56,7 @@ namespace PlatformTest
         public override void Draw(SpriteBatch spriteBatch)
         {
             animPlayer.Draw(spriteBatch, 
-                new Vector2((int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - (int)Camera.Instance.YOffset),
+                new Vector2((int)position.X, (int)position.Y),
                 SpriteEffects.None, origin);
         }
 
@@ -66,7 +66,7 @@ namespace PlatformTest
 
             position += velocity * elapsed;
 
-            animPlayer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            animPlayer.Update(elapsed);
 
             if(looping)
             {

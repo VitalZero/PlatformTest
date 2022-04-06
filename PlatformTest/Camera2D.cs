@@ -8,27 +8,35 @@ namespace PlatformTest
 {
     public class Camera2D
     {
-        protected float zoom;
-        protected float rotation;
-        public Matrix transform;
-        public Vector2 pos;
-        protected Rectangle bounds;
+        public Matrix Transform { get; private set; }
+        private Rectangle bounds;
+        private static Camera2D instance = null;
+        public static Camera2D Instance { get { return instance; } }
 
-        public Camera2D(Viewport viewport)
+        public Camera2D(Rectangle bounds)
         {
-            zoom = 1f;
-            rotation = 0f;
-            pos = Vector2.Zero;
-            bounds = viewport.Bounds;
+            this.bounds = bounds;
+            instance = this;
         }
 
-        public Matrix GetTransformation()
+        public void Follow(Entity entity)
         {
-            transform = Matrix.CreateTranslation(new Vector3(-pos.X, -120, 0)) * // should not move on y
-                Matrix.CreateScale(4f) * // scale for 4 to upscale to viewport from native resolution of 320x240
-                Matrix.CreateTranslation(new Vector3(bounds.Width * 0.5f, bounds.Height * 0.5f, 0));
+            int pX = (int)entity.Position.X;
 
-            return transform;
+            if (pX < (bounds.Width / 2))
+                pX = bounds.Width / 2;
+
+            Matrix position = Matrix.CreateTranslation(
+                -pX,
+                0,
+                0);
+
+            Matrix offset = Matrix.CreateTranslation(
+                bounds.Width / 2,
+                0,
+                0);
+
+            Transform = position * offset;
         }
     }
 }

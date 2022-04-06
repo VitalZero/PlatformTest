@@ -193,8 +193,8 @@ namespace PlatformTest
 
         public void Update(GameTime gameTime)
         {
-            xStart = (int)Math.Max(0, (((int)Camera.Instance.XOffset) / tileSize) -1);
-            xEnd = (int)Math.Min(mapWidth, ((int)(Camera.Instance.XOffset + 320) / tileSize) + 5);
+            xStart = (int)Math.Max(0, -Camera2D.Instance.Transform.Translation.X  / tileSize);
+            xEnd = mapWidth;// (int)Math.Min(mapWidth, ((int)(Camera.Instance.XOffset + 320) / tileSize) + 5);
 
             if (EntityManager.BouncingTile != null)
             {
@@ -257,7 +257,7 @@ namespace PlatformTest
 
                         spriteBatch.Draw(
                             texture,
-                            new Vector2((x * tileSize) - (int)Camera.Instance.XOffset, (y * tileSize) - (int)Camera.Instance.YOffset),
+                            new Vector2((x * tileSize), (y * tileSize)),
                             new Rectangle(dx, dy, tileSize, tileSize),
                             Color.White     
                             );
@@ -271,7 +271,7 @@ namespace PlatformTest
                 int ty = (EntityManager.BouncingTile.TextureID / textureColumns) * tileSize;
 
                 spriteBatch.Draw(texture,
-                    new Vector2((int)EntityManager.BouncingTile.Position.X - (int)Camera.Instance.XOffset, (int)EntityManager.BouncingTile.Position.Y - (int)Camera.Instance.YOffset),
+                    new Vector2((int)EntityManager.BouncingTile.Position.X, (int)EntityManager.BouncingTile.Position.Y),
                     new Rectangle(tx, ty, tileSize, tileSize),
                     Color.White);
             }

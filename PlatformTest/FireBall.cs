@@ -71,17 +71,17 @@ namespace PlatformTest
 
             LateUpdate(gameTime);
 
-            Vector2 posToScreen = Camera.WorldToScreen(position);
+            //Vector2 posToScreen = Camera.WorldToScreen(position);
 
-            if (posToScreen.X > 336 || posToScreen.Y > 256 || posToScreen.X < -16 || posToScreen.Y < -16)
-            {
-                IsDestroyed = true;
-            }
+            //if (posToScreen.X > 336 || posToScreen.Y > 256 || posToScreen.X < -16 || posToScreen.Y < -16)
+            //{
+            //    IsDestroyed = true;
+            //}
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            animPlayer.Draw(spriteBatch, new Vector2((int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - Camera.Instance.YOffset),
+            animPlayer.Draw(spriteBatch, new Vector2((int)position.X, (int)position.Y),
                 hFlip, origin);
         }
     }
