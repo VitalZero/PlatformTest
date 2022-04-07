@@ -35,7 +35,7 @@ namespace PlatformTest
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             world = new World();
-            cam = new Camera2D(new Rectangle(0, 0,width, height));
+            cam = new Camera2D(new Rectangle(0, 0, width, height));
         }
 
         protected override void Initialize()
@@ -46,7 +46,7 @@ namespace PlatformTest
             //graphics.PreferMultiSampling = false;
             graphics.ApplyChanges();
 
-            Camera.Instance.Init(this, 0, 0);
+            //Camera.Instance.Init(this, 0, 0);
 
             world.Initialize(Content.RootDirectory);
 
@@ -118,30 +118,33 @@ namespace PlatformTest
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(sortMode: SpriteSortMode.BackToFront, samplerState: SamplerState.PointClamp, transformMatrix: Camera2D.Instance.Transform);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera2D.Instance.Transform);
 
             EntityManager.DrawBehind(spriteBatch);
+
             world.Draw(spriteBatch);
+
             SpriteManager.Draw(spriteBatch);
+
             EntityManager.Draw(spriteBatch);
 
             spriteBatch.End();
 
             shapes.Begin();
-            shapes.DrawRectangle(paabb.X+Camera2D.Instance.Transform.Translation.X, paabb.Y, paabb.Width, paabb.Height, 1, new Color(Color.Indigo, 0.5f));
+            shapes.DrawRectangle(paabb.X + Camera2D.Instance.Transform.Translation.X, paabb.Y, paabb.Width, paabb.Height, 1, new Color(Color.Indigo, 0.5f));
             shapes.End();
 
             // then draw to the screen 
             // so we can apply the scale to size of the window (globalTransformation) without errors
             GraphicsDevice.SetRenderTarget(null);
 
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            spriteBatch.Draw(renderTarget, new Rectangle(0, 0, windowWidth, windowHeight), Color.White);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: globalTransformation);
+            spriteBatch.Draw(renderTarget, Vector2.Zero, Color.White);
             spriteBatch.End();
 
             // draw info stuff
 
-            Vector2 playerScreenPos = Camera.WorldToScreen(Player.Instance.Position);
+            Vector2 playerScreenPos = Vector2.Zero;// Camera.WorldToScreen(Player.Instance.Position);
             spriteBatch.Begin();
             spriteBatch.DrawString(TextureManager.Arial, "FPS: " + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);
             spriteBatch.DrawString(TextureManager.Arial, "vel X: " + Player.Instance.Vel.X.ToString("00.0000"), new Vector2(20, 35), Color.Red);

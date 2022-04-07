@@ -76,7 +76,7 @@ namespace PlatformTest
                 new Color(Color.Yellow, 0.8f));
 
             spriteBatch.Draw(TextureManager.Pixel, new Rectangle(
-                            (int)position.X - (int)Camera.Instance.XOffset, (int)position.Y - (int)Camera.Instance.YOffset,
+                            (int)position.X, (int)position.Y,
                             1, 1),
                             Color.Red);
 #endif

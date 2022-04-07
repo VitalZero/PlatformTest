@@ -193,8 +193,11 @@ namespace PlatformTest
 
         public void Update(GameTime gameTime)
         {
-            xStart = (int)Math.Max(0, -Camera2D.Instance.Transform.Translation.X  / tileSize);
-            xEnd = mapWidth;// (int)Math.Min(mapWidth, ((int)(Camera.Instance.XOffset + 320) / tileSize) + 5);
+            int leftCameraToWorldValue = (int)-Camera2D.Instance.Transform.Translation.X;
+            int rightCameraToWorldValue = (int)-Camera2D.Instance.Transform.Translation.X + 320;
+
+            xStart = (int)Math.Max(0, leftCameraToWorldValue  / tileSize);
+            xEnd = (int)Math.Min(mapWidth, (rightCameraToWorldValue / tileSize) + 1);// (int)Math.Min(mapWidth, ((int)(Camera.Instance.XOffset + 320) / tileSize) + 5);
 
             if (EntityManager.BouncingTile != null)
             {
@@ -248,9 +251,9 @@ namespace PlatformTest
                 {
                     int tileTexture = map[x + mapWidth * y].id;
 
-                    if (tileTexture >= 0 
-                        && map[x + mapWidth * y].Visible 
-                        && !map[x + mapWidth * y].Destroyed)
+                    if (tileTexture >= 0 &&
+                        map[x + mapWidth * y].Visible  &&
+                        !map[x + mapWidth * y].Destroyed)
                     {
                         int dx = (tileTexture % textureColumns) * tileSize;
                         int dy = (tileTexture / textureColumns) * tileSize;

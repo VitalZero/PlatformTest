@@ -701,7 +701,7 @@ namespace PlatformTest
         private void GoDownPipe()
         {
             CanCollide = false;
-            //DrawBehind = true;
+            DrawBehind = true;
             currState = States.downPipe;
             velocity = Vector2.Zero;
         }
@@ -710,14 +710,14 @@ namespace PlatformTest
         {
             spriteBatch.End();
 
-            spriteBatch.Begin(effect: paleteSwap, transformMatrix: Camera2D.Instance.Transform);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: paleteSwap, transformMatrix: Camera2D.Instance.Transform);
 
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)position.X, (int)position.Y),
                 hFlip, origin);
 
             spriteBatch.End();
-            spriteBatch.Begin();
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera2D.Instance.Transform);
 
             base.Draw(spriteBatch);
         }
