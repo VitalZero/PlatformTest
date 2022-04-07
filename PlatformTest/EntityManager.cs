@@ -42,6 +42,8 @@ namespace PlatformTest
             entity.Init();
             entities.Add(entity);
 
+            UpdateDrawOrder();
+
             if (entity is Enemy)
                 enemies.Add(entity as Enemy);
             else if (entity is PowerUp)
@@ -60,10 +62,10 @@ namespace PlatformTest
 
         public static void RemoveInactiveEntities()
         {
-            entities = entities.Where(e => !e.IsDestroyed).ToList();
-            enemies = enemies.Where(e => !e.IsDestroyed).ToList();
-            powerUps = powerUps.Where(e => !e.IsDestroyed).ToList();
-            fireBalls = fireBalls.Where(e => !e.IsDestroyed).ToList();
+            entities.RemoveAll(e => e.IsDestroyed);
+            enemies.RemoveAll(e => e.IsDestroyed);
+            powerUps.RemoveAll(e => e.IsDestroyed);
+            fireBalls.RemoveAll(e => e.IsDestroyed);
         }
 
         public static void CheckForEnemiesAndActivate(int index)
@@ -75,12 +77,29 @@ namespace PlatformTest
             }
         }
 
+        public static void UpdateDrawOrder()
+        {
+            drawBehind.Clear();
+            drawNormal.Clear();
+
+            foreach (var e in entities)
+            {
+                if (e.DrawBehind)
+                    drawBehind.Add(e);
+                else
+                    drawNormal.Add(e);
+            }
+        }
+
         public static void Update(GameTime gameTime)
         {
+            RemoveInactiveEntities();
+            UpdateDrawOrder();
             // separate and sort entities to be drawn in "z order" and behind or in front of world tiles
-            drawBehind = entities.Where(e => e.DrawBehind).ToList();
-            drawNormal = entities.Where(e => !e.DrawBehind).ToList();
-            drawNormal.Sort((e1, e2) => (e1.drawPriority.CompareTo(e2.drawPriority)));
+
+            //drawBehind = entities.Where(e => e.DrawBehind).ToList();
+            //drawNormal = entities.Where(e => !e.DrawBehind).ToList();
+            //drawNormal.Sort((e1, e2) => (e1.drawPriority.CompareTo(e2.drawPriority)));
 
             isUpdating = true;
 
@@ -103,7 +122,6 @@ namespace PlatformTest
             isUpdating = false;
 
             // clean up after update, remove entities that are not active
-            RemoveInactiveEntities();
 
             addedEntities.Clear();
 

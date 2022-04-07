@@ -144,7 +144,7 @@ namespace PlatformTest
 
             // draw info stuff
 
-            Vector2 playerScreenPos = Vector2.Zero;// Camera.WorldToScreen(Player.Instance.Position);
+            Vector2 playerScreenPos = Camera2D.Instance.WorldToScreen(Player.Instance.Position);
             spriteBatch.Begin();
             spriteBatch.DrawString(TextureManager.Arial, "FPS: " + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);
             spriteBatch.DrawString(TextureManager.Arial, "vel X: " + Player.Instance.Vel.X.ToString("00.0000"), new Vector2(20, 35), Color.Red);

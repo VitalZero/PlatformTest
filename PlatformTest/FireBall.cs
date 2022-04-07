@@ -53,8 +53,7 @@ namespace PlatformTest
             if(LeftWallHit || RightWallHit)
             {
                 SoundManager.Thump.Play();
-                IsDestroyed = true;
-                CanCollide = false;
+                Destroy();
                 velocity = Vector2.Zero;
 
                 if(RightWallHit)
@@ -71,12 +70,12 @@ namespace PlatformTest
 
             LateUpdate(gameTime);
 
-            //Vector2 posToScreen = Camera.WorldToScreen(position);
+            Vector2 posToScreen = Camera2D.Instance.WorldToScreen(position);
 
-            //if (posToScreen.X > 336 || posToScreen.Y > 256 || posToScreen.X < -16 || posToScreen.Y < -16)
-            //{
-            //    IsDestroyed = true;
-            //}
+            if (posToScreen.X > 336 || posToScreen.Y > 256 || posToScreen.X < -16 || posToScreen.Y < -16)
+            {
+                Destroy();
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)

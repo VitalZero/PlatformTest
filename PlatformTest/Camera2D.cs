@@ -19,6 +19,11 @@ namespace PlatformTest
             instance = this;
         }
 
+        public Vector2 WorldToScreen(Vector2 pos)
+        {
+            return new Vector2(pos.X + Transform.Translation.X, pos.Y + Transform.Translation.Y);
+        }
+
         public void Follow(Entity entity)
         {
             int pX = (int)entity.Position.X;

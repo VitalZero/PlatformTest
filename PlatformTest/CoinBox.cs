@@ -51,7 +51,7 @@ namespace PlatformTest
 
             if(position.Y >= yOrigin - 16f)
             {
-                IsDestroyed = true;
+                Destroy();
             }
 
 

@@ -157,9 +157,10 @@ namespace PlatformTest
             }
             else
             {
-                CanCollide = false;
+                Destroy();
+                //CanCollide = false;
                 //Active = false;
-                IsDestroyed = true;
+                //IsDestroyed = true;
             }
         }
 
@@ -632,7 +633,7 @@ namespace PlatformTest
                             if (aAABB.Contains(pAABB) && a.Type == AreaType.endStage)
                             {
                                 velocity = Vector2.Zero;
-                                //DrawBehind = true;
+                                DrawBehind = true;
                                 animPlayer.Freeze();
                             }
                         }

@@ -42,8 +42,7 @@ namespace PlatformTest
 
         public virtual void Collected() 
         {
-            IsDestroyed = true;
-            Active = false;
+            Destroy();
         }
 
         public override void Draw(SpriteBatch spriteBatch)

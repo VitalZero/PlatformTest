@@ -103,8 +103,7 @@ namespace PlatformTest
 
                         if (deadTimeAcc >= 1f)
                         {
-                            Active = false;
-                            IsDestroyed = true;
+                            Destroy();
                         }
                     }
                     break;
@@ -113,10 +112,12 @@ namespace PlatformTest
             animPlayer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             LateUpdate(gameTime);
-            
-            if (position.Y > ((World.Instance.mapHeight + 3) * 16))
+
+            Vector2 posToScreen = Camera2D.Instance.WorldToScreen(position);
+
+            if (posToScreen.X > 336 || posToScreen.Y > 256 || posToScreen.X < -16 || posToScreen.Y < -16)
             {
-                IsDestroyed = true;
+                Destroy();
             }
         }
 

@@ -34,6 +34,11 @@ namespace PlatformTest
             base.velocity = velocity;
         }
 
+        public void Destroy()
+        {
+            IsDestroyed = true;
+        }
+
         public override void Init()
         {
         }
@@ -53,10 +58,17 @@ namespace PlatformTest
             {
                 if (timeCounter >= lifeTime)
                 {
-                    IsDestroyed = true;
+                    Destroy();
                 }
 
                 timeCounter += elapsed;
+            }
+
+            Vector2 posToScreen = Camera2D.Instance.WorldToScreen(position);
+
+            if (posToScreen.X > 336 || posToScreen.Y > 256 || posToScreen.X < -16 || posToScreen.Y < -16)
+            {
+                Destroy();
             }
         }
 

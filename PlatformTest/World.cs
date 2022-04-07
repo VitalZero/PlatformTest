@@ -197,7 +197,7 @@ namespace PlatformTest
             int rightCameraToWorldValue = (int)-Camera2D.Instance.Transform.Translation.X + 320;
 
             xStart = (int)Math.Max(0, leftCameraToWorldValue  / tileSize);
-            xEnd = (int)Math.Min(mapWidth, (rightCameraToWorldValue / tileSize) + 1);// (int)Math.Min(mapWidth, ((int)(Camera.Instance.XOffset + 320) / tileSize) + 5);
+            xEnd = (int)Math.Min(mapWidth, (rightCameraToWorldValue / tileSize) + 2);
 
             if (EntityManager.BouncingTile != null)
             {
