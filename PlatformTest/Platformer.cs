@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using System;
 using VZShapes;
 
 namespace PlatformTest
@@ -28,6 +29,7 @@ namespace PlatformTest
         private bool advance = false;
         public Shapes shapes;
         Camera2D cam;
+
 
         public Platformer()
         {
@@ -92,7 +94,7 @@ namespace PlatformTest
 
             fps = 1f / (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (!pause || ( advance))
+            if (!pause || advance)
             {
                 if (!Player.Instance.IsTransforming)
                 {
@@ -104,6 +106,8 @@ namespace PlatformTest
                 }
                 else
                 {
+                    Camera2D.Instance.Shake();
+
                     Player.Instance.Update(gameTime);
                 }
                     //Camera.Instance.CenterOnPlayer();
