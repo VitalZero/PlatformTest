@@ -94,13 +94,20 @@ namespace PlatformTest
 
             if (!pause || ( advance))
             {
-                world.Update(gameTime);
+                if (!Player.Instance.IsTransforming)
+                {
+                    world.Update(gameTime);
 
-                SpriteManager.Update(gameTime);
+                    SpriteManager.Update(gameTime);
 
-                EntityManager.Update(gameTime);
-                //Camera.Instance.CenterOnPlayer();
-                Camera2D.Instance.Follow(Player.Instance);
+                    EntityManager.Update(gameTime);
+                }
+                else
+                {
+                    Player.Instance.Update(gameTime);
+                }
+                    //Camera.Instance.CenterOnPlayer();
+                    Camera2D.Instance.Follow(Player.Instance);
             }
 
             advance = false;

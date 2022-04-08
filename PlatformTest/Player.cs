@@ -23,15 +23,18 @@ namespace PlatformTest
             }
         }
 
-        private enum States { stand, run, jump, fall, crouch, firing, downPipe, upPipe, goal }
+        private enum States { stand, run, jump, fall, crouch, firing, growing, shrinking, downPipe, upPipe, goal }
         private enum Power { none, big, fire }
 
         public Vector2 PrevPos { get; private set; }
         public bool IsInvencible { get; set; }
         public Vector2 Vel { get { return velocity; } }
+        public bool IsTransforming { get; private set; }
 
         private float invencibleTimer;
-        private const float invencibleTotalTime = 2f;
+        private const float invencibleTotalTime = 3f;
+        private float secondCounter;
+        private const float transformationTotalTime = 1f;
         private const float jumpHoldTime = 0.25f;
         private KeyboardState keyboard;
         private SpriteEffects hFlip;
@@ -59,6 +62,7 @@ namespace PlatformTest
         private Rectangle aabbBig;
         private readonly Vector2 originSmall = new Vector2(8, 15);
         private readonly Vector2 originBig = new Vector2(8, 31);
+        private Vector2 prevVelocity;
 
         Effect paleteSwap;
         Texture2D sourcePal;
@@ -74,6 +78,7 @@ namespace PlatformTest
             drawPriority = 1;
             position = new Vector2(50f, 50f);
             velocity = Vector2.Zero;
+            prevVelocity = Vector2.Zero;
             dir = 1f;
             maxGravity = 2 * maxJumpHeight / (float)Math.Pow(timeToJumpPeak * 1.2, 2);
             normalGravity = 2 * jumpHeight / (float)Math.Pow(timeToJumpPeak, 2); // this is the normal one
@@ -84,6 +89,7 @@ namespace PlatformTest
             pipeSpeed = 40f;
             IsInvencible = false;
             invencibleTimer = 0f;
+            IsTransforming = false;
 
             speed = maxWalkSpeed;
             // rectangle coordinates for big mario, from the origin point (no texture origin)
@@ -134,6 +140,9 @@ namespace PlatformTest
             animPlayer.Add("crouching", new Animation(texture, 1f, true, 16, 32, 1, 16 * 7, 0));
             animPlayer.Add("firing", new Animation(texture, 0.04f, false, 16, 32, 1, 16 * 4, 0));
 
+            animPlayer.Add("growing", new Animation(texture, .04f, true, 16, 32, 3, 0, 48));
+            animPlayer.Add("shrinking", new Animation(texture, .03f, true, 16, 32, 2, 48, 48));
+
             animPlayer.PlayAnimation("idle" + appended);
             font = TextureManager.Arial;
         }
@@ -150,9 +159,9 @@ namespace PlatformTest
         {
             if (power > Power.none)
             {
-                SoundManager.ShrinkPipe.Play();
                 power = Power.none;
                 IsInvencible = true;
+                invencibleTimer = 0f;
                 canTransform = true;
             }
             else
@@ -182,16 +191,20 @@ namespace PlatformTest
         // we also switch it's bounding box and pallete if applies
         private void Shrink()
         {
-            origin = originSmall;
-            aabb = aabbSmall;
-            appended = "Small";
-            paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
-            paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
-            paleteSwap.Parameters["nColors"].SetValue(7);
-            paleteSwap.CurrentTechnique.Passes[0].Apply();
+            SoundManager.ShrinkPipe.Play();
 
-            if (currState == States.fall)
-                animPlayer.PlayAnimation("jumping" + appended);
+            //if (currState == States.fall)
+            //    animPlayer.PlayAnimation("jumping" + appended);
+            prevState = currState;
+            currState = States.shrinking;
+            animPlayer.PlayAnimation("shrinking");
+            AffectedByGravity = false;
+            CanBeHit = false;
+            CanCollide = false;
+            secondCounter = 0f;
+            prevVelocity = velocity;
+            velocity = Vector2.Zero;
+            IsTransforming = true;
         }
 
         private void Burn()
@@ -214,14 +227,22 @@ namespace PlatformTest
             SoundManager.Grow.Play();
             origin = originBig;
             aabb = aabbBig;
-            appended = "Big";
-            paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
-            paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
-            paleteSwap.Parameters["nColors"].SetValue(7);
-            paleteSwap.CurrentTechnique.Passes[0].Apply();
 
-            if (currState == States.fall)
-                animPlayer.PlayAnimation("jumping" + appended);
+            //if (currState == States.fall)
+            //    animPlayer.PlayAnimation("jumping" + appended);
+
+            prevState = currState;
+            currState = States.growing;
+            animPlayer.PlayAnimation("growing");
+            AffectedByGravity = false;
+            CanBeHit = false;
+            CanCollide = false;
+            secondCounter = 0f;
+            prevVelocity = velocity;
+            velocity = Vector2.Zero;
+            IsTransforming = true;
+            IsInvencible = true;
+            invencibleTimer = 0;
         }
 
         public override void Update(GameTime gameTime)
@@ -238,7 +259,6 @@ namespace PlatformTest
                 invencibleTimer += elapsed;
                 if(invencibleTimer >= invencibleTotalTime)
                 {
-                    invencibleTimer = 0f;
                     IsInvencible = false;
                 }
             }
@@ -610,6 +630,59 @@ namespace PlatformTest
                     }
                     break;
 
+                case States.growing:
+                    {
+                        if(secondCounter >= transformationTotalTime)
+                        {
+                            appended = "Big";
+                            paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
+                            paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
+                            paleteSwap.Parameters["nColors"].SetValue(7);
+                            paleteSwap.CurrentTechnique.Passes[0].Apply();
+
+                            currState = prevState;
+                            CanBeHit = true;
+                            CanCollide = true;
+                            AffectedByGravity = true;
+                            velocity = prevVelocity;
+                            IsTransforming = false;
+                            IsInvencible = false;
+                        }
+                    }
+                    break;
+
+                case States.shrinking:
+                    {
+                        if (secondCounter >= transformationTotalTime)
+                        {
+                            origin = originSmall;
+                            aabb = aabbSmall;
+                            appended = "Small";
+                            paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
+                            paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
+                            paleteSwap.Parameters["nColors"].SetValue(7);
+                            paleteSwap.CurrentTechnique.Passes[0].Apply();
+
+                            CanBeHit = true;
+                            CanCollide = true;
+                            AffectedByGravity = true;
+                            velocity = prevVelocity;
+                            IsTransforming = false;
+
+                            if ((int)velocity.Y != 0)
+                            {
+                                currState = States.jump;
+                                animPlayer.PlayAnimation("running" + appended);
+                            }
+                            else
+                            {
+                                currState = States.run;
+                                animPlayer.PlayAnimation("running" + appended);
+                            }
+                        }
+                    }
+                    break;
+
                 case States.downPipe:
                     {
                         velocity.Y = pipeSpeed;
@@ -673,6 +746,8 @@ namespace PlatformTest
 
                 World.Instance.HitTile(tilePos.X, tilePos.Y, power > Power.none);
             }
+
+            secondCounter += elapsed;
         }
 
         private bool HitArea(AreaType areaType)
@@ -712,12 +787,17 @@ namespace PlatformTest
             spriteBatch.End();
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: paleteSwap, transformMatrix: Camera2D.Instance.Transform);
-
-            animPlayer.Draw(spriteBatch,
+            if (invencibleTimer > 0f &&
+                (int)(invencibleTimer * 60f) % 8 > 4)
+            { }
+            else
+            {
+                animPlayer.Draw(spriteBatch,
                 new Vector2((int)position.X, (int)position.Y),
                 hFlip, origin);
+            }
 
-            spriteBatch.End();
+                spriteBatch.End();
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera2D.Instance.Transform);
 
             base.Draw(spriteBatch);
