@@ -106,12 +106,10 @@ namespace PlatformTest
                 }
                 else
                 {
-                    Camera2D.Instance.Shake();
-
                     Player.Instance.Update(gameTime);
                 }
-                    //Camera.Instance.CenterOnPlayer();
-                    Camera2D.Instance.Follow(Player.Instance);
+                
+                Camera2D.Instance.Follow(Player.Instance);
             }
 
             advance = false;

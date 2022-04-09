@@ -745,6 +745,8 @@ namespace PlatformTest
                 Point tilePos = GetContactTile();
 
                 World.Instance.HitTile(tilePos.X, tilePos.Y, power > Power.none);
+
+                Camera2D.Instance.Shake();
             }
 
             secondCounter += elapsed;

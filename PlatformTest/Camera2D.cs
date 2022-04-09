@@ -13,6 +13,7 @@ namespace PlatformTest
         private static Camera2D instance = null;
         public static Camera2D Instance { get { return instance; } }
         private bool shake;
+        private const float initialShakeRadius = 2f;
         private float shakeRadius;
         private float shakeAmount;
         private Vector2 shakeOffset;
@@ -25,11 +26,10 @@ namespace PlatformTest
             instance = this;
             shake = false;
             shakeOffset = Vector2.Zero;
-            shakeRadius = 0f;
             rand = new Random();
-            startShakeAngle = MathHelper.PiOver2;
-            shakeRadius = 2f;
-            shakeAmount = shakeRadius / 60;
+            startShakeAngle = MathHelper.PiOver4;
+            shakeRadius = initialShakeRadius;
+            shakeAmount = shakeRadius / 20;
         }
 
         public void Shake()
@@ -69,14 +69,14 @@ namespace PlatformTest
 
                 if (shakeRadius < 0)
                 {
-                    shakeRadius = 2f;
+                    shakeRadius = initialShakeRadius;
                     shake = false;
                     shakeOffset = Vector2.Zero;
                     startShakeAngle = MathHelper.PiOver2;
                 }
             }
 
-            Matrix cameraShake = Matrix.CreateTranslation(new Vector3(shakeOffset, 0));
+            Matrix cameraShake = Matrix.CreateTranslation(new Vector3((int)shakeOffset.X, (int)shakeOffset.Y, 0));
 
             Transform = position * offset * cameraShake;
         }

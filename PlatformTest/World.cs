@@ -334,6 +334,10 @@ namespace PlatformTest
                     }
                 }
             }
+            else if(t.collision == TileCollision.solid)
+            {
+                SoundManager.Thump.Play();
+            }
         }
 
         private void DestroyTile(int x, int y)
