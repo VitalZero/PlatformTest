@@ -799,7 +799,7 @@ namespace PlatformTest
                 hFlip, origin);
             }
 
-                spriteBatch.End();
+            spriteBatch.End();
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera2D.Instance.Transform);
 
             base.Draw(spriteBatch);

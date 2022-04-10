@@ -127,7 +127,7 @@ namespace PlatformTest
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera2D.Instance.Transform);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera2D.Instance.Transform * Camera2D.Instance.CameraShake);
 
             EntityManager.DrawBehind(spriteBatch);
 
@@ -136,12 +136,12 @@ namespace PlatformTest
             SpriteManager.Draw(spriteBatch);
 
             EntityManager.Draw(spriteBatch);
-
-            spriteBatch.End();
-
             shapes.Begin();
             shapes.DrawRectangle(paabb.X + Camera2D.Instance.Transform.Translation.X, paabb.Y, paabb.Width, paabb.Height, 1, new Color(Color.Indigo, 0.5f));
             shapes.End();
+
+            spriteBatch.End();
+
 
             // then draw to the screen 
             // so we can apply the scale to size of the window (globalTransformation) without errors

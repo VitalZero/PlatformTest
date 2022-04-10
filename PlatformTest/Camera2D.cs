@@ -9,6 +9,7 @@ namespace PlatformTest
     public class Camera2D
     {
         public Matrix Transform { get; private set; }
+        public Matrix CameraShake { get; private set; }
         private Rectangle bounds;
         private static Camera2D instance = null;
         public static Camera2D Instance { get { return instance; } }
@@ -76,9 +77,9 @@ namespace PlatformTest
                 }
             }
 
-            Matrix cameraShake = Matrix.CreateTranslation(new Vector3((int)shakeOffset.X, (int)shakeOffset.Y, 0));
+            CameraShake = Matrix.CreateTranslation(new Vector3((int)shakeOffset.X, (int)shakeOffset.Y, 0));
 
-            Transform = position * offset * cameraShake;
+            Transform = position * offset;
         }
     }
 }
