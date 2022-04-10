@@ -27,11 +27,7 @@ namespace PlatformTest
             this.lifeTime = lifeTime;
             timeCounter = 0f;
             hFlip = SpriteEffects.None;
-        }
-
-        public void SetVelocity(Vector2 velocity)
-        {
-            base.velocity = velocity;
+            acceleration = Vector2.Zero;
         }
 
         public void Destroy()
@@ -51,6 +47,8 @@ namespace PlatformTest
                 hFlip = SpriteEffects.FlipHorizontally;
 
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            velocity += acceleration * elapsed;
 
             position += velocity * elapsed;
 

@@ -22,6 +22,7 @@ namespace PlatformTest
         {
             position = pos;
             velocity = Vector2.Zero;
+            acceleration = Vector2.Zero;
             animPlayer = new AnimationPlayer();
             timeCounter = 0;
             this.lifeTime = lifeTime;
@@ -37,11 +38,6 @@ namespace PlatformTest
 
             if (looping && lifeTime <= 0)
                 throw new ArgumentException("If animation is looping, life time must be greater than 0!");
-        }
-
-        public void SetVelocity(Vector2 velocity)
-        {
-            this.velocity = velocity;
         }
 
         public void Destroy()
@@ -63,6 +59,8 @@ namespace PlatformTest
         public override void Update(GameTime gameTime)
         {
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            velocity += acceleration * elapsed;
 
             position += velocity * elapsed;
 

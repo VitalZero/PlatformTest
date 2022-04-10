@@ -304,8 +304,47 @@ namespace PlatformTest
             {
                 if (canBreak)
                 {
-                    DestroyTile(x, y);
                     SoundManager.BrickBreak.Play();
+                    Camera2D.Instance.Shake();
+
+                    // add brick debris
+                    StaticSprite brickDebris = new StaticSprite(
+                        new Vector2(x * tileSize, y * tileSize),
+                        new Vector2(8, 8),
+                        new Vector2(0, 16),
+                        TextureManager.MiscSprites);
+                    brickDebris.SetAcceleration(new Vector2(0, 850f));
+                    brickDebris.SetVelocity(new Vector2(-100f, -150f));
+                    SpriteManager.Add(brickDebris);
+
+                    brickDebris = new StaticSprite(
+                        new Vector2((x * tileSize) + 8f, y * tileSize),
+                        new Vector2(8, 8),
+                        new Vector2(0, 16),
+                        TextureManager.MiscSprites);
+                    brickDebris.SetAcceleration(new Vector2(0, 850f));
+                    brickDebris.SetVelocity(new Vector2(100f, -150f));
+                    SpriteManager.Add(brickDebris);
+
+                    brickDebris = new StaticSprite(
+                        new Vector2(x * tileSize, (y * tileSize) + 8f),
+                        new Vector2(8, 8),
+                        new Vector2(0, 16),
+                        TextureManager.MiscSprites);
+                    brickDebris.SetAcceleration(new Vector2(0, 850f));
+                    brickDebris.SetVelocity(new Vector2(-60f, -150f));
+                    SpriteManager.Add(brickDebris);
+
+                    brickDebris = new StaticSprite(
+                        new Vector2((x * tileSize) + 8f, (y * tileSize) + 8f),
+                        new Vector2(8, 8),
+                        new Vector2(0, 16),
+                        TextureManager.MiscSprites);
+                    brickDebris.SetAcceleration(new Vector2(0, 850f));
+                    brickDebris.SetVelocity(new Vector2(60f, -150f));
+                    SpriteManager.Add(brickDebris);
+
+                    DestroyTile(x, y);
                 }
                 else
                 {
