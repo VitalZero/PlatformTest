@@ -28,9 +28,9 @@ namespace PlatformTest
             shake = false;
             shakeOffset = Vector2.Zero;
             rand = new Random();
-            startShakeAngle = MathHelper.PiOver4;
+            startShakeAngle = MathHelper.PiOver2;
             shakeRadius = initialShakeRadius;
-            shakeAmount = shakeRadius / 20;
+            shakeAmount = shakeRadius / 25;
         }
 
         public void Shake()
