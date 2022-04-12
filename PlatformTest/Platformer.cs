@@ -45,10 +45,8 @@ namespace PlatformTest
             // TODO: Add your initialization logic here
             graphics.PreferredBackBufferWidth = windowWidth;
             graphics.PreferredBackBufferHeight = windowHeight;
-            //graphics.PreferMultiSampling = false;
+            graphics.PreferMultiSampling = false;
             graphics.ApplyChanges();
-
-            //Camera.Instance.Init(this, 0, 0);
 
             world.Initialize(Content.RootDirectory);
 
@@ -73,7 +71,6 @@ namespace PlatformTest
             // TODO: use this.Content to load your game content here
 
             EntityManager.Add(Player.Instance);
-            //EntityManager.Add(new KoopaTrooper(new Vector2(22 * 16, 11 * 16), 20 + World.Instance.mapWidth * 11));
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(SoundManager.SurfaceStage);
@@ -155,7 +152,7 @@ namespace PlatformTest
 
             Vector2 playerScreenPos = Camera2D.Instance.WorldToScreen(Player.Instance.Position);
             spriteBatch.Begin();
-            spriteBatch.DrawString(TextureManager.Arial, "FPS: " + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);
+            //spriteBatch.DrawString(TextureManager.Arial, "FPS: " + fps.ToString("00.00"), new Vector2(20, 20), Color.Red);
             spriteBatch.DrawString(TextureManager.Arial, "vel X: " + Player.Instance.Vel.X.ToString("00.0000"), new Vector2(20, 35), Color.Red);
             spriteBatch.DrawString(TextureManager.Arial, "vel Y: " + Player.Instance.Vel.Y.ToString("00.0000"), new Vector2(20, 50), Color.Red);
             spriteBatch.DrawString(TextureManager.Arial, "Sprites: " + SpriteManager.Count, new Vector2(20, 65), Color.Red);
@@ -165,7 +162,7 @@ namespace PlatformTest
             spriteBatch.DrawString(TextureManager.Arial, "ScreenY: " + playerScreenPos.Y.ToString("00.00"), new Vector2(20, 125), Color.Red);
             spriteBatch.End();
 
-
+            this.Window.Title = fps.ToString("00.00");
 
             // TODO: Add your drawing code here
 
