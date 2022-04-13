@@ -26,6 +26,7 @@ namespace PlatformTest
         private List<Area2D> triggerAreas;
         int xStart;
         int xEnd;
+        string workingDir;
 
         private static World instance = null;
 
@@ -45,16 +46,69 @@ namespace PlatformTest
             worldObjects = new Dictionary<string, List<ObjType>>();
         }
 
-        public void Initialize(string directory)
+        public void LoadLevel(string level)
         {
+            try
             {
-                VZTiledMapLoader loader = new VZTiledMapLoader(directory + "\\Levels\\stage1.tmx");
+                VZTiledMapLoader mapLoader = new VZTiledMapLoader(level);
+                tiledMap = mapLoader.GetObjectMap();
 
-                tiledMap = loader.GetObjectMap();
+                LoadWorldObjects();
+
+                VZTiledTilesetLoader tileLoader = new VZTiledTilesetLoader("Content\\Levels\\" + tiledMap.tilesetInfo.source);
+                tiledSet = tileLoader.GetTileSet();
+
+                JsonDocument doc = JsonDocument.Parse(File.ReadAllText("Content\\Levels\\tileset.json"));
+
+                textureName = doc.RootElement.GetProperty("image").GetString();
+                textureColumns = doc.RootElement.GetProperty("columns").GetInt32();
+                map = new Tile[mapWidth * mapHeight];
+
+                int leftCameraToWorldValue = (int)-Camera2D.Instance.Transform.Translation.X;
+                int rightCameraToWorldValue = (int)-Camera2D.Instance.Transform.Translation.X + 320;
+
+                xStart = (int)Math.Max(0, leftCameraToWorldValue / tileSize);
+                xEnd = (int)Math.Min(mapWidth, (rightCameraToWorldValue / tileSize) + 2);
+
+                for (int y = 0; y < mapHeight; ++y)
+                {
+                    for (int x = 0; x < mapWidth; ++x)
+                    {
+                        int tileIndex = x + mapWidth * y;
+                        int tileId = tiledMap.layer.map[tileIndex] - 1;
+
+                        map[tileIndex] = new Tile();
+                        map[tileIndex].X = x;
+                        map[tileIndex].Y = y;
+
+                        if (tileId >= 0)
+                        {
+                            if (tileIndex == (55 + mapWidth * 8))
+                                map[tileIndex].Visible = false;
+
+
+                            map[tileIndex].id = tileId;
+
+                            if (powerUps.ContainsKey(tileIndex))
+                                map[tileIndex].collision = TileCollision.item;
+                            else
+                                map[tileIndex].collision = (TileCollision)doc.RootElement.GetProperty("tiles")[tileId].GetProperty("collision").GetInt32();
+                        }
+                    }
+                }
+
+                doc.Dispose();
             }
+            catch (Exception e)
+            {
+                throw new ArgumentException(e.Message);
+            }
+        }
 
+        private void LoadWorldObjects()
+        {
             // get all world objects (items, enemies, areas)
-            foreach(var p in tiledMap.objectGroups)
+            foreach (var p in tiledMap.objectGroups)
             {
                 worldObjects.Add(p.name, p.objects);
             }
@@ -71,7 +125,6 @@ namespace PlatformTest
                     triggerAreas.Add(new Area2D(p.x, p.y, p.width, p.height, p.type));
                 }
             }
-
 
             // add items
             if (worldObjects.ContainsKey("items"))
@@ -105,53 +158,13 @@ namespace PlatformTest
                     }
                 }
             }
+        }
 
-            try
-            {
-                {
-                    VZTiledTilesetLoader loader = new VZTiledTilesetLoader(directory + "\\Levels\\tileset_stage1.tsx");
-                    tiledSet = loader.GetTileSet();
-                }
+        public void Initialize(string directory)
+        {
+            workingDir = directory;
 
-                JsonDocument doc = JsonDocument.Parse(File.ReadAllText(directory + "\\Levels\\tileset.json"));
-
-                textureName = doc.RootElement.GetProperty("image").GetString();
-                textureColumns = doc.RootElement.GetProperty("columns").GetInt32();
-                map = new Tile[mapWidth * mapHeight];
-
-                for (int y = 0; y < mapHeight; ++y)
-                {
-                    for (int x = 0; x < mapWidth; ++x)
-                    {
-                        int tileIndex = x + mapWidth * y;
-                        int tileId = tiledMap.layer.map[tileIndex] - 1;
-
-                        map[tileIndex] = new Tile();
-                        map[tileIndex].X = x;
-                        map[tileIndex].Y = y;
-
-                        if (tileId >= 0)
-                        {
-                            if (tileIndex == (55 + mapWidth * 8))
-                                map[tileIndex].Visible = false;
-
-
-                            map[tileIndex].id = tileId;
-
-                            if (powerUps.ContainsKey(tileIndex))
-                                map[tileIndex].collision = TileCollision.item;
-                            else
-                                map[tileIndex].collision = (TileCollision)doc.RootElement.GetProperty("tiles")[tileId].GetProperty("collision").GetInt32();
-                        }
-                    }
-                }
-
-                doc.Dispose();
-            }
-            catch(Exception e)
-            {
-                throw new ArgumentException(e.Message);
-            }
+            LoadLevel(directory + "\\Levels\\stage1.tmx");
         }
 
         public void Load()

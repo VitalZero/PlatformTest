@@ -686,6 +686,20 @@ namespace PlatformTest
                 case States.downPipe:
                     {
                         velocity.Y = pipeSpeed;
+
+                        if(position.Y >= 200)
+                        {
+                            position = new Vector2(50f, 50f);
+                            velocity = Vector2.Zero;
+                            currState = States.stand;
+                            CanCollide = true;
+                            DrawBehind = false;
+                            AffectedByGravity = true;
+                            EntityManager.StartOver();
+                            World.Instance.LoadLevel("Content\\Levels\\stage1bonus.tmx");
+
+                            break;
+                        }
                     }
                     break;
 

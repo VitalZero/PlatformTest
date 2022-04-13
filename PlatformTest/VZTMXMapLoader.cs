@@ -106,21 +106,21 @@ namespace VZTiledLoader
         [XmlAttribute("nextobjectid")]
         public int nextobjectid { get; set; }
 
-        //[XmlElement("tileset")]
-        //public TileSet tileset { get; set; }
+        [XmlElement("tileset")]
+        public TileSetInfo tilesetInfo { get; set; }
         [XmlElement("layer")]
         public Layer layer { get; set; }
         [XmlElement("objectgroup")]
         public List<ObjectGroup> objectGroups { get; set; }
     }
 
-    //public class TileSet
-    //{
-    //    [XmlAttribute("firstgid")]
-    //    public int firstgid { get; set; }
-    //    [XmlAttribute("source")]
-    //    public string source { get; set; }
-    //}
+    public class TileSetInfo
+    {
+        [XmlAttribute("firstgid")]
+        public int firstgid { get; set; }
+        [XmlAttribute("source")]
+        public string source { get; set; }
+    }
 
     public class Layer
     {

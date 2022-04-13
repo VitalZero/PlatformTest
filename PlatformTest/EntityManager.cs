@@ -19,6 +19,7 @@ namespace PlatformTest
         static List<Entity> drawNormal = new List<Entity>();
 
         static bool isUpdating;
+        static bool startOver = false;
 
         public static int Count { get { return entities.Count; } }
         public static int FireBallCount { get { return fireBalls.Count; } }
@@ -35,6 +36,23 @@ namespace PlatformTest
             //    addedEntities.Add(entity);
             //}
             addedEntities.Add(entity);
+        }
+
+        public static void StartOver()
+        {
+            startOver = true;
+        }
+
+        private static void Clear()
+        {
+            enemies.Clear();
+            powerUps.Clear();
+            fireBalls.Clear();
+            entities.Clear();
+            drawBehind.Clear();
+            drawNormal.Clear();
+
+            Add(Player.Instance);
         }
 
         private static void AddEntity(Entity entity)
@@ -101,6 +119,12 @@ namespace PlatformTest
             //drawNormal = entities.Where(e => !e.DrawBehind).ToList();
             //drawNormal.Sort((e1, e2) => (e1.drawPriority.CompareTo(e2.drawPriority)));
 
+            if (startOver)
+            {
+                StartOver();
+                startOver = false;
+            }
+
             isUpdating = true;
 
             foreach(var entity in entities)
@@ -119,13 +143,9 @@ namespace PlatformTest
                 AddEntity(entity);
             }
 
-            isUpdating = false;
-
             // clean up after update, remove entities that are not active
 
             addedEntities.Clear();
-
-
         }
 
         public static void DrawBehind(SpriteBatch spriteBatch)
