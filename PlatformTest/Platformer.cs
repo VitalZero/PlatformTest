@@ -109,7 +109,7 @@ namespace PlatformTest
                     Player.Instance.Update(gameTime);
                 }
                 
-                Camera2D.Instance.Follow(Player.Instance);
+                Camera2D.Instance.Follow(Player.Instance, (float)gameTime.ElapsedGameTime.TotalSeconds);
             }
 
             advance = false;

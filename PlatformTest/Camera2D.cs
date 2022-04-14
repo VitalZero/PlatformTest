@@ -27,6 +27,8 @@ namespace PlatformTest
         private Vector2 zoomTarget;
         Random rand;
         float startShakeAngle;
+        float zoomAcc = 0f;
+        float ratio;
 
         public Camera2D(Rectangle bounds, Rectangle screenSize)
         {
@@ -41,6 +43,7 @@ namespace PlatformTest
             shakeRadius = initialShakeRadius;
             shakeAmount = shakeRadius / 25;
             zoom = defaultZoom;
+            ratio = screenSize.Width / bounds.Width;
         }
 
         public void Shake()
@@ -60,7 +63,7 @@ namespace PlatformTest
             return new Vector2(pos.X + Transform.Translation.X, pos.Y + Transform.Translation.Y);
         }
 
-        public void Follow(Entity entity)
+        public void Follow(Entity entity, float dt)
         {
             int pX = (int)entity.Position.X;
 
@@ -98,7 +101,7 @@ namespace PlatformTest
 
             if (dramaticZoom)
             {
-                Zoom = Matrix.CreateTranslation(new Vector3(zoomTarget.X - screenSize.Width / 2, zoomTarget.Y - screenSize.Height / 2, 0)) * Matrix.CreateScale(zoom);
+                Zoom = Matrix.CreateScale(zoom) * Matrix.CreateTranslation(new Vector3(-screenSize.Width / 2, (screenSize.Height / 2) - Position.Y, 0));
             }
             else
             {
