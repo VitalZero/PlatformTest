@@ -43,7 +43,7 @@ namespace VZTiledLoader
         public int tilecount { get; set; }
         [XmlAttribute("columns")]
         public int columns { get; set; }
-        [XmlElement(ElementName ="tile")]
+        [XmlElement("tile")]
         public List<TileType> tiles { get; set; }
     }
 

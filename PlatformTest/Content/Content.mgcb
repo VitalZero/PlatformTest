@@ -32,9 +32,6 @@
 #begin Levels/stage1bonus.tmx
 /copy:Levels/stage1bonus.tmx
 
-#begin Levels/tileset.json
-/copy:Levels/tileset.json
-
 #begin Levels/tileset_stage1.tsx
 /copy:Levels/tileset_stage1.tsx
 

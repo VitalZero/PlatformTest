@@ -224,6 +224,7 @@ namespace PlatformTest
 
         private void Grow()
         {
+            Camera2D.Instance.DramaticZoom(this.position);
             SoundManager.Grow.Play();
             origin = originBig;
             aabb = aabbBig;
@@ -647,6 +648,7 @@ namespace PlatformTest
                             velocity = prevVelocity;
                             IsTransforming = false;
                             IsInvencible = false;
+                            Camera2D.Instance.DramaticZoom(position);
                         }
                     }
                     break;
@@ -689,9 +691,10 @@ namespace PlatformTest
 
                         if(position.Y >= 200)
                         {
-                            position = new Vector2(50f, 50f);
+                            position = new Vector2(50f, 0f);
                             velocity = Vector2.Zero;
-                            currState = States.stand;
+                            currState = States.jump;
+                            hFlip = SpriteEffects.None;
                             CanCollide = true;
                             DrawBehind = false;
                             AffectedByGravity = true;

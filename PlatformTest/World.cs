@@ -17,7 +17,7 @@ namespace PlatformTest
         private int tileSize;
         private int textureColumns;
         private Texture2D texture;
-        private string textureName;
+        //private string textureName;
         private int tileIndexRestore = -1;
         private Dictionary<int, PowerUp> powerUps;
         private Dictionary<string, List<ObjType>> worldObjects;
@@ -53,15 +53,15 @@ namespace PlatformTest
                 VZTiledMapLoader mapLoader = new VZTiledMapLoader(level);
                 tiledMap = mapLoader.GetObjectMap();
 
-                LoadWorldObjects();
+                mapWidth = tiledMap.width;
+                mapHeight = tiledMap.height;
+                tileSize = tiledMap.tilewidth;
+
 
                 VZTiledTilesetLoader tileLoader = new VZTiledTilesetLoader("Content\\Levels\\" + tiledMap.tilesetInfo.source);
                 tiledSet = tileLoader.GetTileSet();
 
-                JsonDocument doc = JsonDocument.Parse(File.ReadAllText("Content\\Levels\\tileset.json"));
-
-                textureName = doc.RootElement.GetProperty("image").GetString();
-                textureColumns = doc.RootElement.GetProperty("columns").GetInt32();
+                textureColumns = tiledSet.columns;
                 map = new Tile[mapWidth * mapHeight];
 
                 int leftCameraToWorldValue = (int)-Camera2D.Instance.Transform.Translation.X;
@@ -69,6 +69,8 @@ namespace PlatformTest
 
                 xStart = (int)Math.Max(0, leftCameraToWorldValue / tileSize);
                 xEnd = (int)Math.Min(mapWidth, (rightCameraToWorldValue / tileSize) + 2);
+
+                LoadWorldObjects();
 
                 for (int y = 0; y < mapHeight; ++y)
                 {
@@ -81,6 +83,11 @@ namespace PlatformTest
                         map[tileIndex].X = x;
                         map[tileIndex].Y = y;
 
+                        if (tileIndex == 1885)
+                        {
+                            float i = 0;
+                        }
+
                         if (tileId >= 0)
                         {
                             if (tileIndex == (55 + mapWidth * 8))
@@ -92,12 +99,10 @@ namespace PlatformTest
                             if (powerUps.ContainsKey(tileIndex))
                                 map[tileIndex].collision = TileCollision.item;
                             else
-                                map[tileIndex].collision = (TileCollision)doc.RootElement.GetProperty("tiles")[tileId].GetProperty("collision").GetInt32();
+                                map[tileIndex].collision = (TileCollision)tiledSet.tiles[tileId].type;
                         }
                     }
-                }
-
-                doc.Dispose();
+                };
             }
             catch (Exception e)
             {
@@ -112,10 +117,6 @@ namespace PlatformTest
             {
                 worldObjects.Add(p.name, p.objects);
             }
-
-            mapWidth = tiledMap.width;
-            mapHeight = tiledMap.height;
-            tileSize = tiledMap.tilewidth;
 
             //add trigger areas
             if (worldObjects.ContainsKey("areas"))

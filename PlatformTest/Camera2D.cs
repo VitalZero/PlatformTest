@@ -10,32 +10,49 @@ namespace PlatformTest
     {
         public Matrix Transform { get; private set; }
         public Matrix CameraShake { get; private set; }
+        public Matrix Zoom { get; private set; }
+        public Vector2 Position { get; private set; }
         private Rectangle bounds;
+        private Rectangle screenSize;
         private static Camera2D instance = null;
         public static Camera2D Instance { get { return instance; } }
         private bool shake;
+        private bool dramaticZoom;
         private const float initialShakeRadius = 2f;
         private float shakeRadius;
         private float shakeAmount;
         private Vector2 shakeOffset;
+        private readonly float defaultZoom = 1f;
+        private float zoom;
+        private Vector2 zoomTarget;
         Random rand;
         float startShakeAngle;
 
-        public Camera2D(Rectangle bounds)
+        public Camera2D(Rectangle bounds, Rectangle screenSize)
         {
             this.bounds = bounds;
+            this.screenSize = screenSize;
             instance = this;
             shake = false;
+            dramaticZoom = false;
             shakeOffset = Vector2.Zero;
             rand = new Random();
             startShakeAngle = MathHelper.PiOver2;
             shakeRadius = initialShakeRadius;
             shakeAmount = shakeRadius / 25;
+            zoom = defaultZoom;
         }
 
         public void Shake()
         {
             shake = true;
+        }
+
+        public void DramaticZoom(Vector2 target)
+        {
+            dramaticZoom = !dramaticZoom;
+            zoomTarget = target;
+            zoom = 2f;
         }
 
         public Vector2 WorldToScreen(Vector2 pos)
@@ -52,15 +69,17 @@ namespace PlatformTest
             else if (pX > (World.Instance.mapWidth * 16) - (bounds.Width / 2))
                 pX = (World.Instance.mapWidth * 16) - (bounds.Width / 2);
 
-            Matrix position = Matrix.CreateTranslation(
+            Matrix matrixPos = Matrix.CreateTranslation(
                 -pX,
                 0,
                 0);
 
-            Matrix offset = Matrix.CreateTranslation(
+            Matrix matrixOffset = Matrix.CreateTranslation(
                 bounds.Width / 2,
                 0,
                 0);
+
+            Position = new Vector2((screenSize.Width / 2) - matrixPos.Translation.X, screenSize.Height / 2);
 
             if (shake)
             {
@@ -77,9 +96,18 @@ namespace PlatformTest
                 }
             }
 
+            if (dramaticZoom)
+            {
+                Zoom = Matrix.CreateTranslation(new Vector3(zoomTarget.X - screenSize.Width / 2, zoomTarget.Y - screenSize.Height / 2, 0)) * Matrix.CreateScale(zoom);
+            }
+            else
+            {
+                Zoom = Matrix.Identity;
+            }
+
             CameraShake = Matrix.CreateTranslation(new Vector3((int)shakeOffset.X, (int)shakeOffset.Y, 0));
 
-            Transform = position * offset;
+            Transform = matrixPos * matrixOffset;
         }
     }
 }

@@ -37,7 +37,7 @@ namespace PlatformTest
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             world = new World();
-            cam = new Camera2D(new Rectangle(0, 0, width, height));
+            cam = new Camera2D(new Rectangle(0, 0, width, height), new Rectangle(0, 0, windowWidth, windowHeight));
         }
 
         protected override void Initialize()
@@ -46,6 +46,9 @@ namespace PlatformTest
             graphics.PreferredBackBufferWidth = windowWidth;
             graphics.PreferredBackBufferHeight = windowHeight;
             graphics.PreferMultiSampling = false;
+            //IsFixedTimeStep = true;
+            //TargetElapsedTime = TimeSpan.FromSeconds(1f / 120f);
+            //graphics.SynchronizeWithVerticalRetrace = false;
             graphics.ApplyChanges();
 
             world.Initialize(Content.RootDirectory);
@@ -133,9 +136,9 @@ namespace PlatformTest
             SpriteManager.Draw(spriteBatch);
 
             EntityManager.Draw(spriteBatch);
-            shapes.Begin();
-            shapes.DrawRectangle(paabb.X + Camera2D.Instance.Transform.Translation.X, paabb.Y, paabb.Width, paabb.Height, 1, new Color(Color.Indigo, 0.5f));
-            shapes.End();
+            //shapes.Begin();
+            //shapes.DrawRectangle(paabb.X + Camera2D.Instance.Transform.Translation.X, paabb.Y, paabb.Width, paabb.Height, 1, new Color(Color.Indigo, 0.5f));
+            //shapes.End();
 
             spriteBatch.End();
 
@@ -144,7 +147,7 @@ namespace PlatformTest
             // so we can apply the scale to size of the window (globalTransformation) without errors
             GraphicsDevice.SetRenderTarget(null);
 
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: globalTransformation);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: globalTransformation * Camera2D.Instance.Zoom);
             spriteBatch.Draw(renderTarget, Vector2.Zero, Color.White);
             spriteBatch.End();
 
