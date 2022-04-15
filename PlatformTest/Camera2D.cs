@@ -76,15 +76,15 @@ namespace PlatformTest
             else if (pX > (World.Instance.mapWidth * 16) - (bounds.Width / 2))
                 pX = (World.Instance.mapWidth * 16) - (bounds.Width / 2);
 
-            //Matrix matrixPos = Matrix.CreateTranslation(
-            //    -pX,
-            //    -pY,
-            //    0);
+            Matrix matrixPos = Matrix.CreateTranslation(
+                -pX,
+                -pY,
+                0);
 
-            //Matrix matrixOffset = Matrix.CreateTranslation(
-            //    bounds.Width / 2,
-            //    bounds.Height / 2,
-            //    0);
+            Matrix matrixOffset = Matrix.CreateTranslation(
+                bounds.Width / 2,
+                bounds.Height / 2,
+                0);
 
             Position = new Vector2((screenSize.Width / 2) - matrixPos.Translation.X, screenSize.Height / 2);
 
@@ -120,7 +120,7 @@ namespace PlatformTest
             CameraShake = Matrix.CreateTranslation(new Vector3((int)shakeOffset.X, (int)shakeOffset.Y, 0));
 
             //Transform = matrixPos * matrixOffset;
-            Transform = Matrix.CreateTranslation(new Vector3(-pX + bounds.Width / 2, -pY + bounds.Height / 2, 0));
+            Transform = Matrix.CreateTranslation(new Vector3(-pX + bounds.Width / 2, 0, 0));
         }
     }
 }
