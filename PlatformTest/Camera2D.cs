@@ -29,6 +29,7 @@ namespace PlatformTest
         float startShakeAngle;
         float zoomAcc = 0f;
         float ratio;
+        private Vector2 offsetLerp;
 
         public Camera2D(Rectangle bounds, Rectangle screenSize)
         {
@@ -55,7 +56,9 @@ namespace PlatformTest
         {
             dramaticZoom = !dramaticZoom;
             zoomTarget = target;
-            zoom = 2f;
+            zoom = defaultZoom;
+            offsetLerp = Vector2.Zero;//new Vector2(Transform.Translation.X, Transform.Translation.Y);// new Vector2(-target.X + bounds.Width / 2, -target.Y + bounds.Height / 2);
+            zoomAcc = 0f;
         }
 
         public Vector2 WorldToScreen(Vector2 pos)
@@ -66,21 +69,22 @@ namespace PlatformTest
         public void Follow(Entity entity, float dt)
         {
             int pX = (int)entity.Position.X;
+            int pY = (int)entity.Position.Y;
 
             if (pX < (bounds.Width / 2))
                 pX = bounds.Width / 2;
             else if (pX > (World.Instance.mapWidth * 16) - (bounds.Width / 2))
                 pX = (World.Instance.mapWidth * 16) - (bounds.Width / 2);
 
-            Matrix matrixPos = Matrix.CreateTranslation(
-                -pX,
-                0,
-                0);
+            //Matrix matrixPos = Matrix.CreateTranslation(
+            //    -pX,
+            //    -pY,
+            //    0);
 
-            Matrix matrixOffset = Matrix.CreateTranslation(
-                bounds.Width / 2,
-                0,
-                0);
+            //Matrix matrixOffset = Matrix.CreateTranslation(
+            //    bounds.Width / 2,
+            //    bounds.Height / 2,
+            //    0);
 
             Position = new Vector2((screenSize.Width / 2) - matrixPos.Translation.X, screenSize.Height / 2);
 
@@ -101,7 +105,12 @@ namespace PlatformTest
 
             if (dramaticZoom)
             {
-                Zoom = Matrix.CreateScale(zoom) * Matrix.CreateTranslation(new Vector3(-screenSize.Width / 2, (screenSize.Height / 2) - Position.Y, 0));
+                zoom = MathHelper.Lerp(zoom, 3f, (zoomAcc / 1f));
+                zoomAcc += dt;
+                
+                offsetLerp.X = MathHelper.Lerp(offsetLerp.X, -screenSize.Width, (zoomAcc / 1f));
+                offsetLerp.Y = MathHelper.Lerp(offsetLerp.Y, -screenSize.Height, (zoomAcc / 1f));
+                Zoom = Matrix.CreateScale(zoom) * Matrix.CreateTranslation(new Vector3(offsetLerp, 0));
             }
             else
             {
@@ -110,7 +119,8 @@ namespace PlatformTest
 
             CameraShake = Matrix.CreateTranslation(new Vector3((int)shakeOffset.X, (int)shakeOffset.Y, 0));
 
-            Transform = matrixPos * matrixOffset;
+            //Transform = matrixPos * matrixOffset;
+            Transform = Matrix.CreateTranslation(new Vector3(-pX + bounds.Width / 2, -pY + bounds.Height / 2, 0));
         }
     }
 }
