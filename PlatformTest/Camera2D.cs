@@ -71,10 +71,10 @@ namespace PlatformTest
             int pX = (int)entity.Position.X;
             int pY = (int)entity.Position.Y;
 
-            if (pX < (bounds.Width / 2))
-                pX = bounds.Width / 2;
-            else if (pX > (World.Instance.mapWidth * 16) - (bounds.Width / 2))
-                pX = (World.Instance.mapWidth * 16) - (bounds.Width / 2);
+            pX = (int)Math.Clamp(pX, bounds.Width / 2, (World.Instance.mapWidth * 16) - (bounds.Width / 2));
+            
+            if(!dramaticZoom)
+                pY = (int)Math.Clamp(pY, bounds.Height / 2, (World.Instance.mapHeight * 16) - (bounds.Height / 2));
 
             Matrix matrixPos = Matrix.CreateTranslation(
                 -pX,
@@ -105,12 +105,15 @@ namespace PlatformTest
 
             if (dramaticZoom)
             {
-                zoom = MathHelper.Lerp(zoom, 3f, (zoomAcc / 1f));
+                zoom = MathHelper.Lerp(zoom, 5f, (zoomAcc / 1f));
+                //zoom = 2f;
                 zoomAcc += dt;
-                
-                offsetLerp.X = MathHelper.Lerp(offsetLerp.X, -screenSize.Width, (zoomAcc / 1f));
-                offsetLerp.Y = MathHelper.Lerp(offsetLerp.Y, -screenSize.Height, (zoomAcc / 1f));
-                Zoom = Matrix.CreateScale(zoom) * Matrix.CreateTranslation(new Vector3(offsetLerp, 0));
+
+                //offsetLerp.X = MathHelper.Lerp(offsetLerp.X, -screenSize.Width, (zoomAcc / 1f));
+                //offsetLerp.Y = MathHelper.Lerp(offsetLerp.Y, -screenSize.Height, (zoomAcc / 1f));
+                offsetLerp.X = -screenSize.Width / 2;
+                offsetLerp.Y = -screenSize.Height / 2;
+                Zoom = Matrix.CreateScale(zoom, zoom, 1f);// * Matrix.CreateTranslation(new Vector3(offsetLerp, 0));
             }
             else
             {
@@ -119,8 +122,7 @@ namespace PlatformTest
 
             CameraShake = Matrix.CreateTranslation(new Vector3((int)shakeOffset.X, (int)shakeOffset.Y, 0));
 
-            //Transform = matrixPos * matrixOffset;
-            Transform = Matrix.CreateTranslation(new Vector3(-pX + bounds.Width / 2, 0, 0));
+            Transform = matrixPos * Zoom * matrixOffset;
         }
     }
 }

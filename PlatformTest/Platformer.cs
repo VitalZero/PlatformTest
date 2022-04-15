@@ -147,7 +147,7 @@ namespace PlatformTest
             // so we can apply the scale to size of the window (globalTransformation) without errors
             GraphicsDevice.SetRenderTarget(null);
 
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: globalTransformation * Camera2D.Instance.Zoom);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: globalTransformation);
             spriteBatch.Draw(renderTarget, Vector2.Zero, Color.White);
             spriteBatch.End();
 
