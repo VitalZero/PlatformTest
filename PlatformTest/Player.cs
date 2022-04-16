@@ -224,7 +224,7 @@ namespace PlatformTest
 
         private void Grow()
         {
-            Camera2D.Instance.DramaticZoom(this.position);
+            Camera2D.Instance.SetZoom(2f);
             SoundManager.Grow.Play();
             origin = originBig;
             aabb = aabbBig;
@@ -648,7 +648,7 @@ namespace PlatformTest
                             velocity = prevVelocity;
                             IsTransforming = false;
                             IsInvencible = false;
-                            Camera2D.Instance.DramaticZoom(position);
+                            Camera2D.Instance.RestoreZoom();
                         }
                     }
                     break;
