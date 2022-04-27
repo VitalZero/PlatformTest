@@ -10,7 +10,7 @@ namespace PlatformTest
     public static class EntityManager
     {
         static List<Enemy> enemies = new List<Enemy>();
-        static List<PowerUp> powerUps = new List<PowerUp>();
+        static List<Item> powerUps = new List<Item>();
         public static BouncingTile BouncingTile { get; set; }
         static List<FireBall> fireBalls = new List<FireBall>();
         static List<Entity> entities = new List<Entity>();
@@ -64,8 +64,8 @@ namespace PlatformTest
 
             if (entity is Enemy)
                 enemies.Add(entity as Enemy);
-            else if (entity is PowerUp)
-                powerUps.Add(entity as PowerUp);
+            else if (entity is Item)
+                powerUps.Add(entity as Item);
             else if (entity is FireBall)
                 fireBalls.Add(entity as FireBall);
         }

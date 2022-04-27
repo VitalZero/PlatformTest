@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public class Flower : PowerUp
+    public class Flower : Item
     {
         public Flower(Vector2 pos)
             : base(ItemType.flower, pos)

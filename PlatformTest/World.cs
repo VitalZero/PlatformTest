@@ -19,7 +19,7 @@ namespace PlatformTest
         private Texture2D texture;
         //private string textureName;
         private int tileIndexRestore = -1;
-        private Dictionary<int, PowerUp> powerUps;
+        private Dictionary<int, Item> powerUps;
         private Dictionary<string, List<ObjType>> worldObjects;
         TiledMap tiledMap;
         TileSet tiledSet;
@@ -41,7 +41,7 @@ namespace PlatformTest
         public World()
         {
             instance = this;
-            powerUps = new Dictionary<int, PowerUp>();
+            powerUps = new Dictionary<int, Item>();
             triggerAreas = new List<Area2D>();
             worldObjects = new Dictionary<string, List<ObjType>>();
         }
@@ -153,10 +153,19 @@ namespace PlatformTest
                     {
                         powerUps.Add(index, new OneUp(new Vector2(xTile * 16, yTile * 16)));
                     }
-                    else if (p.type == (int)ItemType.coin)
+                    else if (p.type == (int)ItemType.coinBox)
                     {
                         powerUps.Add(index, new CoinBox(new Vector2(xTile * 16, yTile * 16)));
                     }
+                }
+            }
+
+            //add coins
+            if (worldObjects.ContainsKey("coins"))
+            {
+                foreach (var p in worldObjects["coins"])
+                {
+                    EntityManager.Add(new Coin(new Vector2(p.x, p.y)));
                 }
             }
         }
@@ -219,7 +228,7 @@ namespace PlatformTest
 
                 if (EntityManager.BouncingTile.Done)
                 {
-                    if (powerUps.ContainsKey(tileIndexRestore) && powerUps[tileIndexRestore].GetItemType() != ItemType.coin)
+                    if (powerUps.ContainsKey(tileIndexRestore) && powerUps[tileIndexRestore].GetItemType() != ItemType.coinBox)
                     {
                         EntityManager.Add(powerUps[tileIndexRestore]);
                     }
@@ -376,7 +385,7 @@ namespace PlatformTest
 
                 if (powerUps.ContainsKey(tileIndexRestore))
                 {
-                    if (powerUps[tileIndexRestore].GetItemType() != ItemType.coin)
+                    if (powerUps[tileIndexRestore].GetItemType() != ItemType.coinBox)
                     {
                         SoundManager.PowerUp.Play();
                     }

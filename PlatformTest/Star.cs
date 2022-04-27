@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public class Star : PowerUp
+    public class Star : Item
     {
         public float bounceSpeed = -300f;
         public Star(Vector2 pos)

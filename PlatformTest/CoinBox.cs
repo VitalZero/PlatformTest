@@ -6,14 +6,14 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public class CoinBox : PowerUp
+    public class CoinBox : Item
     {
         private bool rising;
         private float yOrigin;
         private AnimationPlayer animPlayer;
 
         public CoinBox(Vector2 pos)
-            : base(ItemType.coin, pos)
+            : base(ItemType.coinBox, pos)
         {
             speed = 250;
             dir = 0f;

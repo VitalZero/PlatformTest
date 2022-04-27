@@ -6,9 +6,9 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public enum ItemType { oneup, coin, mushroom, flower, star }
+    public enum ItemType { oneup, coinBox, mushroom, flower, star, coin }
 
-    public class PowerUp : Entity
+    public class Item : Entity
     {
         protected ItemType type;
         protected Rectangle spriteArea;
@@ -17,7 +17,7 @@ namespace PlatformTest
         protected float startY;
         protected int yOffset;
 
-        public PowerUp(ItemType type, Vector2 pos)
+        public Item(ItemType type, Vector2 pos)
         {
             this.type = type;
             spriteArea = new Rectangle();

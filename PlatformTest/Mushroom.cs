@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PlatformTest
 {
-    public class Mushroom : PowerUp
+    public class Mushroom : Item
     {
         public Mushroom(Vector2 pos)
             :base(ItemType.mushroom, pos)
