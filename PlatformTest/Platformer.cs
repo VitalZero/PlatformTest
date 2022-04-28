@@ -125,7 +125,7 @@ namespace PlatformTest
             // draw to a texture
             GraphicsDevice.SetRenderTarget(renderTarget);
 
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(World.Instance.bgColor);//(Color.CornflowerBlue);
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera2D.Instance.Transform * Camera2D.Instance.CameraShake);
 

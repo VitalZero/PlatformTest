@@ -23,7 +23,7 @@ namespace PlatformTest
             }
         }
 
-        private enum States { stand, run, jump, fall, crouch, firing, growing, shrinking, downPipe, upPipe, goal }
+        private enum States { stand, run, jump, fall, crouch, firing, growing, shrinking, downPipe, rightPipe, leftPipe, upPipe, goal }
         private enum Power { none, big, fire }
 
         public Vector2 PrevPos { get; private set; }
@@ -393,6 +393,14 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
+                            if(HitArea(AreaType.rightPipe))
+                            {
+                                GoRightPipe();
+                                SoundManager.ShrinkPipe.Play();
+                                MediaPlayer.Stop();
+                                break;
+                            }
+
                             if (velocity.X < 0f)
                                 animPlayer.PlayAnimation("skid" + appended);
 
@@ -700,9 +708,26 @@ namespace PlatformTest
                             AffectedByGravity = true;
                             EntityManager.StartOver();
                             World.Instance.LoadLevel("Content\\Levels\\stage1bonus.tmx");
-
+                            //MediaPlayer.Play(SoundManager.UnderGroundStage);
                             break;
                         }
+                    }
+                    break;
+
+                case States.rightPipe:
+                    {
+                        animPlayer.PlayAnimation("running" + appended);
+                        velocity.X = maxWalkSpeed;
+                        
+                        //if(position.X >= 320)
+                        //{
+                        //    EntityManager.StartOver();
+                        //    World.Instance.LoadLevel("Content\\Levels\\stage1.tmx");
+                        //    position = new Vector2(2464, 160);
+                        //    currState = States.stand;
+                        //    MediaPlayer.Play(SoundManager.SurfaceStage);
+                        //    break;
+                        //}
                     }
                     break;
 
@@ -778,7 +803,7 @@ namespace PlatformTest
                 {
                     return aAABB.Intersects(pAABB);
                 }
-                else if (areaType == AreaType.downPipe || areaType == AreaType.endStage)
+                else if (areaType == a.Type)//AreaType.downPipe || areaType == AreaType.rightPipe || areaType == AreaType.endStage)
                 {
                     if (aAABB.Intersects(pAABB) && IsOnGround &&
                       pAABB.Right <= aAABB.Right && pAABB.Left >= aAABB.Left)
@@ -796,6 +821,14 @@ namespace PlatformTest
             CanCollide = false;
             DrawBehind = true;
             currState = States.downPipe;
+            velocity = Vector2.Zero;
+        }
+
+        private void GoRightPipe()
+        {
+            CanCollide = false;
+            DrawBehind = true;
+            currState = States.rightPipe;
             velocity = Vector2.Zero;
         }
 

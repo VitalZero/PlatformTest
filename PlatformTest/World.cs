@@ -14,6 +14,7 @@ namespace PlatformTest
         private Tile[] map;
         public int mapWidth;
         public int mapHeight;
+        public Color bgColor;
         private int tileSize;
         private int textureColumns;
         private Texture2D texture;
@@ -48,6 +49,10 @@ namespace PlatformTest
 
         public void LoadLevel(string level)
         {
+            triggerAreas.Clear();
+            worldObjects.Clear();
+            powerUps.Clear();
+
             try
             {
                 VZTiledMapLoader mapLoader = new VZTiledMapLoader(level);
@@ -57,6 +62,10 @@ namespace PlatformTest
                 mapHeight = tiledMap.height;
                 tileSize = tiledMap.tilewidth;
 
+                var sysColor = System.Drawing.ColorTranslator.FromHtml(tiledMap.backgroundcolor);
+                bgColor.R = sysColor.R;
+                bgColor.G = sysColor.G;
+                bgColor.B = sysColor.B;
 
                 VZTiledTilesetLoader tileLoader = new VZTiledTilesetLoader("Content\\Levels\\" + tiledMap.tilesetInfo.source);
                 tiledSet = tileLoader.GetTileSet();
@@ -285,7 +294,7 @@ namespace PlatformTest
                             texture,
                             new Vector2((x * tileSize), (y * tileSize)),
                             new Rectangle(dx, dy, tileSize, tileSize),
-                            Color.White     
+                            Color.White
                             );
                     }
                 }

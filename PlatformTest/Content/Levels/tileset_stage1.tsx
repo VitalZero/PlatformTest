@@ -3,7 +3,7 @@
  <editorsettings>
   <export target="stage1tiles.json" format="json"/>
  </editorsettings>
- <image source="mariotilesimple.png" width="160" height="80"/>
+ <image source="../Tiles/mariotilesimple.png" width="160" height="80"/>
  <tile id="0" type="1"/>
  <tile id="1" type="1"/>
  <tile id="2" type="2"/>

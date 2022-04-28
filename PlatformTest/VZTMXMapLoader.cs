@@ -101,6 +101,8 @@ namespace VZTiledLoader
         public int tileheight { get; set; }
         [XmlAttribute("infinite")]
         public int infinite { get; set; }
+        [XmlAttribute("backgroundcolor")]
+        public string backgroundcolor { get; set; }
         [XmlAttribute("nextlayerid")]
         public int nextlayerid { get; set; }
         [XmlAttribute("nextobjectid")]
