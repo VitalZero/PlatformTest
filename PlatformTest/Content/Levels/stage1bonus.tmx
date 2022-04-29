@@ -80,6 +80,6 @@
   </object>
  </objectgroup>
  <objectgroup id="3" name="areas">
-  <object id="21" type="2" x="256" y="176" width="17" height="33"/>
+  <object id="21" type="2" x="260" y="183" width="12" height="25"/>
  </objectgroup>
 </map>

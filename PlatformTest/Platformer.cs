@@ -136,9 +136,9 @@ namespace PlatformTest
             SpriteManager.Draw(spriteBatch);
 
             EntityManager.Draw(spriteBatch);
-            //shapes.Begin();
-            //shapes.DrawRectangle(paabb.X + Camera2D.Instance.Transform.Translation.X, paabb.Y, paabb.Width, paabb.Height, 1, new Color(Color.Indigo, 0.5f));
-            //shapes.End();
+            shapes.Begin();
+            shapes.DrawRectangle(paabb.X + Camera2D.Instance.Transform.Translation.X, paabb.Y, paabb.Width, paabb.Height, 1, new Color(Color.Indigo, 0.5f));
+            shapes.End();
 
             spriteBatch.End();
 

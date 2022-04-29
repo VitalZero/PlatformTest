@@ -338,11 +338,15 @@ namespace PlatformTest
 
                         if(keyboard.IsKeyDown(Keys.Down))
                         {
-                            if (HitArea(AreaType.downPipe))
+                            Area2D aDownPipe = InsideArea(AreaType.downPipe);
+
+                            if (aDownPipe != null)
                             {
                                 GoDownPipe();
                                 SoundManager.ShrinkPipe.Play();
                                 MediaPlayer.Stop();
+                                aDownPipe.Active = false;
+                                aDownPipe = null;
                                 break;
                             }
 
@@ -393,11 +397,15 @@ namespace PlatformTest
                         }
                         else if (keyboard.IsKeyDown(Keys.Right))
                         {
-                            if(HitArea(AreaType.rightPipe))
+                            Area2D aRightPipe = InsideArea(AreaType.rightPipe);
+
+                            if (aRightPipe != null)
                             {
                                 GoRightPipe();
                                 SoundManager.ShrinkPipe.Play();
                                 MediaPlayer.Stop();
+                                aRightPipe.Active = false;
+                                aRightPipe = null;
                                 break;
                             }
 
@@ -448,11 +456,15 @@ namespace PlatformTest
 
                         if (keyboard.IsKeyDown(Keys.Down))
                         {
-                            if (HitArea(AreaType.downPipe))
+                            Area2D aDownPipe = InsideArea(AreaType.downPipe);
+
+                            if (aDownPipe != null)
                             {
                                 GoDownPipe();
                                 SoundManager.ShrinkPipe.Play();
                                 MediaPlayer.Stop();
+                                aDownPipe.Active = false;
+                                aDownPipe = null;
                                 break;
                             }
 
@@ -717,17 +729,22 @@ namespace PlatformTest
                 case States.rightPipe:
                     {
                         animPlayer.PlayAnimation("running" + appended);
-                        velocity.X = maxWalkSpeed;
-                        
-                        //if(position.X >= 320)
-                        //{
-                        //    EntityManager.StartOver();
-                        //    World.Instance.LoadLevel("Content\\Levels\\stage1.tmx");
-                        //    position = new Vector2(2464, 160);
-                        //    currState = States.stand;
-                        //    MediaPlayer.Play(SoundManager.SurfaceStage);
-                        //    break;
-                        //}
+                        velocity.X = maxWalkSpeed * 0.5f;
+
+                        if (position.X >= 300)
+                        {
+                            EntityManager.StartOver();
+                            World.Instance.LoadLevel("Content\\Levels\\stage1.tmx");
+                            position = new Vector2(2480, 176);
+                            velocity = Vector2.Zero;
+                            currState = States.stand;
+                            MediaPlayer.Play(SoundManager.SurfaceStage);
+                            CanCollide = true;
+                            DrawBehind = false;
+                            AffectedByGravity = true;
+                            hFlip = SpriteEffects.None;
+                            break;
+                        }
                     }
                     break;
 
@@ -770,7 +787,9 @@ namespace PlatformTest
 
             LateUpdate(gameTime);
 
-            if(HitArea(AreaType.goal) && currState != States.goal)
+            Area2D goal = HitArea(AreaType.goal);
+
+            if(goal != null)
             {
                 SoundManager.PoleDown.Play();
                 currState = States.goal;
@@ -780,6 +799,9 @@ namespace PlatformTest
                 velocity = Vector2.Zero;
                 velocity.Y = 100f;
                 AffectedByGravity = false;
+
+                goal.Active = false;
+                goal = null;
             }
 
             if (CeilingHit)
@@ -792,28 +814,36 @@ namespace PlatformTest
             secondCounter += elapsed;
         }
 
-        private bool HitArea(AreaType areaType)
+        private Area2D HitArea(AreaType areaType)
         {
             foreach (var a in World.Instance.GetTriggerAreas())
             {
-                Rectangle pAABB = GetAABB();
-                Rectangle aAABB = a.GetAABB();
+                if (a.Active && a.Type == areaType)
+                {
+                    Rectangle pAABB = GetAABB();
+                    Rectangle area = a.GetAABB();
 
-                if (areaType == AreaType.goal)
-                {
-                    return aAABB.Intersects(pAABB);
-                }
-                else if (areaType == a.Type)//AreaType.downPipe || areaType == AreaType.rightPipe || areaType == AreaType.endStage)
-                {
-                    if (aAABB.Intersects(pAABB) && IsOnGround &&
-                      pAABB.Right <= aAABB.Right && pAABB.Left >= aAABB.Left)
-                    {
-                        return true;
-                    }
+                    if (pAABB.Intersects(area))
+                        return a;
                 }
             }
+            return null;
+        }
 
-            return false;
+        private Area2D InsideArea(AreaType areaType)
+        {
+            foreach (var a in World.Instance.GetTriggerAreas())
+            {
+                if (a.Active && a.Type == areaType)
+                {
+                    Rectangle pAABB = GetAABB();
+                    Rectangle area = a.GetAABB();
+                    
+                    if (area.Contains(pAABB))
+                        return a;
+                }
+            }
+            return null;
         }
 
         private void GoDownPipe()
@@ -828,8 +858,10 @@ namespace PlatformTest
         {
             CanCollide = false;
             DrawBehind = true;
+            AffectedByGravity = false;
             currState = States.rightPipe;
             velocity = Vector2.Zero;
+            position.Y -= 0f;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
