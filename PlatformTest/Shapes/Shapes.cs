@@ -292,5 +292,38 @@ namespace VZShapes
 
             shapeCount++;
         }
+
+        public void DrawCircle(float x, float y, float radius, int points, float thickness, Color color)
+        {
+            const int minPoints = 3;
+            const int maxPoints = 256;
+
+            points = Math.Clamp(points, minPoints, maxPoints);
+
+            float deltaAngle = MathHelper.TwoPi / (float)points;
+
+            float angle = 0f;
+
+            for(int i = 0; i < points; ++i)
+            {
+                float ax = (float)Math.Sin(angle) * radius + x;
+                float ay = (float)Math.Cos(angle) * radius + y;
+
+                angle += deltaAngle;
+
+                float bx = (float)Math.Sin(angle) * radius + x;
+                float by = (float)Math.Cos(angle) * radius + y;
+
+                DrawLine(ax, ay, bx, by, thickness, color);
+            }
+        }
+
+        public void DrawPolygon(Vector2[] vertices, float thickness, Color color)
+        {
+            for (int i = 0; i < vertices.Length; ++i)
+            {
+                DrawLine(vertices[i], vertices[(i + 1) % vertices.Length], thickness, color);
+            }
+        }
     }
 }

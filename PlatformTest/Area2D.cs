@@ -31,10 +31,10 @@ namespace PlatformTest
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(TextureManager.Pixel,
-                new Vector2((int)pos.X, (int)pos.Y),
-                    area,
-                    new Color(Color.Red, 0.1f));
+            //spriteBatch.Draw(TextureManager.Pixel,
+            //    new Vector2((int)pos.X, (int)pos.Y),
+            //        area,
+            //        new Color(Color.Red, 0.1f));
         }
     }
 
