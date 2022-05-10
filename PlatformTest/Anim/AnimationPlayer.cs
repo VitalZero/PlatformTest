@@ -96,21 +96,24 @@ namespace PlatformTest
             {
                 time += dt;
 
-                while (time > animations[currentAnimation].FrameTime)
+                while (time > animations[currentAnimation].CurrentFrame.frameTime)
                 {
-                    time -= animations[currentAnimation].FrameTime;
+                    time -= animations[currentAnimation].CurrentFrame.frameTime;
 
-                    if (animations[currentAnimation].IsLooping)
-                    {
-                        frameIndex = (frameIndex + 1) % animations[currentAnimation].FrameCount;
-                    }
-                    else
-                    {
-                        if (frameIndex + 1 >= animations[currentAnimation].FrameCount)
-                            ended = true;
+                    animations[currentAnimation].Advance();
+                    ended = animations[currentAnimation].AnimationEnded;
 
-                        frameIndex = Math.Min(frameIndex + 1, animations[currentAnimation].FrameCount - 1);
-                    }
+                    //if (animations[currentAnimation].IsLooping)
+                    //{
+                    //    frameIndex = (frameIndex + 1) % animations[currentAnimation].FrameCount;
+                    //}
+                    //else
+                    //{
+                    //    if (frameIndex + 1 >= animations[currentAnimation].FrameCount)
+                    //        ended = true;
+
+                    //    frameIndex = Math.Min(frameIndex + 1, animations[currentAnimation].FrameCount - 1);
+                    //}
                 }
             }
             else
@@ -118,11 +121,16 @@ namespace PlatformTest
                 freeze = false;
             }
 
+            //source = new Rectangle(
+            //    (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX,
+            //    animations[currentAnimation].StartFrameY,
+            //    animations[currentAnimation].FrameWidth,
+            //    animations[currentAnimation].FrameHeight);
             source = new Rectangle(
-                (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX,
-                animations[currentAnimation].StartFrameY,
-                animations[currentAnimation].FrameWidth,
-                animations[currentAnimation].FrameHeight);
+                animations[currentAnimation].CurrentFrame.frameRect.X,
+                animations[currentAnimation].CurrentFrame.frameRect.Y,
+                animations[currentAnimation].CurrentFrame.frameRect.Width,
+                animations[currentAnimation].CurrentFrame.frameRect.Height);
         }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 pos, SpriteEffects effects, Vector2 origin)
