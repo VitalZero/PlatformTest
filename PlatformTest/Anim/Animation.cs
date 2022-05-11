@@ -20,7 +20,7 @@ namespace PlatformTest
         public int StartFrameY { get { return frames[currentFrameIndex].frameRect.Y; } }
         public Frame CurrentFrame { get { return frames[currentFrameIndex]; } }
 
-        Animation(Texture2D texture)
+        public Animation(Texture2D texture)
         {
             Texture = texture;
             currentFrameIndex = 0;

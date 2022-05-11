@@ -22,6 +22,9 @@ namespace PlatformTest
         public AnimationPlayer()
         {
             animations = new Dictionary<string, Animation>();
+            frameIndex = 0;
+            ended = false;
+            time = 0f;
         }
 
         public void PlayAnimation(string animationName)

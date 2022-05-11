@@ -140,8 +140,21 @@ namespace PlatformTest
             animPlayer.Add("crouching", new Animation(texture, 1f, true, 16, 32, 1, 16 * 7, 0));
             animPlayer.Add("firing", new Animation(texture, 0.04f, false, 16, 32, 1, 16 * 4, 0));
 
-            animPlayer.Add("growing", new Animation(texture, .04f, true, 16, 32, 3, 0, 48));
+            //animPlayer.Add("growing", new Animation(texture, .04f, true, 16, 32, 3, 0, 48));
             animPlayer.Add("shrinking", new Animation(texture, .03f, true, 16, 32, 2, 48, 48));
+
+            Animation growing = new Animation(texture);
+            growing.AddFrame(16, 48, 16, 32, 0.03f);
+            growing.AddFrame(0, 48, 16, 32, 0.03f);
+            growing.AddFrame(0, 48, 0, 0, 0.03f);
+            growing.AddFrame(16, 48, 16, 32, 0.03f);
+            growing.AddFrame(0, 48, 0, 0, 0.03f);
+            growing.AddFrame(32, 48, 16, 32, 0.03f);
+            growing.AddFrame(16, 48, 16, 32, 0.03f);
+            growing.AddFrame(0, 48, 0, 0, 0.03f);
+            growing.AddFrame(32, 48, 16, 32, 0.03f);
+
+            animPlayer.Add("growing", growing);
 
             animPlayer.PlayAnimation("idle" + appended);
             font = TextureManager.Arial;
@@ -242,8 +255,8 @@ namespace PlatformTest
             prevVelocity = velocity;
             velocity = Vector2.Zero;
             IsTransforming = true;
-            IsInvencible = true;
-            invencibleTimer = 0;
+            //IsInvencible = true;
+            //invencibleTimer = 0;
         }
 
         public override void Update(GameTime gameTime)
