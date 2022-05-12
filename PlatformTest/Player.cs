@@ -124,6 +124,14 @@ namespace PlatformTest
             paleteSwap.Parameters["nColors"].SetValue(7);
             paleteSwap.CurrentTechnique.Passes[0].Apply();
 
+            AddAnimations();
+
+            animPlayer.PlayAnimation("idle" + appended);
+            font = TextureManager.Arial;
+        }
+
+        private void AddAnimations()
+        {
             animPlayer.Add("idleSmall", new Animation(texture, 1f, true, 16, 16, 1, 0, 16 * 2));
             animPlayer.Add("runningSmall", new Animation(texture, .04f, true, 16, 16, 3, 16, 16 * 2));
             animPlayer.Add("jumpingSmall", new Animation(texture, .1f, true, 16, 16, 1, 16 * 6, 16 * 2));
@@ -144,20 +152,20 @@ namespace PlatformTest
             animPlayer.Add("shrinking", new Animation(texture, .03f, true, 16, 32, 2, 48, 48));
 
             Animation growing = new Animation(texture);
-            growing.AddFrame(16, 48, 16, 32, 0.03f);
-            growing.AddFrame(0, 48, 16, 32, 0.03f);
-            growing.AddFrame(0, 48, 0, 0, 0.03f);
-            growing.AddFrame(16, 48, 16, 32, 0.03f);
-            growing.AddFrame(0, 48, 0, 0, 0.03f);
-            growing.AddFrame(32, 48, 16, 32, 0.03f);
-            growing.AddFrame(16, 48, 16, 32, 0.03f);
-            growing.AddFrame(0, 48, 0, 0, 0.03f);
-            growing.AddFrame(32, 48, 16, 32, 0.03f);
+            growing.AddFrame(0, 48, 16, 32, 0.1837f);
+            growing.AddFrame(16, 48, 16, 32, 0.0668f);
+            growing.AddFrame(0, 48, 16, 32, 0.0668f);
+            growing.AddFrame(16, 48, 16, 32, 0.0668f);
+            growing.AddFrame(0, 48, 16, 32, 0.0668f);
+            growing.AddFrame(16, 48, 16, 32, 0.0668f);
+            growing.AddFrame(32, 48, 16, 32, 0.0668f);
+            growing.AddFrame(0, 48, 16, 32, 0.0668f);
+            growing.AddFrame(16, 48, 16, 32, 0.0668f);
+            growing.AddFrame(32, 48, 16, 32, 0.0668f);
+            growing.AddFrame(0, 48, 16, 32, 0.0334f);
+            growing.AddFrame(32, 48, 16, 32, 0.1837f);
 
             animPlayer.Add("growing", growing);
-
-            animPlayer.PlayAnimation("idle" + appended);
-            font = TextureManager.Arial;
         }
 
         public void Bounce()
@@ -796,7 +804,10 @@ namespace PlatformTest
 
             float updateSpeed = (currState == States.firing) ? 60 : Math.Max(50, Math.Abs(velocity.X)); // to change
 
-            animPlayer.Update(MapValue(maxRunSpeed, updateSpeed, elapsed));
+            if(currState == States.growing || currState == States.shrinking)
+                animPlayer.Update(elapsed);
+            else
+                animPlayer.Update(MapValue(maxRunSpeed, updateSpeed, elapsed));
 
             LateUpdate(gameTime);
 

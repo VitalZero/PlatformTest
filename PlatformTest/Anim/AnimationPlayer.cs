@@ -8,8 +8,6 @@ namespace PlatformTest
 {
     class AnimationPlayer
     {
-        int frameIndex;
-        public int FrameIndex { get { return frameIndex; } }
         //public Vector2 Origin { get { return new Vector2(Animation.FrameWidth / 2, Animation.FrameHeight); } }
         float time;
         Rectangle source;
@@ -22,7 +20,6 @@ namespace PlatformTest
         public AnimationPlayer()
         {
             animations = new Dictionary<string, Animation>();
-            frameIndex = 0;
             ended = false;
             time = 0f;
         }
@@ -35,20 +32,8 @@ namespace PlatformTest
             if (currentAnimation != animationName)
             {
                 currentAnimation = animationName;
-                frameIndex = 0;
                 time = 0f;
                 ended = false;
-
-                source.X = (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX;
-                source.Y = animations[currentAnimation].StartFrameY;
-                source.Width = animations[currentAnimation].FrameWidth;
-                source.Height = animations[currentAnimation].FrameHeight;
-
-                //source = new Rectangle(
-                //    (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX,
-                //    animations[currentAnimation].StartFrameY, 
-                //    animations[currentAnimation].FrameWidth,
-                //    animations[currentAnimation].FrameHeight);
             }
         }
 
@@ -82,14 +67,6 @@ namespace PlatformTest
             return currentAnimation;
         }
 
-        //public void OnAnimationEnded()
-        //{
-        //    if(AnimationEnded != null)
-        //    {
-        //        AnimationEnded(this, EventArgs.Empty);
-        //    }
-        //}
-
         public void Update(float dt)
         {
             if (animations.Count == 0)
@@ -99,7 +76,7 @@ namespace PlatformTest
             {
                 time += dt;
 
-                while (time > animations[currentAnimation].CurrentFrame.frameTime)
+                while (time >= animations[currentAnimation].CurrentFrame.frameTime)
                 {
                     time -= animations[currentAnimation].CurrentFrame.frameTime;
 
@@ -124,16 +101,7 @@ namespace PlatformTest
                 freeze = false;
             }
 
-            //source = new Rectangle(
-            //    (FrameIndex * animations[currentAnimation].FrameWidth) + animations[currentAnimation].StartFrameX,
-            //    animations[currentAnimation].StartFrameY,
-            //    animations[currentAnimation].FrameWidth,
-            //    animations[currentAnimation].FrameHeight);
-            source = new Rectangle(
-                animations[currentAnimation].CurrentFrame.frameRect.X,
-                animations[currentAnimation].CurrentFrame.frameRect.Y,
-                animations[currentAnimation].CurrentFrame.frameRect.Width,
-                animations[currentAnimation].CurrentFrame.frameRect.Height);
+            source = animations[currentAnimation].CurrentFrame.frameRect;
         }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 pos, SpriteEffects effects, Vector2 origin)
