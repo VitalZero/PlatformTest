@@ -37,6 +37,7 @@ namespace PlatformTest
         private const float transformationTotalTime = 1f;
         private const float jumpHoldTime = 0.25f;
         private KeyboardState keyboard;
+        KeyboardState oldState;
         private SpriteEffects hFlip;
         private AnimationPlayer animPlayer;
         private States currState;
@@ -245,7 +246,7 @@ namespace PlatformTest
 
         private void Grow()
         {
-            Camera2D.Instance.SetZoom(2f);
+            //Camera2D.Instance.SetZoom(2f);
             SoundManager.Grow.Play();
             origin = originBig;
             aabb = aabbBig;
@@ -273,7 +274,7 @@ namespace PlatformTest
 
             PrevPos = position;
 
-            KeyboardState oldState = keyboard;
+            oldState = keyboard;
             keyboard = Keyboard.GetState();
 
             if(IsInvencible)
@@ -312,90 +313,7 @@ namespace PlatformTest
             switch (currState)
             {
                 case States.stand:
-                    {
-                        if((int)velocity.X >= 1 || (int)velocity.X <= -1)
-                            animPlayer.PlayAnimation("running" + appended);
-                        else
-                            animPlayer.PlayAnimation("idle" + appended);
-
-                        //if (keyboard.IsKeyDown(Keys.A))
-                        //{
-                        //    speed = maxRunSpeed;
-                        //}
-                        //else if (keyboard.IsKeyUp(Keys.A))
-                        //{
-                        //    speed = maxWalkSpeed;
-                        //}
-
-                        velocity.X = Lerp(velocity.X, 0, 0.1f);
-
-                        if (!IsOnGround)
-                        {
-                            currState = States.fall;
-                            break;
-                        }
-
-                        if (keyboard.IsKeyDown(Keys.Right) != keyboard.IsKeyDown(Keys.Left))
-                        {
-                            currState = States.run;
-                            break;
-                        }
-                        else if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
-                        {
-                            animPlayer.PlayAnimation("jumping" + appended);
-
-                            currState = States.jump;
-
-                            velocity.Y = -jumpSpeed;  
-                            IsOnGround = false;
-
-                            if (appended == "Small")
-                                SoundManager.JumpSmall.Play();
-                            else
-                                SoundManager.JumpBig.Play();
-
-                            break;
-                        }
-
-                        if(keyboard.IsKeyDown(Keys.Down))
-                        {
-                            Area2D aDownPipe = InsideArea(AreaType.downPipe);
-
-                            if (aDownPipe != null)
-                            {
-                                GoDownPipe();
-                                SoundManager.ShrinkPipe.Play();
-                                MediaPlayer.Stop();
-                                aDownPipe.Active = false;
-                                aDownPipe = null;
-                                break;
-                            }
-
-                            if (power > Power.none)
-                            {
-                                animPlayer.PlayAnimation("crouching");
-                                currState = States.crouch;
-
-                                break;
-                            }
-                        }
-
-                        if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
-                        {
-                            if (EntityManager.FireBallCount < 2)
-                            {
-                                EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
-
-                                animPlayer.PlayAnimation("firing");
-                                prevState = currState;
-                                currState = States.firing;
-
-                                SoundManager.FireBall.Play();
-                            }
-
-                            break;
-                        }
-                    }
+                    UpdateStandState();
                     break;
 
                 case States.run:
@@ -673,124 +591,23 @@ namespace PlatformTest
                     break;
 
                 case States.growing:
-                    {
-                        if(secondCounter >= transformationTotalTime)
-                        {
-                            appended = "Big";
-                            paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
-                            paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
-                            paleteSwap.Parameters["nColors"].SetValue(7);
-                            paleteSwap.CurrentTechnique.Passes[0].Apply();
-
-                            currState = prevState;
-                            CanBeHit = true;
-                            CanCollide = true;
-                            AffectedByGravity = true;
-                            velocity = prevVelocity;
-                            IsTransforming = false;
-                            IsInvencible = false;
-                            Camera2D.Instance.RestoreZoom();
-                        }
-                    }
+                    UpdateGrowingState();
                     break;
 
                 case States.shrinking:
-                    {
-                        if (secondCounter >= transformationTotalTime)
-                        {
-                            origin = originSmall;
-                            aabb = aabbSmall;
-                            appended = "Small";
-                            paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
-                            paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
-                            paleteSwap.Parameters["nColors"].SetValue(7);
-                            paleteSwap.CurrentTechnique.Passes[0].Apply();
-
-                            CanBeHit = true;
-                            CanCollide = true;
-                            AffectedByGravity = true;
-                            velocity = prevVelocity;
-                            IsTransforming = false;
-
-                            if ((int)velocity.Y != 0)
-                            {
-                                currState = States.jump;
-                                animPlayer.PlayAnimation("running" + appended);
-                            }
-                            else
-                            {
-                                currState = States.run;
-                                animPlayer.PlayAnimation("running" + appended);
-                            }
-                        }
-                    }
+                    UpdateShrinkingState();
                     break;
 
                 case States.downPipe:
-                    {
-                        velocity.Y = pipeSpeed;
-
-                        if(position.Y >= 200)
-                        {
-                            position = new Vector2(50f, 0f);
-                            velocity = Vector2.Zero;
-                            currState = States.jump;
-                            hFlip = SpriteEffects.None;
-                            CanCollide = true;
-                            DrawBehind = false;
-                            AffectedByGravity = true;
-                            EntityManager.StartOver();
-                            World.Instance.LoadLevel("Content\\Levels\\stage1bonus.tmx");
-                            //MediaPlayer.Play(SoundManager.UnderGroundStage);
-                            break;
-                        }
-                    }
+                    UpdateDownPipeState();
                     break;
 
                 case States.rightPipe:
-                    {
-                        animPlayer.PlayAnimation("running" + appended);
-                        velocity.X = maxWalkSpeed * 0.5f;
-
-                        if (position.X >= 300)
-                        {
-                            EntityManager.StartOver();
-                            World.Instance.LoadLevel("Content\\Levels\\stage1.tmx");
-                            position = new Vector2(2480, 176);
-                            velocity = Vector2.Zero;
-                            currState = States.stand;
-                            MediaPlayer.Play(SoundManager.SurfaceStage);
-                            CanCollide = true;
-                            DrawBehind = false;
-                            AffectedByGravity = true;
-                            hFlip = SpriteEffects.None;
-                            break;
-                        }
-                    }
+                    UpdateRightPipeState();
                     break;
 
                 case States.goal:
-                    {
-                        if(FloorHit)
-                        {
-                            AffectedByGravity = true;
-                            animPlayer.PlayAnimation("running" + appended);
-                            velocity.X = maxWalkSpeed;
-                        }
-
-                        foreach (var a in World.Instance.GetTriggerAreas())
-                        {
-                            Rectangle pAABB = GetAABB();
-                            Rectangle aAABB = a.GetAABB();
-
-                            if (aAABB.Contains(pAABB) && a.Type == AreaType.endStage)
-                            {
-                                velocity = Vector2.Zero;
-                                DrawBehind = true;
-                                animPlayer.Freeze();
-                            }
-                        }
-                    }
+                    UpdateGoalState();
                     break;
             }
 
@@ -924,6 +741,203 @@ namespace PlatformTest
         {
             return (minValue * knowMaxValue) / maxValue;
         }
+
+        #region States
+
+        private void UpdateStandState()
+        {
+            if ((int)velocity.X >= 1 || (int)velocity.X <= -1)
+                animPlayer.PlayAnimation("running" + appended);
+            else
+                animPlayer.PlayAnimation("idle" + appended);
+
+
+            velocity.X = Lerp(velocity.X, 0, 0.1f);
+
+            if (!IsOnGround)
+            {
+                currState = States.fall;
+                return;
+            }
+
+            if (keyboard.IsKeyDown(Keys.Right) != keyboard.IsKeyDown(Keys.Left))
+            {
+                currState = States.run;
+                return;
+            }
+            else if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
+            {
+                animPlayer.PlayAnimation("jumping" + appended);
+
+                currState = States.jump;
+
+                velocity.Y = -jumpSpeed;
+                IsOnGround = false;
+
+                if (appended == "Small")
+                    SoundManager.JumpSmall.Play();
+                else
+                    SoundManager.JumpBig.Play();
+
+                return;
+            }
+
+            if (keyboard.IsKeyDown(Keys.Down))
+            {
+                Area2D aDownPipe = InsideArea(AreaType.downPipe);
+
+                if (aDownPipe != null)
+                {
+                    GoDownPipe();
+                    SoundManager.ShrinkPipe.Play();
+                    MediaPlayer.Stop();
+                    aDownPipe.Active = false;
+                    aDownPipe = null;
+
+                    return;
+                }
+
+                if (power > Power.none)
+                {
+                    animPlayer.PlayAnimation("crouching");
+                    currState = States.crouch;
+
+                    return;
+                }
+            }
+
+            if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
+            {
+                if (EntityManager.FireBallCount < 2)
+                {
+                    EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
+
+                    animPlayer.PlayAnimation("firing");
+                    prevState = currState;
+                    currState = States.firing;
+
+                    SoundManager.FireBall.Play();
+                }
+
+                return;
+            }
+        }
+
+        private void UpdateGrowingState()
+        {
+            if (secondCounter >= transformationTotalTime)
+            {
+                appended = "Big";
+                paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
+                paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
+                paleteSwap.Parameters["nColors"].SetValue(7);
+                paleteSwap.CurrentTechnique.Passes[0].Apply();
+
+                currState = prevState;
+                CanBeHit = true;
+                CanCollide = true;
+                AffectedByGravity = true;
+                velocity = prevVelocity;
+                IsTransforming = false;
+                IsInvencible = false;
+                //Camera2D.Instance.RestoreZoom();
+            }
+        }
+
+        private void UpdateShrinkingState()
+        {
+            if (secondCounter >= transformationTotalTime)
+            {
+                origin = originSmall;
+                aabb = aabbSmall;
+                appended = "Small";
+                paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
+                paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
+                paleteSwap.Parameters["nColors"].SetValue(7);
+                paleteSwap.CurrentTechnique.Passes[0].Apply();
+
+                CanBeHit = true;
+                CanCollide = true;
+                AffectedByGravity = true;
+                velocity = prevVelocity;
+                IsTransforming = false;
+
+                if ((int)velocity.Y != 0)
+                {
+                    currState = States.jump;
+                    animPlayer.PlayAnimation("running" + appended);
+                }
+                else
+                {
+                    currState = States.run;
+                    animPlayer.PlayAnimation("running" + appended);
+                }
+            }
+        }
+
+        private void UpdateDownPipeState()
+        {
+            velocity.Y = pipeSpeed;
+
+            if (position.Y >= 200)
+            {
+                position = new Vector2(50f, 0f);
+                velocity = Vector2.Zero;
+                currState = States.jump;
+                hFlip = SpriteEffects.None;
+                CanCollide = true;
+                DrawBehind = false;
+                AffectedByGravity = true;
+                EntityManager.StartOver();
+                World.Instance.LoadLevel("Content\\Levels\\stage1bonus.tmx");
+                //MediaPlayer.Play(SoundManager.UnderGroundStage);
+            }
+        }
+
+        private void UpdateRightPipeState()
+        {
+            animPlayer.PlayAnimation("running" + appended);
+            velocity.X = maxWalkSpeed * 0.5f;
+
+            if (position.X >= 300)
+            {
+                EntityManager.StartOver();
+                World.Instance.LoadLevel("Content\\Levels\\stage1.tmx");
+                position = new Vector2(2480, 176);
+                velocity = Vector2.Zero;
+                currState = States.stand;
+                MediaPlayer.Play(SoundManager.SurfaceStage);
+                CanCollide = true;
+                DrawBehind = false;
+                AffectedByGravity = true;
+                hFlip = SpriteEffects.None;
+            }
+        }
+
+        private void UpdateGoalState()
+        {
+            if (FloorHit)
+            {
+                AffectedByGravity = true;
+                animPlayer.PlayAnimation("running" + appended);
+                velocity.X = maxWalkSpeed;
+            }
+
+            foreach (var a in World.Instance.GetTriggerAreas())
+            {
+                Rectangle pAABB = GetAABB();
+                Rectangle aAABB = a.GetAABB();
+
+                if (aAABB.Contains(pAABB) && a.Type == AreaType.endStage)
+                {
+                    velocity = Vector2.Zero;
+                    DrawBehind = true;
+                    animPlayer.Freeze();
+                }
+            }
+        }
+
+        #endregion
     }
 }
 
