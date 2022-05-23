@@ -277,10 +277,10 @@ namespace PlatformTest
             oldState = keyboard;
             keyboard = Keyboard.GetState();
 
-            if(IsInvencible)
+            if (IsInvencible)
             {
                 invencibleTimer += elapsed;
-                if(invencibleTimer >= invencibleTotalTime)
+                if (invencibleTimer >= invencibleTotalTime)
                 {
                     IsInvencible = false;
                 }
@@ -296,7 +296,7 @@ namespace PlatformTest
 
             // delay the transform switching as changing the bounding box takes
             // effect inmediately and it looks weird (draw position and real position is not the same)
-            if(canTransform)
+            if (canTransform)
             {
                 animPlayer.PlayAnimation(animPlayer.CurrentAnimation());
 
@@ -317,277 +317,23 @@ namespace PlatformTest
                     break;
 
                 case States.run:
-                    {
-                        animPlayer.PlayAnimation("running" + appended);
-
-                        if(keyboard.IsKeyDown(Keys.A))
-                        {
-                            speed = maxRunSpeed;
-                        }
-                        else if(keyboard.IsKeyUp(Keys.A))
-                        {
-                            speed = maxWalkSpeed;
-                        }
-
-                        if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
-                        {
-                            currState = States.stand;
-                            break;
-                        }
-                        else if (keyboard.IsKeyDown(Keys.Right))
-                        {
-                            Area2D aRightPipe = InsideArea(AreaType.rightPipe);
-
-                            if (aRightPipe != null)
-                            {
-                                GoRightPipe();
-                                SoundManager.ShrinkPipe.Play();
-                                MediaPlayer.Stop();
-                                aRightPipe.Active = false;
-                                aRightPipe = null;
-                                break;
-                            }
-
-                            if (velocity.X < 0f)
-                                animPlayer.PlayAnimation("skid" + appended);
-
-                            dir = 1f;
-                            velocity.X = Lerp(velocity.X, speed, 0.04f);
-
-                            hFlip = SpriteEffects.None;
-                        }
-                        else if (keyboard.IsKeyDown(Keys.Left))
-                        {
-                            if (velocity.X > 0f)
-                                animPlayer.PlayAnimation("skid" + appended);
-
-                            dir = -1f;
-                            velocity.X = Lerp(velocity.X, -speed, 0.04f);
-
-                            hFlip = SpriteEffects.FlipHorizontally;
-                        }
-
-                        if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
-                        {
-                            animPlayer.PlayAnimation("jumping" + appended);
-
-                            currState = States.jump;
-                            velocity.Y = -jumpSpeed;
-                            
-                            if(speed == maxRunSpeed)
-                                gravity = maxGravity;
-
-                            IsOnGround = false;
-
-                            if (appended == "Small")
-                                SoundManager.JumpSmall.Play();
-                            else
-                                SoundManager.JumpBig.Play();
-
-                            break;
-                        }
-
-                        else if (!IsOnGround)
-                        {
-                            currState = States.fall;
-                            break;
-                        }
-
-                        if (keyboard.IsKeyDown(Keys.Down))
-                        {
-                            Area2D aDownPipe = InsideArea(AreaType.downPipe);
-
-                            if (aDownPipe != null)
-                            {
-                                GoDownPipe();
-                                SoundManager.ShrinkPipe.Play();
-                                MediaPlayer.Stop();
-                                aDownPipe.Active = false;
-                                aDownPipe = null;
-                                break;
-                            }
-
-                            if (power > Power.none)
-                            {
-                                currState = States.crouch;
-
-                                break;
-                            }
-                        }
-
-                        if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
-                        {
-                            if (EntityManager.FireBallCount < 2)
-                            {
-                                EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
-
-                                prevState = currState;
-                                currState = States.firing;
-
-                                SoundManager.FireBall.Play();
-                            }
-
-                                break;
-                        }
-                    }
+                    UpdateRunState();
                     break;
 
                 case States.jump:
-                    {
-                        animPlayer.PlayAnimation("jumping" + appended);
-
-                        if (keyboard.IsKeyDown(Keys.Right))
-                        {
-                            velocity.X = Lerp(velocity.X, speed, 0.03f);
-                        }
-                        else if (keyboard.IsKeyDown(Keys.Left))
-                        {
-                            velocity.X = Lerp(velocity.X, -speed, 0.03f);
-                        }
-
-                        if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
-                        {
-                            velocity.X = Lerp(velocity.X, 0, 0.1f);
-                        }
-
-                        if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
-                        {
-                            if (EntityManager.FireBallCount < 2)
-                            {
-                                EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
-                                SoundManager.FireBall.Play();
-                            }
-                        }
-
-                        if (!bounce)
-                        {
-                            if (keyboard.IsKeyDown(Keys.S))
-                            {
-                                if ((int)gravity == (int)maxGravity)
-                                    gravity = maxGravity;
-                                else
-                                    gravity = normalGravity;
-                            }
-                            else if (keyboard.IsKeyUp(Keys.S))
-                            {
-                                gravity = minGravity;
-                            }
-                        }
-                        else
-                        {
-                            gravity = maxGravity;
-                        }
-
-                        if (velocity.Y > 0)
-                        {
-                            currState = States.fall;
-                            bounce = false;
-                            break;
-                        }
-                    }
+                    UpdateJumpState();
                     break;
 
                 case States.fall:
-                    gravity = normalGravity;
-
-                    animPlayer.Freeze();
-
-                    if (keyboard.IsKeyDown(Keys.Right))
-                    {
-                        velocity.X = Lerp(velocity.X, speed, 0.02f);
-                    }
-                    else if (keyboard.IsKeyDown(Keys.Left))
-                    {
-                        velocity.X = Lerp(velocity.X, -speed, 0.02f);
-                    }
-
-                    if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
-                    {
-                        velocity.X = Lerp(velocity.X, 0, 0.1f);
-                    }
-
-                    if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
-                    {
-                        if (EntityManager.FireBallCount < 2)
-                        {
-                            EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
-                            SoundManager.FireBall.Play();
-                        }
-                    }
-
-                    if (IsOnGround)
-                    {
-                        if (animPlayer.CurrentAnimation() == "crouching")
-                            aabb = aabbBig;
-
-                        if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
-                        {
-                            currState = States.stand;
-                        }
-                        else
-                        {
-                            currState = States.run;
-                        }
-                    }
+                    UpdateFallState();
                     break;
 
                 case States.firing:
-                    {
-                        animPlayer.PlayAnimation("firing");
-
-                        if (animPlayer.AnimationEnded("firing"))
-                        {
-                            currState = prevState;
-                        }
-                    }
+                    UpdateFiringState();
                     break;
 
                 case States.crouch:
-                    {
-                        animPlayer.PlayAnimation("crouching");
-
-                        aabb = aabbSmall;
-
-                        velocity.X = Lerp(velocity.X, 0, 0.1f);
-
-                        if (!IsOnGround)
-                        {
-                            aabb = aabbBig;
-
-                            currState = States.fall;
-                            break;
-                        }
-
-                        if(keyboard.IsKeyUp(Keys.Down))
-                        {
-                            aabb = aabbBig;
-
-                            currState = States.stand;
-                            break;
-                        }
-
-                        if (keyboard.IsKeyDown(Keys.Right))
-                        {
-                            dir = 1f;
-
-                            hFlip = SpriteEffects.None;
-                        }
-                        else if (keyboard.IsKeyDown(Keys.Left))
-                        {
-                            dir = -1f;
-
-                            hFlip = SpriteEffects.FlipHorizontally;
-                        }
-
-                        if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
-                        {
-                            currState = States.jump;
-
-                            velocity.Y = -jumpSpeed;
-                            IsOnGround = false;
-                            break;
-                        }
-                    }
+                    UpdateCrouchState();
                     break;
 
                 case States.growing:
@@ -621,7 +367,7 @@ namespace PlatformTest
 
             float updateSpeed = (currState == States.firing) ? 60 : Math.Max(50, Math.Abs(velocity.X)); // to change
 
-            if(currState == States.growing || currState == States.shrinking)
+            if (currState == States.growing || currState == States.shrinking)
                 animPlayer.Update(elapsed);
             else
                 animPlayer.Update(MapValue(maxRunSpeed, updateSpeed, elapsed));
@@ -630,7 +376,7 @@ namespace PlatformTest
 
             Area2D goal = HitArea(AreaType.goal);
 
-            if(goal != null)
+            if (goal != null)
             {
                 SoundManager.PoleDown.Play();
                 currState = States.goal;
@@ -679,7 +425,7 @@ namespace PlatformTest
                 {
                     Rectangle pAABB = GetAABB();
                     Rectangle area = a.GetAABB();
-                    
+
                     if (area.Contains(pAABB))
                         return a;
                 }
@@ -819,6 +565,277 @@ namespace PlatformTest
                     SoundManager.FireBall.Play();
                 }
 
+                return;
+            }
+        }
+
+        private void UpdateRunState()
+        {
+            animPlayer.PlayAnimation("running" + appended);
+
+            if (keyboard.IsKeyDown(Keys.A))
+            {
+                speed = maxRunSpeed;
+            }
+            else if (keyboard.IsKeyUp(Keys.A))
+            {
+                speed = maxWalkSpeed;
+            }
+
+            if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
+            {
+                currState = States.stand;
+                return;
+            }
+            else if (keyboard.IsKeyDown(Keys.Right))
+            {
+                Area2D aRightPipe = InsideArea(AreaType.rightPipe);
+
+                if (aRightPipe != null)
+                {
+                    GoRightPipe();
+                    SoundManager.ShrinkPipe.Play();
+                    MediaPlayer.Stop();
+                    aRightPipe.Active = false;
+                    aRightPipe = null;
+                    return;
+                }
+
+                if (velocity.X < 0f)
+                    animPlayer.PlayAnimation("skid" + appended);
+
+                dir = 1f;
+                velocity.X = Lerp(velocity.X, speed, 0.04f);
+
+                hFlip = SpriteEffects.None;
+            }
+            else if (keyboard.IsKeyDown(Keys.Left))
+            {
+                if (velocity.X > 0f)
+                    animPlayer.PlayAnimation("skid" + appended);
+
+                dir = -1f;
+                velocity.X = Lerp(velocity.X, -speed, 0.04f);
+
+                hFlip = SpriteEffects.FlipHorizontally;
+            }
+
+            if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
+            {
+                animPlayer.PlayAnimation("jumping" + appended);
+
+                currState = States.jump;
+                velocity.Y = -jumpSpeed;
+
+                if (speed == maxRunSpeed)
+                    gravity = maxGravity;
+
+                IsOnGround = false;
+
+                if (appended == "Small")
+                    SoundManager.JumpSmall.Play();
+                else
+                    SoundManager.JumpBig.Play();
+
+                return;
+            }
+
+            else if (!IsOnGround)
+            {
+                currState = States.fall;
+                return;
+            }
+
+            if (keyboard.IsKeyDown(Keys.Down))
+            {
+                Area2D aDownPipe = InsideArea(AreaType.downPipe);
+
+                if (aDownPipe != null)
+                {
+                    GoDownPipe();
+                    SoundManager.ShrinkPipe.Play();
+                    MediaPlayer.Stop();
+                    aDownPipe.Active = false;
+                    aDownPipe = null;
+                    return;
+                }
+
+                if (power > Power.none)
+                {
+                    currState = States.crouch;
+
+                    return;
+                }
+            }
+
+            if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
+            {
+                if (EntityManager.FireBallCount < 2)
+                {
+                    EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
+
+                    prevState = currState;
+                    currState = States.firing;
+
+                    SoundManager.FireBall.Play();
+                }
+
+                return;
+            }
+        }
+
+        private void UpdateJumpState()
+        {
+            animPlayer.PlayAnimation("jumping" + appended);
+
+            if (keyboard.IsKeyDown(Keys.Right))
+            {
+                velocity.X = Lerp(velocity.X, speed, 0.03f);
+            }
+            else if (keyboard.IsKeyDown(Keys.Left))
+            {
+                velocity.X = Lerp(velocity.X, -speed, 0.03f);
+            }
+
+            if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
+            {
+                velocity.X = Lerp(velocity.X, 0, 0.1f);
+            }
+
+            if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
+            {
+                if (EntityManager.FireBallCount < 2)
+                {
+                    EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
+                    SoundManager.FireBall.Play();
+                }
+            }
+
+            if (!bounce)
+            {
+                if (keyboard.IsKeyDown(Keys.S))
+                {
+                    if ((int)gravity == (int)maxGravity)
+                        gravity = maxGravity;
+                    else
+                        gravity = normalGravity;
+                }
+                else if (keyboard.IsKeyUp(Keys.S))
+                {
+                    gravity = minGravity;
+                }
+            }
+            else
+            {
+                gravity = maxGravity;
+            }
+
+            if (velocity.Y > 0)
+            {
+                currState = States.fall;
+                bounce = false;
+                return;
+            }
+        }
+
+        private void UpdateFallState()
+        {
+            gravity = normalGravity;
+
+            animPlayer.Freeze();
+
+            if (keyboard.IsKeyDown(Keys.Right))
+            {
+                velocity.X = Lerp(velocity.X, speed, 0.02f);
+            }
+            else if (keyboard.IsKeyDown(Keys.Left))
+            {
+                velocity.X = Lerp(velocity.X, -speed, 0.02f);
+            }
+
+            if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
+            {
+                velocity.X = Lerp(velocity.X, 0, 0.1f);
+            }
+
+            if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
+            {
+                if (EntityManager.FireBallCount < 2)
+                {
+                    EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
+                    SoundManager.FireBall.Play();
+                }
+            }
+
+            if (IsOnGround)
+            {
+                if (animPlayer.CurrentAnimation() == "crouching")
+                    aabb = aabbBig;
+
+                if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
+                {
+                    currState = States.stand;
+                }
+                else
+                {
+                    currState = States.run;
+                }
+            }
+        }
+
+        private void UpdateFiringState()
+        {
+            animPlayer.PlayAnimation("firing");
+
+            if (animPlayer.AnimationEnded("firing"))
+            {
+                currState = prevState;
+            }
+        }
+
+        private void UpdateCrouchState()
+        {
+            animPlayer.PlayAnimation("crouching");
+
+            aabb = aabbSmall;
+
+            velocity.X = Lerp(velocity.X, 0, 0.1f);
+
+            if (!IsOnGround)
+            {
+                aabb = aabbBig;
+
+                currState = States.fall;
+                return;
+            }
+
+            if (keyboard.IsKeyUp(Keys.Down))
+            {
+                aabb = aabbBig;
+
+                currState = States.stand;
+                return;
+            }
+
+            if (keyboard.IsKeyDown(Keys.Right))
+            {
+                dir = 1f;
+
+                hFlip = SpriteEffects.None;
+            }
+            else if (keyboard.IsKeyDown(Keys.Left))
+            {
+                dir = -1f;
+
+                hFlip = SpriteEffects.FlipHorizontally;
+            }
+
+            if (keyboard.IsKeyDown(Keys.S) && oldState.IsKeyUp(Keys.S))
+            {
+                currState = States.jump;
+
+                velocity.Y = -jumpSpeed;
+                IsOnGround = false;
                 return;
             }
         }
