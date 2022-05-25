@@ -164,7 +164,7 @@ namespace PlatformTest
             growing.AddFrame(16, 48, 16, 32, 0.0668f);
             growing.AddFrame(32, 48, 16, 32, 0.0668f);
             growing.AddFrame(0, 48, 16, 32, 0.0334f);
-            growing.AddFrame(32, 48, 16, 32, 0.1837f);
+            growing.AddFrame(32, 48, 16, 32, 0.2004f);
 
             animPlayer.Add("growing", growing);
         }

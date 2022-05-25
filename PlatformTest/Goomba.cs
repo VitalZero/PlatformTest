@@ -16,6 +16,9 @@ namespace PlatformTest
         private float deadTimeAcc;
         private States currState;
         private SpriteEffects vFlip;
+        private float angle;
+        private float addedAngle;
+        private bool killed = false;
 
         public Goomba(Vector2 pos, int index)
         {
@@ -32,6 +35,8 @@ namespace PlatformTest
             Active = false;
             vFlip = SpriteEffects.None;
             origin = new Vector2(8, 15);
+            angle = 0f;
+            addedAngle = MathHelper.TwoPi / 90;
         }
 
         public override void Init()
@@ -53,12 +58,13 @@ namespace PlatformTest
 
         public override void Kill()
         {
+            killed = true;
             currState = States.instantKill;
             velocity.Y = -250f;
             CanKill = false;
             CanCollide = false;
             speed = 30f;
-            vFlip = SpriteEffects.FlipVertically;
+            //vFlip = SpriteEffects.FlipVertically;
             IsOnGround = false;
         }
 
@@ -96,6 +102,10 @@ namespace PlatformTest
                     break;
                 case States.instantKill:
                     {
+                        angle += addedAngle * dir;
+
+                        angle = Math.Clamp(angle, -MathHelper.Pi, MathHelper.Pi);
+
                         animPlayer.Freeze();
                         deadTimeAcc += elapsed;
 
@@ -125,7 +135,7 @@ namespace PlatformTest
         {
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)position.X, (int)position.Y ),
-                vFlip, origin);
+                vFlip, origin, angle);
 
             base.Draw(spriteBatch);
         }
