@@ -109,7 +109,7 @@ namespace PlatformTest
                         animPlayer.Freeze();
                         deadTimeAcc += elapsed;
 
-                        velocity.X = speed * dir;
+                        velocity.X = speed * 1.5f * dir;
 
                         if (deadTimeAcc >= 1f)
                         {

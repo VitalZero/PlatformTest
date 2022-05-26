@@ -18,6 +18,8 @@ namespace PlatformTest
         private States currState;
         private SpriteEffects flip;
         private SpriteEffects vFlip;
+        private float angle;
+        private float addedAngle;
 
         public KoopaTrooper(Vector2 pos, int index)
         {
@@ -33,6 +35,8 @@ namespace PlatformTest
             dir = -1f;
             Active = false;
             origin = new Vector2(8, 23);
+            angle = 0f;
+            addedAngle = MathHelper.TwoPi / 90;
         }
 
         public override void Init()
@@ -74,13 +78,13 @@ namespace PlatformTest
         public override void Kill()
         {
             currState = States.instantKill;
-            origin.Y = 15;
+            //origin.Y = 15;
             animPlayer.PlayAnimation("stomped");
             velocity.Y = -250f;
             CanKill = false;
             CanCollide = false;
             speed = 30f;
-            vFlip = SpriteEffects.FlipVertically;
+            //vFlip = SpriteEffects.FlipVertically;
             IsOnGround = false;
         }
 
@@ -153,7 +157,11 @@ namespace PlatformTest
                         animPlayer.Freeze();
                         deadTimeAcc += elapsed;
 
-                        velocity.X = speed * dir;
+                        angle += addedAngle * dir;
+
+                        angle = Math.Clamp(angle, -MathHelper.Pi, MathHelper.Pi);
+
+                        velocity.X = speed * 1.5f * dir;
 
                         if (deadTimeAcc >= 1f)
                         {
@@ -179,7 +187,7 @@ namespace PlatformTest
         {
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)position.X, (int)position.Y),
-                flip | vFlip, origin);
+                flip | vFlip, origin, angle);
 
             base.Draw(spriteBatch);
         }
