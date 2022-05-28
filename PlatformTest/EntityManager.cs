@@ -278,6 +278,7 @@ namespace PlatformTest
                             }
                             else if(Player.Instance.HasStar)
                             {
+                                SoundManager.InstantKill.Play()ss;
                                 e.Kill();
                             }
                             else

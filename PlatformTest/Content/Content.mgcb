@@ -155,6 +155,12 @@
 /processorParam:Quality=Best
 /build:Sounds/smbsurface.mp3
 
+#begin Sounds/starremix.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/starremix.mp3
+
 #begin Sounds/stomp.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

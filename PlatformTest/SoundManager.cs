@@ -25,6 +25,7 @@ namespace PlatformTest
         public static SoundEffect OneUpMushroom { get; set; }
         public static SoundEffect PoleDown { get; set; }
         public static Song SurfaceStage { get; set; }
+        public static Song StarSong { get; set; }
 
         public static void Load(ContentManager content)
         {
@@ -44,6 +45,7 @@ namespace PlatformTest
             OneUpNormal = content.Load<SoundEffect>("Sounds/oneupnormal");
             OneUpMushroom = content.Load<SoundEffect>("Sounds/oneupmushroom");
             PoleDown = content.Load<SoundEffect>("Sounds/poledown");
+            StarSong = content.Load<Song>("Sounds/starremix");
         }
     }
 }

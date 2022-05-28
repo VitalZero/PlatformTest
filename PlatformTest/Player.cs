@@ -282,6 +282,7 @@ namespace PlatformTest
             starTimer = 0f;
             HasStar = true;
             MediaPlayer.Stop();
+            MediaPlayer.Play(SoundManager.StarSong);
         }
 
         public override void Update(GameTime gameTime)
@@ -388,6 +389,7 @@ namespace PlatformTest
                     starTimer = 0f;
                     HasStar = false;
                     IsInvencible = false;
+                    MediaPlayer.Stop();
                     MediaPlayer.Play(SoundManager.SurfaceStage);
                 }
             }
