@@ -135,7 +135,7 @@ namespace PlatformTest
         {
             animPlayer.Draw(spriteBatch,
                 new Vector2((int)position.X, (int)position.Y ),
-                vFlip, origin, angle);
+                vFlip, origin, Color.White, angle);
 
             base.Draw(spriteBatch);
         }

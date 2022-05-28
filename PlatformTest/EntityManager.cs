@@ -276,6 +276,10 @@ namespace PlatformTest
                                 Player.Instance.Bounce();
                                 //return;
                             }
+                            else if(Player.Instance.HasStar)
+                            {
+                                e.Kill();
+                            }
                             else
                             {
                                 if(!Player.Instance.IsInvencible)
@@ -311,7 +315,10 @@ namespace PlatformTest
                     {
                         SoundManager.OneUpMushroom.Play();
                     }
-
+                    else if(p is Star)
+                    {
+                        Player.Instance.GetStar();
+                    }
                     p.Collected();
                 }
             }

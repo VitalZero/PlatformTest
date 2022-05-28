@@ -53,7 +53,7 @@ namespace PlatformTest
         {
             animPlayer.Draw(spriteBatch, 
                 new Vector2((int)position.X, (int)position.Y),
-                SpriteEffects.None, origin);
+                SpriteEffects.None, origin, Color.White);
         }
 
         public override void Update(GameTime gameTime)

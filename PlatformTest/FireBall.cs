@@ -81,7 +81,7 @@ namespace PlatformTest
         public override void Draw(SpriteBatch spriteBatch)
         {
             animPlayer.Draw(spriteBatch, new Vector2((int)position.X, (int)position.Y),
-                hFlip, origin);
+                hFlip, origin, Color.White);
         }
     }
 }

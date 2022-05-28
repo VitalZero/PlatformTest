@@ -24,7 +24,7 @@ namespace PlatformTest
         }
 
         private enum States { stand, run, jump, fall, crouch, firing, growing, shrinking, downPipe, rightPipe, leftPipe, upPipe, goal }
-        private enum Power { none, big, fire }
+        private enum Power { none, big, fire}
 
         public Vector2 PrevPos { get; private set; }
         public bool IsInvencible { get; set; }
@@ -33,6 +33,9 @@ namespace PlatformTest
 
         private float invencibleTimer;
         private const float invencibleTotalTime = 3f;
+        private const float starTotalTime = 10f;
+        private float starTimer;
+        public bool HasStar { get; private set; }
         private float secondCounter;
         private const float transformationTotalTime = 1f;
         private const float jumpHoldTime = 0.25f;
@@ -70,6 +73,9 @@ namespace PlatformTest
         Texture2D pal1;
         Texture2D pal2;
 
+        Color[] starColor;
+        private int colorStep = 0;
+
         //for debug purposes
         List<string> playerStates = new List<string>();
         SpriteFont font;
@@ -90,6 +96,7 @@ namespace PlatformTest
             pipeSpeed = 40f;
             IsInvencible = false;
             invencibleTimer = 0f;
+            starTimer = 0f;
             IsTransforming = false;
 
             speed = maxWalkSpeed;
@@ -108,6 +115,8 @@ namespace PlatformTest
 
             currState = States.fall;
             prevState = currState;
+
+            starColor = new Color[] { Color.Red, Color.Green, Color.Yellow, Color.Blue };
         }
 
         public override void Init()
@@ -268,6 +277,13 @@ namespace PlatformTest
             //invencibleTimer = 0;
         }
 
+        public void GetStar()
+        {
+            starTimer = 0f;
+            HasStar = true;
+            MediaPlayer.Stop();
+        }
+
         public override void Update(GameTime gameTime)
         {
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -355,6 +371,25 @@ namespace PlatformTest
                 case States.goal:
                     UpdateGoalState();
                     break;
+            }
+
+            if(HasStar)
+            {
+                starTimer += elapsed;
+
+                if((int)(starTimer * 60f) % 2 == 0)
+                {
+                    colorStep++;
+                    colorStep %= starColor.Length;
+                }
+
+                if(starTimer >= starTotalTime)
+                {
+                    starTimer = 0f;
+                    HasStar = false;
+                    IsInvencible = false;
+                    MediaPlayer.Play(SoundManager.SurfaceStage);
+                }
             }
 
             if (RightWallHit || LeftWallHit)
@@ -453,6 +488,17 @@ namespace PlatformTest
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            Color color;
+
+            if(HasStar)
+            {
+                color = starColor[colorStep];
+            }
+            else
+            {
+                color = Color.White;
+            }
+
             spriteBatch.End();
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: paleteSwap, transformMatrix: Camera2D.Instance.Transform);
@@ -463,7 +509,7 @@ namespace PlatformTest
             {
                 animPlayer.Draw(spriteBatch,
                 new Vector2((int)position.X, (int)position.Y),
-                hFlip, origin);
+                hFlip, origin, color);
             }
 
             spriteBatch.End();

@@ -104,15 +104,15 @@ namespace PlatformTest
             source = animations[currentAnimation].CurrentFrame.frameRect;
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 pos, SpriteEffects effects, Vector2 origin)
+        public void Draw(SpriteBatch spriteBatch, Vector2 pos, SpriteEffects effects, Vector2 origin, Color color)
         {
-            spriteBatch.Draw(animations[currentAnimation].Texture, pos, source, Color.White, 
+            spriteBatch.Draw(animations[currentAnimation].Texture, pos, source, color, 
                 0f, origin, 1f, effects, 1f);
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 pos, SpriteEffects effects, Vector2 origin, float angle)
+        public void Draw(SpriteBatch spriteBatch, Vector2 pos, SpriteEffects effects, Vector2 origin, Color color, float angle)
         {
-            spriteBatch.Draw(animations[currentAnimation].Texture, pos, source, Color.White,
+            spriteBatch.Draw(animations[currentAnimation].Texture, pos, source, color,
                 angle, origin, 1f, effects, 1f);
         }
     }
