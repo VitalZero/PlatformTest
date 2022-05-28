@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
+using System.Diagnostics;
 using VZShapes;
 
 namespace PlatformTest
@@ -29,6 +30,7 @@ namespace PlatformTest
         private bool advance = false;
         public Shapes shapes;
         Camera2D cam;
+        //Stopwatch stopWatch;
 
 
         public Platformer()
@@ -38,6 +40,7 @@ namespace PlatformTest
             IsMouseVisible = true;
             world = new World();
             cam = new Camera2D(new Rectangle(0, 0, width, height), new Rectangle(0, 0, windowWidth, windowHeight));
+            //stopWatch = new Stopwatch();
         }
 
         protected override void Initialize()
@@ -98,11 +101,16 @@ namespace PlatformTest
             {
                 if (!Player.Instance.IsTransforming)
                 {
+                    //stopWatch.Reset();
+                    //stopWatch.Start();
+
                     world.Update(gameTime);
 
                     SpriteManager.Update(gameTime);
 
                     EntityManager.Update(gameTime);
+
+                    //stopWatch.Stop();
                 }
                 else
                 {
@@ -111,6 +119,8 @@ namespace PlatformTest
                 
                 Camera2D.Instance.Follow(Player.Instance, (float)gameTime.ElapsedGameTime.TotalSeconds);
             }
+
+            //Debug.WriteLine(stopWatch.Elapsed.TotalSeconds.ToString("0.000000"));
 
             advance = false;
             

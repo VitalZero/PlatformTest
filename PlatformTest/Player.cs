@@ -224,8 +224,6 @@ namespace PlatformTest
         {
             SoundManager.ShrinkPipe.Play();
 
-            //if (currState == States.fall)
-            //    animPlayer.PlayAnimation("jumping" + appended);
             prevState = currState;
             currState = States.shrinking;
             animPlayer.PlayAnimation("shrinking");
@@ -255,13 +253,9 @@ namespace PlatformTest
 
         private void Grow()
         {
-            //Camera2D.Instance.SetZoom(2f);
             SoundManager.Grow.Play();
             origin = originBig;
             aabb = aabbBig;
-
-            //if (currState == States.fall)
-            //    animPlayer.PlayAnimation("jumping" + appended);
 
             prevState = currState;
             currState = States.growing;
@@ -273,8 +267,6 @@ namespace PlatformTest
             prevVelocity = velocity;
             velocity = Vector2.Zero;
             IsTransforming = true;
-            //IsInvencible = true;
-            //invencibleTimer = 0;
         }
 
         public void GetStar()
@@ -309,8 +301,6 @@ namespace PlatformTest
                 //power = Power.fire;
                 GetStar();
             }
-            //if (keyboard.IsKeyDown(Keys.H) && oldState.IsKeyUp(Keys.H))
-            //    Shrink();
 
             // delay the transform switching as changing the bounding box takes
             // effect inmediately and it looks weird (draw position and real position is not the same)
@@ -515,6 +505,7 @@ namespace PlatformTest
             spriteBatch.End();
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: paleteSwap, transformMatrix: Camera2D.Instance.Transform);
+
             if (invencibleTimer > 0f &&
                 (int)(invencibleTimer * 60f) % 8 > 4)
             { }
