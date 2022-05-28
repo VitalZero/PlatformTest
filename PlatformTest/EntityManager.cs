@@ -267,7 +267,12 @@ namespace PlatformTest
                             // if can kill, generate a hit only if player lands on top of the koopatrooper
                             // adjust player position and make it bounce
                             // otherwise, kill the player (including when the shell is rebounding)
-                            if (pAABB.Bottom <= tAABB.Center.Y ||
+                            if (Player.Instance.HasStar)
+                            {
+                                SoundManager.InstantKill.Play();
+                                e.Kill();
+                            }
+                            else if (pAABB.Bottom <= tAABB.Center.Y ||
                                 (int)Player.Instance.PrevPos.Y < (int)Player.Instance.Position.Y)
                             {
                                 e.Hit();
@@ -275,11 +280,6 @@ namespace PlatformTest
                                 SoundManager.Stomp.Play();
                                 Player.Instance.Bounce();
                                 //return;
-                            }
-                            else if(Player.Instance.HasStar)
-                            {
-                                SoundManager.InstantKill.Play()ss;
-                                e.Kill();
                             }
                             else
                             {

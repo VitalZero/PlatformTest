@@ -116,7 +116,7 @@ namespace PlatformTest
             currState = States.fall;
             prevState = currState;
 
-            starColor = new Color[] { Color.Red, Color.Green, Color.Yellow, Color.Blue };
+            starColor = new Color[] { Color.Red, Color.Green, Color.Gold, Color.Blue, Color.White };
         }
 
         public override void Init()
@@ -305,8 +305,9 @@ namespace PlatformTest
             // for debug purposes (switch to a transform)
             if (keyboard.IsKeyDown(Keys.G) && oldState.IsKeyUp(Keys.G))
             {
-                Burn();
-                power = Power.fire;
+                //Burn();
+                //power = Power.fire;
+                GetStar();
             }
             //if (keyboard.IsKeyDown(Keys.H) && oldState.IsKeyUp(Keys.H))
             //    Shrink();
@@ -377,14 +378,24 @@ namespace PlatformTest
             if(HasStar)
             {
                 starTimer += elapsed;
+                int starTimerMod;
 
-                if((int)(starTimer * 60f) % 2 == 0)
+                if (starTimer < (starTotalTime * 0.8f))
+                {
+                    starTimerMod = 3;
+                }
+                else
+                {
+                    starTimerMod = 8;
+                }
+
+                if ((int)(starTimer * 60f) % starTimerMod == 0)
                 {
                     colorStep++;
                     colorStep %= starColor.Length;
                 }
 
-                if(starTimer >= starTotalTime)
+                if (starTimer >= starTotalTime)
                 {
                     starTimer = 0f;
                     HasStar = false;
