@@ -80,6 +80,20 @@ namespace PlatformTest
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(SoundManager.SurfaceStage);
+
+            Player.Instance.deathEvent += StopMusic;
+        }
+
+        protected override void UnloadContent()
+        {
+            Player.Instance.deathEvent -= StopMusic;
+
+            base.UnloadContent();
+        }
+
+        public void StopMusic()
+        {
+            MediaPlayer.Stop();
         }
 
         protected override void Update(GameTime gameTime)

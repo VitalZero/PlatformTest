@@ -76,6 +76,11 @@ namespace PlatformTest
         Color[] starColor;
         private int colorStep = 0;
 
+        // delegates
+        public event Action deathEvent;
+        //public delegate void DeathDelegate();
+        //public event DeathDelegate deathEvent;
+
         //for debug purposes
         List<string> playerStates = new List<string>();
         SpriteFont font;
@@ -198,6 +203,10 @@ namespace PlatformTest
             else
             {
                 Destroy();
+                if(deathEvent != null)
+                {
+                    deathEvent.Invoke();
+                }
                 //CanCollide = false;
                 //Active = false;
                 //IsDestroyed = true;
