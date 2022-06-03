@@ -115,10 +115,6 @@ namespace PlatformTest
             UpdateDrawOrder();
             // separate and sort entities to be drawn in "z order" and behind or in front of world tiles
 
-            //drawBehind = entities.Where(e => e.DrawBehind).ToList();
-            //drawNormal = entities.Where(e => !e.DrawBehind).ToList();
-            //drawNormal.Sort((e1, e2) => (e1.drawPriority.CompareTo(e2.drawPriority)));
-
             if (startOver)
             {
                 StartOver();

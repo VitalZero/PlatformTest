@@ -64,7 +64,6 @@ namespace PlatformTest
             CanKill = false;
             CanCollide = false;
             speed = 30f;
-            //vFlip = SpriteEffects.FlipVertically;
             IsOnGround = false;
         }
 
@@ -78,14 +77,8 @@ namespace PlatformTest
                     {
                         velocity.X = speed * dir;
 
-                        if (RightWallHit)
-                        {
-                            dir = -1f;
-                        }
-                        else if(LeftWallHit)
-                        {
-                            dir = 1f;
-                        }
+                        if (RightWallHit || LeftWallHit)
+                            dir = -dir;
                     }
                     break;
                 case States.stomped:
@@ -95,8 +88,7 @@ namespace PlatformTest
 
                         if (deadTimeAcc >= deadTime)
                         {
-                            Active = false;
-                            IsDestroyed = true;
+                            Destroy();
                         }
                     }
                     break;

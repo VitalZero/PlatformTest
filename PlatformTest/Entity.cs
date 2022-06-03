@@ -147,6 +147,7 @@ namespace PlatformTest
         private void HandlecollisionHorizontal()
         {
             Rectangle bounds = GetAABB();
+            Rectangle tileBounds;
 
             int top = bounds.Top / 16;
             int bottom = bounds.Bottom / 16;
@@ -165,17 +166,18 @@ namespace PlatformTest
 
                 foreach (var t in tilesToCheck)
                 {
+                    bounds = GetAABB();
+
                     if (t.collision != TileCollision.none && t.Visible)
                     {
-                        bounds = GetAABB();
-                        Rectangle tileBounds = World.Instance.GetBounds(t.X, t.Y);
+                        tileBounds = World.Instance.GetBounds(t.X, t.Y);
 
                         if (bounds.Intersects(tileBounds))
                         {
-                            int depth = bounds.Right - tileBounds.Left;
+                            int depth = tileBounds.Left - bounds.Right;
 
-                            position.X -= depth;
-                            position.X = (int)position.X;
+                            position.X += depth;
+                            //position.X = (int)position.X;
                             RightWallHit = true;
                             break;
                         }
@@ -198,20 +200,24 @@ namespace PlatformTest
 
                 foreach (var t in tilesToCheck)
                 {
+                    bounds = GetAABB();
+
                     if (t.collision != TileCollision.none && t.Visible)
                     {
-                        bounds = GetAABB();
-                        Rectangle tileBounds = World.Instance.GetBounds(t.X, t.Y);
+                        tileBounds = World.Instance.GetBounds(t.X, t.Y);
 
                         if (bounds.Intersects(tileBounds))
                         {
-                            int depth = bounds.Left - tileBounds.Right;
+                            int depth = tileBounds.Right - bounds.Left;
 
-                            position.X -= depth;
-                            position.X = (int)position.X;
+                            position.X += depth;
+                            //position.X = (int)position.X;
                             LeftWallHit = true;
-                            break;
                         }
+                    }
+                    else
+                    {
+                        LeftWallHit = false;
                     }
                 }
             }

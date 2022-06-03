@@ -41,14 +41,8 @@ namespace PlatformTest
                     IsOnGround = false;
                 }
 
-                if (RightWallHit)
-                {
-                    dir = -1f;
-                }
-                else if (LeftWallHit)
-                {
-                    dir = 1f;
-                }
+                if (RightWallHit || LeftWallHit)
+                    dir = -dir;
 
                 LateUpdate(gameTime);
 

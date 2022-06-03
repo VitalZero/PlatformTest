@@ -103,14 +103,8 @@ namespace PlatformTest
                         else if(velocity.X < 0)
                             flip = SpriteEffects.FlipHorizontally;
 
-                        if (RightWallHit)
-                        {
-                            dir = -1f;
-                        }
-                        else if(LeftWallHit)
-                        {
-                            dir = 1f;
-                        }
+                        if (RightWallHit || LeftWallHit)
+                            dir = -dir;
                     }
                     break;
                 case States.stomped:
@@ -136,20 +130,12 @@ namespace PlatformTest
                     break;
                 case States.rebounding:
                     {
-                        velocity.X = (speed * 15f) *  dir;
-
-                        if (RightWallHit)
+                        if(RightWallHit || LeftWallHit)
                         {
-                            position.X -= 10f;
+                            dir = -dir;
                             SoundManager.Thump.Play();
-                            dir = -1f;
                         }
-                        else if (LeftWallHit)
-                        {
-                            SoundManager.Thump.Play();
-                            position.X += 10f;
-                            dir = 1f;
-                        }
+                        velocity.X = speed * 15f * dir;
                     }
                     break;
                 case States.instantKill:
