@@ -29,7 +29,7 @@ namespace PlatformTest
         {
             texture = TextureManager.MiscSprites;
             animPlayer = new AnimationPlayer();
-            animPlayer.Add("idle", new Animation(texture, 0.05f, true, 8, 16, 4, 64, 0));
+            animPlayer.Add("idle", new Animation(0.05f, true, 8, 16, 4, 64, 0));
             spriteArea = new Rectangle(0, 0, 16, 16);
 
             animPlayer.PlayAnimation("idle");
@@ -62,9 +62,13 @@ namespace PlatformTest
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            animPlayer.Draw(spriteBatch,
+            animPlayer.Draw(
+                spriteBatch,
+                texture,
                 new Vector2((int)position.X, (int)position.Y),
-                SpriteEffects.None, new Vector2(0, 0), Color.White);
+                SpriteEffects.None, 
+                Vector2.Zero, 
+                Color.White);
         }
     }
 }

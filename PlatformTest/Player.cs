@@ -68,18 +68,11 @@ namespace PlatformTest
         private readonly Vector2 originBig = new Vector2(8, 31);
         private Vector2 prevVelocity;
 
-        Effect paleteSwap;
-        Texture2D sourcePal;
-        Texture2D pal1;
-        Texture2D pal2;
-
         Color[] starColor;
         private int colorStep = 0;
 
         // delegates
         public event Action deathEvent;
-        //public delegate void DeathDelegate();
-        //public event DeathDelegate deathEvent;
 
         //for debug purposes
         List<string> playerStates = new List<string>();
@@ -129,15 +122,6 @@ namespace PlatformTest
             origin = originSmall;
 
             texture = TextureManager.Player;
-            paleteSwap = TextureManager.ColorSwap;
-            sourcePal = TextureManager.SourcePal;
-            pal1 = TextureManager.Pal1;
-            pal2 = TextureManager.Pal2;
-
-            paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
-            paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
-            paleteSwap.Parameters["nColors"].SetValue(7);
-            paleteSwap.CurrentTechnique.Passes[0].Apply();
 
             AddAnimations();
 
@@ -147,40 +131,42 @@ namespace PlatformTest
 
         private void AddAnimations()
         {
-            animPlayer.Add("idleSmall", new Animation(texture, 1f, true, 16, 16, 1, 0, 16 * 2));
-            animPlayer.Add("runningSmall", new Animation(texture, .04f, true, 16, 16, 3, 16, 16 * 2));
-            animPlayer.Add("jumpingSmall", new Animation(texture, .1f, true, 16, 16, 1, 16 * 6, 16 * 2));
-            animPlayer.Add("skidSmall", new Animation(texture, 1f, true, 16, 16, 1, 16 * 5, 16 * 2));
-            animPlayer.Add("climbSmall", new Animation(texture, .03f, true, 16, 16, 2, 16 * 8, 16 * 2));
-            animPlayer.Add("killed", new Animation(texture, 1f, true, 16, 32, 1, 16 * 4, 16 * 2));
+            animPlayer.Add("idleSmall", new Animation(1f, true, 16, 16, 1, 0, 16 * 2));
+            animPlayer.Add("runningSmall", new Animation(.04f, true, 16, 16, 3, 16, 16 * 2));
+            animPlayer.Add("jumpingSmall", new Animation(.1f, true, 16, 16, 1, 16 * 6, 16 * 2));
+            animPlayer.Add("skidSmall", new Animation(1f, true, 16, 16, 1, 16 * 5, 16 * 2));
+            animPlayer.Add("climbSmall", new Animation(.03f, true, 16, 16, 2, 16 * 8, 16 * 2));
+            animPlayer.Add("killed", new Animation(1f, true, 16, 32, 1, 16 * 4, 16 * 2));
 
-            animPlayer.Add("idleBig", new Animation(texture, 1f, true, 16, 32, 1, 0, 0));
-            animPlayer.Add("runningBig", new Animation(texture, .04f, true, 16, 32, 3, 16, 0));
-            animPlayer.Add("jumpingBig", new Animation(texture, .1f, true, 16, 32, 1, 16 * 6, 0));
-            animPlayer.Add("skidBig", new Animation(texture, 1f, true, 16, 32, 1, 16 * 5, 0));
-            animPlayer.Add("climbBig", new Animation(texture, .03f, true, 16, 32, 2, 16 * 8, 0));
+            animPlayer.Add("idleBig", new Animation(1f, true, 16, 32, 1, 0, 0));
+            animPlayer.Add("runningBig", new Animation(.04f, true, 16, 32, 3, 16, 0));
+            animPlayer.Add("jumpingBig", new Animation(.1f, true, 16, 32, 1, 16 * 6, 0));
+            animPlayer.Add("skidBig", new Animation(1f, true, 16, 32, 1, 16 * 5, 0));
+            animPlayer.Add("climbBig", new Animation(.03f, true, 16, 32, 2, 16 * 8, 0));
 
-            animPlayer.Add("crouching", new Animation(texture, 1f, true, 16, 32, 1, 16 * 7, 0));
-            animPlayer.Add("firing", new Animation(texture, 0.04f, false, 16, 32, 1, 16 * 4, 0));
+            animPlayer.Add("crouching", new Animation(1f, true, 16, 32, 1, 16 * 7, 0));
 
-            //animPlayer.Add("growing", new Animation(texture, .04f, true, 16, 32, 3, 0, 48));
-            animPlayer.Add("shrinking", new Animation(texture, .03f, true, 16, 32, 2, 48, 48));
+            animPlayer.Add("firing", new Animation(0.04f, false, 16, 32, 1, 16 * 4, 0));
 
-            Animation growing = new Animation(texture);
-            growing.AddFrame(0, 48, 16, 32, 0.1837f);
-            growing.AddFrame(16, 48, 16, 32, 0.0668f);
-            growing.AddFrame(0, 48, 16, 32, 0.0668f);
-            growing.AddFrame(16, 48, 16, 32, 0.0668f);
-            growing.AddFrame(0, 48, 16, 32, 0.0668f);
-            growing.AddFrame(16, 48, 16, 32, 0.0668f);
-            growing.AddFrame(32, 48, 16, 32, 0.0668f);
-            growing.AddFrame(0, 48, 16, 32, 0.0668f);
-            growing.AddFrame(16, 48, 16, 32, 0.0668f);
-            growing.AddFrame(32, 48, 16, 32, 0.0668f);
-            growing.AddFrame(0, 48, 16, 32, 0.0334f);
-            growing.AddFrame(32, 48, 16, 32, 0.2004f);
+            animPlayer.Add("shrinking", new Animation(.03f, true, 16, 32, 2, 48, 48));
 
-            animPlayer.Add("growing", growing);
+            {
+                Animation growing = new Animation();
+                growing.AddFrame(0, 48, 16, 32, 0.1837f);
+                growing.AddFrame(16, 48, 16, 32, 0.0668f);
+                growing.AddFrame(0, 48, 16, 32, 0.0668f);
+                growing.AddFrame(16, 48, 16, 32, 0.0668f);
+                growing.AddFrame(0, 48, 16, 32, 0.0668f);
+                growing.AddFrame(16, 48, 16, 32, 0.0668f);
+                growing.AddFrame(32, 48, 16, 32, 0.0668f);
+                growing.AddFrame(0, 48, 16, 32, 0.0668f);
+                growing.AddFrame(16, 48, 16, 32, 0.0668f);
+                growing.AddFrame(32, 48, 16, 32, 0.0668f);
+                growing.AddFrame(0, 48, 16, 32, 0.0334f);
+                growing.AddFrame(32, 48, 16, 32, 0.2004f);
+
+                animPlayer.Add("growing", growing);
+            }
         }
 
         public void Bounce()
@@ -243,6 +229,8 @@ namespace PlatformTest
             prevVelocity = velocity;
             velocity = Vector2.Zero;
             IsTransforming = true;
+
+            //texture = TextureManager.Player;
         }
 
         private void Burn()
@@ -251,10 +239,7 @@ namespace PlatformTest
             origin = originBig;
             aabb = aabbBig;
             appended = "Big";
-            paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
-            paleteSwap.Parameters["xTargetPal"].SetValue(pal2);
-            paleteSwap.Parameters["nColors"].SetValue(7);
-            paleteSwap.CurrentTechnique.Passes[0].Apply();
+            texture = TextureManager.PlayerFire;
 
             if (currState == States.fall)
                 animPlayer.PlayAnimation("jumping" + appended);
@@ -265,6 +250,7 @@ namespace PlatformTest
             SoundManager.Grow.Play();
             origin = originBig;
             aabb = aabbBig;
+            //texture = TextureManager.Player;
 
             prevState = currState;
             currState = States.growing;
@@ -511,22 +497,19 @@ namespace PlatformTest
                 color = Color.White;
             }
 
-            spriteBatch.End();
-
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: paleteSwap, transformMatrix: Camera2D.Instance.Transform);
-
             if (invencibleTimer > 0f &&
                 (int)(invencibleTimer * 60f) % 8 > 4)
             { }
             else
             {
-                animPlayer.Draw(spriteBatch,
-                new Vector2((int)position.X, (int)position.Y),
-                hFlip, origin, color);
+                animPlayer.Draw(
+                    spriteBatch,
+                    texture,
+                    new Vector2((int)position.X, (int)position.Y),
+                    hFlip, 
+                    origin, 
+                    color);
             }
-
-            spriteBatch.End();
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera2D.Instance.Transform);
 
             base.Draw(spriteBatch);
         }
@@ -904,10 +887,6 @@ namespace PlatformTest
             if (secondCounter >= transformationTotalTime)
             {
                 appended = "Big";
-                paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
-                paleteSwap.Parameters["xTargetPal"].SetValue(pal1);
-                paleteSwap.Parameters["nColors"].SetValue(7);
-                paleteSwap.CurrentTechnique.Passes[0].Apply();
 
                 currState = prevState;
                 CanBeHit = true;
@@ -927,10 +906,6 @@ namespace PlatformTest
                 origin = originSmall;
                 aabb = aabbSmall;
                 appended = "Small";
-                paleteSwap.Parameters["xSourcePal"].SetValue(sourcePal);
-                paleteSwap.Parameters["xTargetPal"].SetValue(sourcePal);
-                paleteSwap.Parameters["nColors"].SetValue(7);
-                paleteSwap.CurrentTechnique.Passes[0].Apply();
 
                 CanBeHit = true;
                 CanCollide = true;

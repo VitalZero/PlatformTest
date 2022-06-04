@@ -11,7 +11,6 @@ namespace PlatformTest
         private List<Frame> frames;
         private int currentFrameIndex;
         public bool AnimationEnded { get; private set; }
-        public Texture2D Texture { get; private set; }
         public bool IsLooping { get; private set; }
         public int FrameWidth { get { return frames[currentFrameIndex].frameRect.Width; }  }
         public int FrameHeight { get { return frames[currentFrameIndex].frameRect.Height; } }
@@ -20,9 +19,8 @@ namespace PlatformTest
         public int StartFrameY { get { return frames[currentFrameIndex].frameRect.Y; } }
         public Frame CurrentFrame { get { return frames[currentFrameIndex]; } }
 
-        public Animation(Texture2D texture)
+        public Animation()
         {
-            Texture = texture;
             currentFrameIndex = 0;
             frames = new List<Frame>();
             AnimationEnded = false;
@@ -30,7 +28,6 @@ namespace PlatformTest
         }
 
         public Animation(
-            Texture2D texture,
             float frameTime,
             bool isLooping,
             int frameWidth,
@@ -40,7 +37,6 @@ namespace PlatformTest
             int startFrameY)
         {
             frames = new List<Frame>();
-            Texture = texture;
             AnimationEnded = false;
             currentFrameIndex = 0;
             IsLooping = isLooping;

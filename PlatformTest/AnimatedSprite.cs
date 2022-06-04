@@ -32,7 +32,7 @@ namespace PlatformTest
 
             texture = TextureManager.MiscSprites;
 
-            animPlayer.Add("single", new Animation(texture, frameDuration, looping, (int)frameSize.X, (int)frameSize.Y,
+            animPlayer.Add("single", new Animation(frameDuration, looping, (int)frameSize.X, (int)frameSize.Y,
                 frameCount, (int)frameStart.X, (int)frameStart.Y));
             animPlayer.PlayAnimation("single");
 
@@ -51,9 +51,13 @@ namespace PlatformTest
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            animPlayer.Draw(spriteBatch, 
+            animPlayer.Draw(
+                spriteBatch, 
+                texture,
                 new Vector2((int)position.X, (int)position.Y),
-                SpriteEffects.None, origin, Color.White);
+                SpriteEffects.None, 
+                origin, 
+                Color.White);
         }
 
         public override void Update(GameTime gameTime)

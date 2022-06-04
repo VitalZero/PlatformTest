@@ -43,8 +43,8 @@ namespace PlatformTest
         {
             texture = TextureManager.Goomba;
 
-            animPlayer.Add("walking", new Animation(texture, 0.2f, true, 16, 16, 2, 0, 0));
-            animPlayer.Add("stomped", new Animation(texture, 1f, false, 16, 16, 1, 32, 0));
+            animPlayer.Add("walking", new Animation(0.2f, true, 16, 16, 2, 0, 0));
+            animPlayer.Add("stomped", new Animation(1f, false, 16, 16, 1, 32, 0));
             animPlayer.PlayAnimation("walking");
         }
 
@@ -125,9 +125,14 @@ namespace PlatformTest
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            animPlayer.Draw(spriteBatch,
+            animPlayer.Draw(
+                spriteBatch,
+                texture,
                 new Vector2((int)position.X, (int)position.Y ),
-                vFlip, origin, Color.White, angle);
+                vFlip, 
+                origin, 
+                Color.White, 
+                angle);
 
             base.Draw(spriteBatch);
         }

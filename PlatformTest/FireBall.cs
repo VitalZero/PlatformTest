@@ -35,7 +35,7 @@ namespace PlatformTest
         public override void Init()
         {
             texture = TextureManager.MiscSprites;
-            animPlayer.Add("normal", new Animation(texture, 0.06f, true, 8, 8, 4, 8, 16));
+            animPlayer.Add("normal", new Animation(0.06f, true, 8, 8, 4, 8, 16));
             animPlayer.PlayAnimation("normal");
         }
 
@@ -80,8 +80,13 @@ namespace PlatformTest
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            animPlayer.Draw(spriteBatch, new Vector2((int)position.X, (int)position.Y),
-                hFlip, origin, Color.White);
+            animPlayer.Draw(
+                spriteBatch, 
+                texture,
+                new Vector2((int)position.X, (int)position.Y),
+                hFlip, 
+                origin, 
+                Color.White);
         }
     }
 }

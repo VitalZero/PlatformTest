@@ -49,9 +49,9 @@ namespace PlatformTest
             graphics.PreferredBackBufferWidth = windowWidth;
             graphics.PreferredBackBufferHeight = windowHeight;
             graphics.PreferMultiSampling = false;
-            //IsFixedTimeStep = true;
-            //TargetElapsedTime = TimeSpan.FromSeconds(1f / 120f);
+            //IsFixedTimeStep = false;
             //graphics.SynchronizeWithVerticalRetrace = false;
+            //TargetElapsedTime = TimeSpan.FromSeconds(1f / 120f);
             graphics.ApplyChanges();
 
             world.Initialize(Content.RootDirectory);
