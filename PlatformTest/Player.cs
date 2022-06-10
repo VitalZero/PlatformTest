@@ -23,7 +23,7 @@ namespace PlatformTest
             }
         }
 
-        private enum States { stand, run, jump, fall, crouch, firing, growing, shrinking, downPipe, rightPipe, leftPipe, upPipe, goal }
+        private enum States { stand, run, jump, fall, crouch, firing, growing, shrinking, burning, downPipe, rightPipe, leftPipe, upPipe, goal }
         private enum Power { none, big, fire}
 
         public Vector2 PrevPos { get; private set; }
@@ -36,6 +36,7 @@ namespace PlatformTest
         private const float starTotalTime = 10f;
         private float starTimer;
         public bool HasStar { get; private set; }
+        private bool isBurning;
         private float secondCounter;
         private const float transformationTotalTime = 1f;
         private const float jumpHoldTime = 0.25f;
@@ -67,12 +68,15 @@ namespace PlatformTest
         private readonly Vector2 originSmall = new Vector2(8, 15);
         private readonly Vector2 originBig = new Vector2(8, 31);
         private Vector2 prevVelocity;
+        Color color;
 
         Color[] starColor;
         private int colorStep = 0;
 
         // delegates
         public event Action deathEvent;
+
+        private RenderTarget2D target;
 
         //for debug purposes
         List<string> playerStates = new List<string>();
@@ -110,11 +114,12 @@ namespace PlatformTest
             bounce = false;
 
             instance = this;
+            isBurning = false;
 
             currState = States.fall;
             prevState = currState;
 
-            starColor = new Color[] { Color.Red, Color.Green, Color.Gold, Color.Blue, Color.White };
+            starColor = new Color[] { Color.Red, Color.DarkGreen, new Color(100, 100, 10), Color.Blue, Color.White };
         }
 
         public override void Init()
@@ -127,6 +132,7 @@ namespace PlatformTest
 
             animPlayer.PlayAnimation("idle" + appended);
             font = TextureManager.Arial;
+
         }
 
         private void AddAnimations()
@@ -236,13 +242,21 @@ namespace PlatformTest
         private void Burn()
         {
             SoundManager.Grow.Play();
+            prevState = currState;
+            currState = States.burning;
             origin = originBig;
             aabb = aabbBig;
             appended = "Big";
-            texture = TextureManager.PlayerFire;
-
-            if (currState == States.fall)
-                animPlayer.PlayAnimation("jumping" + appended);
+            AffectedByGravity = false;
+            CanBeHit = false;
+            CanCollide = false;
+            secondCounter = 0f;
+            prevVelocity = velocity;
+            velocity = Vector2.Zero;
+            IsTransforming = true;
+            isBurning = true;
+            //if (currState == States.fall)
+            //    animPlayer.PlayAnimation("jumping" + appended);
         }
 
         private void Grow()
@@ -345,6 +359,10 @@ namespace PlatformTest
 
                 case States.shrinking:
                     UpdateShrinkingState();
+                    break;
+
+                case States.burning:
+                    UpdateBurningState();
                     break;
 
                 case States.downPipe:
@@ -484,11 +502,62 @@ namespace PlatformTest
             position.Y -= 0f;
         }
 
+        public void PreDraw(SpriteBatch spriteBatch)
+        {
+            if(target == null)
+            {
+                target = new RenderTarget2D(spriteBatch.GraphicsDevice, 16, 32);
+            }
+
+            spriteBatch.GraphicsDevice.SetRenderTarget(target);
+            spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(effect: null);
+
+            
+                animPlayer.Draw(
+                    spriteBatch,
+                    texture,
+                    Vector2.Zero,
+                    hFlip,
+                    Vector2.Zero,
+                    Color.White);
+
+            spriteBatch.End();
+            spriteBatch.GraphicsDevice.SetRenderTarget(null);
+
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Color color;
+        //Color color;
 
-            if(HasStar)
+        //if(HasStar)
+        //{
+        //    color = starColor[colorStep];
+        //}
+        //else
+        //{
+        //    color = Color.White;
+        //}
+
+        //if (invencibleTimer > 0f &&
+        //    (int)(invencibleTimer * 60f) % 8 > 4)
+        //{ }
+        //else
+        //{
+        //    animPlayer.Draw(
+        //        spriteBatch,
+        //        texture,
+        //        new Vector2((int)position.X, (int)position.Y),
+        //        hFlip, 
+        //        origin, 
+        //        color);
+        //}
+            if (HasStar)
+            {
+                color = starColor[colorStep];
+            }
+            else if(isBurning)
             {
                 color = starColor[colorStep];
             }
@@ -502,15 +571,9 @@ namespace PlatformTest
             { }
             else
             {
-                animPlayer.Draw(
-                    spriteBatch,
-                    texture,
-                    new Vector2((int)position.X, (int)position.Y),
-                    hFlip, 
-                    origin, 
-                    color);
-            }
+                spriteBatch.Draw(target, new Vector2((int)position.X, (int)position.Y), null, color, 0, origin, 1, SpriteEffects.None, 1);
 
+            }
             base.Draw(spriteBatch);
         }
 
@@ -925,6 +988,33 @@ namespace PlatformTest
                 }
             }
         }
+
+
+        private void UpdateBurningState()
+        {
+            if ((int)(secondCounter * 60f) % 8 == 0)
+            {
+                colorStep++;
+                colorStep %= starColor.Length;
+            }
+
+            animPlayer.Freeze();
+
+            if (secondCounter >= transformationTotalTime)
+            {
+                currState = prevState;
+                CanBeHit = true;
+                CanCollide = true;
+                AffectedByGravity = true;
+                velocity = prevVelocity;
+                IsTransforming = false;
+                IsInvencible = false;
+                texture = TextureManager.PlayerFire;
+                isBurning = false;
+                //Camera2D.Instance.RestoreZoom();
+            }
+        }
+            
 
         private void UpdateDownPipeState()
         {

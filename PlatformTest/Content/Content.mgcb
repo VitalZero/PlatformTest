@@ -20,11 +20,11 @@
 /processorParam:TextureFormat=Compressed
 /build:Arial.spritefont
 
-#begin ColorSwap.fx
+#begin damage.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:ColorSwap.fx
+/build:damage.fx
 
 #begin Levels/stage1.tmx
 /copy:Levels/stage1.tmx

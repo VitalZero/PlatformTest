@@ -40,7 +40,6 @@ namespace PlatformTest
             IsMouseVisible = true;
             world = new World();
             cam = new Camera2D(new Rectangle(0, 0, width, height), new Rectangle(0, 0, windowWidth, windowHeight));
-            //stopWatch = new Stopwatch();
         }
 
         protected override void Initialize()
@@ -115,16 +114,11 @@ namespace PlatformTest
             {
                 if (!Player.Instance.IsTransforming)
                 {
-                    //stopWatch.Reset();
-                    //stopWatch.Start();
-
                     world.Update(gameTime);
 
                     SpriteManager.Update(gameTime);
 
                     EntityManager.Update(gameTime);
-
-                    //stopWatch.Stop();
                 }
                 else
                 {
@@ -133,8 +127,6 @@ namespace PlatformTest
                 
                 Camera2D.Instance.Follow(Player.Instance, (float)gameTime.ElapsedGameTime.TotalSeconds);
             }
-
-            //Debug.WriteLine(stopWatch.Elapsed.TotalSeconds.ToString("0.000000"));
 
             advance = false;
             
@@ -147,6 +139,9 @@ namespace PlatformTest
         {
             Rectangle paabb = Player.Instance.GetAABB();
             // draw to a texture
+
+            Player.Instance.PreDraw(spriteBatch);
+
             GraphicsDevice.SetRenderTarget(renderTarget);
 
             GraphicsDevice.Clear(World.Instance.bgColor);//(Color.CornflowerBlue);
@@ -157,9 +152,9 @@ namespace PlatformTest
 
             world.Draw(spriteBatch);
 
-            SpriteManager.Draw(spriteBatch);
-
             EntityManager.Draw(spriteBatch);
+
+            SpriteManager.Draw(spriteBatch);
             //shapes.Begin();
             //shapes.DrawRectangle(paabb.X + Camera2D.Instance.Transform.Translation.X, paabb.Y, paabb.Width, paabb.Height, 1, new Color(Color.Indigo, 0.5f));
             //shapes.End();
