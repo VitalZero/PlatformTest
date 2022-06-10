@@ -140,7 +140,7 @@ namespace PlatformTest
             Rectangle paabb = Player.Instance.GetAABB();
             // draw to a texture
 
-            Player.Instance.PreDraw(spriteBatch);
+            EntityManager.PreDraw(spriteBatch);
 
             GraphicsDevice.SetRenderTarget(renderTarget);
 
@@ -182,7 +182,7 @@ namespace PlatformTest
             spriteBatch.DrawString(TextureManager.Arial, "Enemies total: " + EntityManager.EnemiesCount, new Vector2(20, 95), Color.Red);
             spriteBatch.DrawString(TextureManager.Arial, "ScreenX: " + playerScreenPos.X.ToString("00.00"), new Vector2(20, 110), Color.Red);
             spriteBatch.DrawString(TextureManager.Arial, "ScreenY: " + playerScreenPos.Y.ToString("00.00"), new Vector2(20, 125), Color.Red);
-            spriteBatch.DrawString(TextureManager.Arial, "GameTime.DT: " + gameTime.ElapsedGameTime.TotalSeconds.ToString("0.00000"), new Vector2(20, 135), Color.Red);
+            spriteBatch.DrawString(TextureManager.Arial, "GameTime.DT: " + gameTime.ElapsedGameTime.TotalSeconds.ToString("0.00000"), new Vector2(20, 140), Color.Red);
             spriteBatch.End();
 
             this.Window.Title = fps.ToString("00.00");

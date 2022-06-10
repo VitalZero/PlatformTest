@@ -152,6 +152,14 @@ namespace PlatformTest
             }
         }
 
+        public static void PreDraw(SpriteBatch spriteBatch)
+        {
+            foreach (var entity in entities)
+            {
+                entity.PreDraw(spriteBatch);
+            }
+        }
+
         public static void Draw(SpriteBatch spriteBatch)
         {
             foreach (var entity in drawNormal)

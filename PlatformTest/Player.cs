@@ -502,7 +502,7 @@ namespace PlatformTest
             position.Y -= 0f;
         }
 
-        public void PreDraw(SpriteBatch spriteBatch)
+        public override void PreDraw(SpriteBatch spriteBatch)
         {
             if(target == null)
             {

@@ -60,6 +60,11 @@ namespace PlatformTest
             this.dir = dir;
         }
 
+        public virtual void PreDraw(SpriteBatch spriteBatch)
+        {
+
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
 
