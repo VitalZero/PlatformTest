@@ -180,7 +180,9 @@ namespace PlatformTest
             bounce = true;
             currState = States.jump;
             velocity.Y = -bounceSpeed;
-            animPlayer.PlayAnimation("jumping" + appended);
+
+            if(animPlayer.CurrentAnimation() != "crouching")
+                animPlayer.PlayAnimation("jumping" + appended);
         }
 
         public override void Hit()
@@ -791,7 +793,8 @@ namespace PlatformTest
 
         private void UpdateJumpState()
         {
-            animPlayer.PlayAnimation("jumping" + appended);
+            if(animPlayer.CurrentAnimation() != "crouching")
+                animPlayer.PlayAnimation("jumping" + appended);
 
             if (keyboard.IsKeyDown(Keys.Right))
             {
@@ -807,12 +810,15 @@ namespace PlatformTest
                 velocity.X = Lerp(velocity.X, 0, 0.1f);
             }
 
-            if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
+            if (animPlayer.CurrentAnimation() != "crouching")
             {
-                if (EntityManager.FireBallCount < 2)
+                if (keyboard.IsKeyDown(Keys.A) && oldState.IsKeyUp(Keys.A) && power == Power.fire)
                 {
-                    EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
-                    SoundManager.FireBall.Play();
+                    if (EntityManager.FireBallCount < 2)
+                    {
+                        EntityManager.Add(new FireBall(new Vector2(hFlip == 0 ? position.X + 6 : position.X - 6, position.Y - 23), hFlip == 0 ? 1f : -1f));
+                        SoundManager.FireBall.Play();
+                    }
                 }
             }
 
@@ -875,7 +881,11 @@ namespace PlatformTest
             if (IsOnGround)
             {
                 if (animPlayer.CurrentAnimation() == "crouching")
+                {
                     aabb = aabbBig;
+                    currState = States.crouch;
+                    return;
+                }
 
                 if (keyboard.IsKeyDown(Keys.Right) == keyboard.IsKeyDown(Keys.Left))
                 {
@@ -941,6 +951,12 @@ namespace PlatformTest
 
                 velocity.Y = -jumpSpeed;
                 IsOnGround = false;
+
+                if (appended == "Small")
+                    SoundManager.JumpSmall.Play();
+                else
+                    SoundManager.JumpBig.Play();
+
                 return;
             }
         }

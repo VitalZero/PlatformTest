@@ -200,6 +200,7 @@ namespace PlatformTest
                         if (penetration != Rectangle.Empty)
                         {
                             e.Kill();
+                            SoundManager.InstantKill.Play();
                         }
                     }
                 }

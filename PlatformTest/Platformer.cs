@@ -146,7 +146,7 @@ namespace PlatformTest
 
             GraphicsDevice.Clear(World.Instance.bgColor);//(Color.CornflowerBlue);
 
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera2D.Instance.Transform * Camera2D.Instance.CameraShake);
+            spriteBatch.Begin(samplerState: SamplerState.PointWrap, transformMatrix: Camera2D.Instance.Transform * Camera2D.Instance.CameraShake);
 
             EntityManager.DrawBehind(spriteBatch);
 
@@ -155,19 +155,20 @@ namespace PlatformTest
             EntityManager.Draw(spriteBatch);
 
             SpriteManager.Draw(spriteBatch);
-            //shapes.Begin();
-            //shapes.DrawRectangle(paabb.X + Camera2D.Instance.Transform.Translation.X, paabb.Y, paabb.Width, paabb.Height, 1, new Color(Color.Indigo, 0.5f));
-            //shapes.End();
 
             spriteBatch.End();
+
+            shapes.Begin();
+            shapes.DrawRectangle(paabb.X + Camera2D.Instance.Transform.Translation.X, paabb.Y, paabb.Width, paabb.Height, 1, new Color(Color.Indigo, 0.5f));
+            shapes.End();
 
 
             // then draw to the screen 
             // so we can apply the scale to size of the window (globalTransformation) without errors
             GraphicsDevice.SetRenderTarget(null);
 
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: globalTransformation);
-            spriteBatch.Draw(renderTarget, Vector2.Zero, Color.White);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            spriteBatch.Draw(renderTarget, new Rectangle(0, 0, windowWidth, windowHeight), new Rectangle(0, 0, width, height), Color.White);
             spriteBatch.End();
 
             // draw info stuff
